@@ -1,5 +1,5 @@
 {
-  "timestamp": "20251021_023817",
+  "timestamp": "20251021_104201",
   "epochs": 10,
   "device": "cpu",
   "grids": [
@@ -22,7 +22,14 @@
     "relu",
     "silu"
   ],
-  "num_datasets": 4,
-  "kan_models_saved": false,
-  "pruned_models_saved": false
+  "frequencies": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "num_datasets": 9,
+  "kan_models_saved": true,
+  "pruned_models_saved": true
 }
