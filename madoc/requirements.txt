@@ -1,0 +1,72 @@
+# Requirements for madoc - Independent KAN Research Repository
+# This file includes PyKAN and all dependencies needed to run madoc as a standalone repo
+#
+# Installation:
+#   pip install -r requirements.txt
+#
+# Note: This installs PyKAN from the parent directory in editable mode
+
+# ============================================================================
+# CORE: PyKAN and its dependencies
+# ============================================================================
+# Install PyKAN from parent directory (editable mode for latest code)
+-e ../
+
+# PyTorch - Deep learning framework (CPU version)
+# For GPU version on Gadi, use: torch==2.2.2+cu118 with --extra-index-url
+torch==2.2.2
+
+# Core scientific computing
+numpy==1.24.4
+scipy>=1.10.0
+
+# Symbolic mathematics (for KAN's symbolic layer)
+sympy==1.11.1
+
+# Visualization
+matplotlib==3.6.2
+seaborn>=0.12.0
+
+# Data handling
+pandas==2.0.1
+
+# Progress bars
+tqdm==4.66.2
+
+# Configuration files
+pyyaml>=6.0
+
+# ============================================================================
+# MACHINE LEARNING: Required for section2_new ensemble/clustering
+# ============================================================================
+scikit-learn==1.1.3
+
+# ============================================================================
+# DEVELOPMENT & UTILITIES
+# ============================================================================
+# For saving/loading results
+setuptools==65.5.0
+
+# ============================================================================
+# OPTIONAL: Uncomment if needed
+# ============================================================================
+# For Jupyter notebooks (if running interactive examples)
+# jupyter>=1.0.0
+# ipykernel>=6.0.0
+
+# For experiment tracking (if using tensorboard)
+# tensorboard>=2.10.0
+
+# For evolutionary algorithms in section2_new (alternative to custom implementation)
+# deap>=1.3.0
+
+# GPU-specific PyTorch (uncomment for Gadi GPU nodes)
+# --extra-index-url https://download.pytorch.org/whl/cu118
+# torch==2.2.2+cu118
+
+# ============================================================================
+# VERSION NOTES
+# ============================================================================
+# Python requirement: >=3.6 (recommended: 3.9-3.11)
+# PyKAN version: 0.2.8 (from parent directory)
+# Compatible with NCI Gadi modules: python3/3.10.4
