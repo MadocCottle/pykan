@@ -80,10 +80,11 @@ print("Clustering Experts...")
 print("="*60)
 
 clusterer = ExpertClusterer(ensemble, method='kmeans')
-labels = clusterer.cluster_by_importance(X_test, y_test, n_clusters=3, importance_method='permutation')
+n_clusters = min(3, n_experts)  # Don't exceed number of experts
+labels = clusterer.cluster_by_importance(X_test, y_test, n_clusters=n_clusters, importance_method='permutation')
 
 print(f"Cluster assignments: {labels}")
-for cluster_id in range(3):
+for cluster_id in range(n_clusters):
     experts_in_cluster = np.where(labels == cluster_id)[0]
     print(f"Cluster {cluster_id}: Experts {list(experts_in_cluster)}")
 

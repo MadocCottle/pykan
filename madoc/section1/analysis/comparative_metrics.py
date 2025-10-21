@@ -82,7 +82,8 @@ class MetricsAnalyzer:
                 continue
 
             data = self.results[model_type]
-            dataset_key = str(dataset_idx)
+            # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+            dataset_key = dataset_idx if dataset_idx in data else str(dataset_idx)
 
             if dataset_key not in data:
                 continue
@@ -148,7 +149,8 @@ class MetricsAnalyzer:
                 continue
 
             data = self.results[model_type]
-            dataset_key = str(dataset_idx)
+            # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+            dataset_key = dataset_idx if dataset_idx in data else str(dataset_idx)
 
             if dataset_key not in data:
                 continue
@@ -220,7 +222,8 @@ class MetricsAnalyzer:
                 continue
 
             data = self.results[model_type]
-            dataset_key = str(dataset_idx)
+            # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+            dataset_key = dataset_idx if dataset_idx in data else str(dataset_idx)
 
             if dataset_key not in data:
                 continue
@@ -323,7 +326,8 @@ class MetricsAnalyzer:
 
             scores = []
             for dataset_idx in range(self._get_num_datasets()):
-                dataset_key = str(dataset_idx)
+                # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+                dataset_key = dataset_idx if dataset_idx in self.results[model_type] else str(dataset_idx)
                 if dataset_key in self.results[model_type]:
                     best_score = self._get_best_score(
                         model_type, self.results[model_type][dataset_key], metric

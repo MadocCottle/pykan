@@ -91,7 +91,8 @@ class Heatmap2DAnalyzer:
         y_true = true_func(x_test).cpu().numpy().reshape(resolution, resolution)
 
         # Get predictions
-        dataset_key = str(dataset_idx)
+        # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+        dataset_key = dataset_idx if dataset_idx in self.results.get('kan', {}) else str(dataset_idx)
         y_pred = None
 
         if model_type in self.results and dataset_key in self.results[model_type]:
@@ -221,7 +222,8 @@ class Heatmap2DAnalyzer:
 
             # Model predictions
             for model_type in model_types:
-                dataset_key = str(dataset_idx)
+                # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+                dataset_key = dataset_idx if dataset_idx in self.results.get('kan', {}) else str(dataset_idx)
                 if model_type in self.results and dataset_key in self.results[model_type]:
                     y_pred = self._get_predictions(model_type, dataset_key, x_test)
                     if y_pred is not None:
@@ -251,7 +253,8 @@ class Heatmap2DAnalyzer:
 
             # Model predictions
             for model_type in model_types:
-                dataset_key = str(dataset_idx)
+                # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+                dataset_key = dataset_idx if dataset_idx in self.results.get('kan', {}) else str(dataset_idx)
                 if model_type in self.results and dataset_key in self.results[model_type]:
                     y_pred = self._get_predictions(model_type, dataset_key, x_test)
                     if y_pred is not None:
@@ -298,7 +301,8 @@ class Heatmap2DAnalyzer:
 
         # Get values
         y_true = true_func(x_test).cpu().numpy().reshape(resolution, resolution)
-        dataset_key = str(dataset_idx)
+        # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+        dataset_key = dataset_idx if dataset_idx in self.results.get('kan', {}) else str(dataset_idx)
 
         if model_type not in self.results or dataset_key not in self.results[model_type]:
             print(f"No results for {model_type} on dataset {dataset_idx}")
@@ -431,7 +435,8 @@ class Heatmap2DAnalyzer:
 
             # Comparison heatmaps for each model
             for model_type in ['mlp', 'siren', 'kan', 'kan_pruning']:
-                dataset_key = str(dataset_idx)
+                # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+                dataset_key = dataset_idx if dataset_idx in self.results.get('kan', {}) else str(dataset_idx)
                 if model_type in self.results and dataset_key in self.results[model_type]:
                     print(f"  - {model_type.upper()} comparison heatmap")
                     self.create_comparison_heatmaps(
@@ -450,7 +455,8 @@ class Heatmap2DAnalyzer:
 
             # Error quantile maps
             for model_type in ['kan', 'kan_pruning']:
-                dataset_key = str(dataset_idx)
+                # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+                dataset_key = dataset_idx if dataset_idx in self.results.get('kan', {}) else str(dataset_idx)
                 if model_type in self.results and dataset_key in self.results[model_type]:
                     print(f"  - {model_type.upper()} error quantile map")
                     self.create_error_quantile_map(

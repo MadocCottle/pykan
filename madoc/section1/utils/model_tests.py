@@ -10,7 +10,7 @@ from . import trad_nn as tnn
 from .metrics import dense_mse_error_from_dataset
 import time
 
-def train_model(model, dataset, epochs, device, true_function=None, compute_dense_mse=False):
+def train_model(model, dataset, epochs, device, true_function=None, compute_dense_mse=False, max_grad_norm=10.0):
     """Train any model using LBFGS optimizer
 
     Args:
@@ -20,11 +20,18 @@ def train_model(model, dataset, epochs, device, true_function=None, compute_dens
         device: Device to train on
         true_function: Ground truth function for dense MSE calculation (optional)
         compute_dense_mse: Whether to compute dense MSE at each epoch (default: False)
+        max_grad_norm: Maximum gradient norm for clipping (default: 10.0)
 
     Returns:
         train_losses, test_losses, total_time, time_per_epoch, dense_mse_errors (if enabled)
     """
-    optimizer = torch.optim.LBFGS(model.parameters())
+    optimizer = torch.optim.LBFGS(
+        model.parameters(),
+        max_iter=20,
+        line_search_fn='strong_wolfe',  # Enable adaptive step sizing for stability
+        tolerance_grad=1e-7,
+        tolerance_change=1e-9
+    )
     criterion = nn.MSELoss()
 
     train_losses = []
@@ -38,7 +45,16 @@ def train_model(model, dataset, epochs, device, true_function=None, compute_dens
             optimizer.zero_grad()
             train_pred = model(dataset['train_input'])
             loss = criterion(train_pred, dataset['train_label'])
+
+            # Check for NaN/Inf in loss before backward
+            if torch.isnan(loss) or torch.isinf(loss):
+                print(f"Warning: NaN/Inf loss detected at epoch {epoch}")
+                return loss
+
             loss.backward()
+
+            # Gradient clipping to prevent explosions
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
             return loss
 
         optimizer.step(closure)

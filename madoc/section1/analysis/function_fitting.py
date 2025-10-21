@@ -119,7 +119,8 @@ class FunctionFittingVisualizer:
             ax.plot(x_plot, y_true, 'k--', linewidth=2, label='True Function', alpha=0.7)
 
             # Get predictions from best model
-            dataset_key = str(dataset_idx)
+            # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+            dataset_key = dataset_idx if dataset_idx in self.results[model_type] else str(dataset_idx)
             if dataset_key in self.results[model_type]:
                 predictions = self._get_best_predictions_1d(
                     model_type, dataset_key, x_test
@@ -254,7 +255,8 @@ class FunctionFittingVisualizer:
             ax_3d = fig.add_subplot(gs[row, col], projection='3d')
             ax_contour = fig.add_subplot(gs[row, col + 1])
 
-            dataset_key = str(dataset_idx)
+            # Try both integer and string keys for compatibility (PKL uses int, JSON uses str)
+            dataset_key = dataset_idx if dataset_idx in self.results.get(model_type, {}) else str(dataset_idx)
             if model_type in self.results and dataset_key in self.results[model_type]:
                 predictions = self._get_best_predictions_2d(model_type, dataset_key, x_test)
 

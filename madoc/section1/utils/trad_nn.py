@@ -50,26 +50,50 @@ class SIREN(nn.Module):
 class MLP(nn.Module):
     def __init__(self, in_features=1, width=5, depth=2, activation='tanh'):
         super().__init__()
+        self.activation = activation
         layers = []
+
         # Input layer
         layers.append(nn.Linear(in_features, width))
-        
-        # Hidden layers
+
+        # Add activation after input layer
+        if activation == 'tanh':
+            layers.append(nn.Tanh())
+        elif activation == 'relu':
+            layers.append(nn.ReLU())
+        elif activation == 'silu':
+            layers.append(nn.SiLU())
+
+        # Hidden layers (depth - 2 means layers between input and output)
         for _ in range(depth - 2):
+            layers.append(nn.Linear(width, width))
             if activation == 'tanh':
                 layers.append(nn.Tanh())
             elif activation == 'relu':
                 layers.append(nn.ReLU())
             elif activation == 'silu':
                 layers.append(nn.SiLU())
-            layers.append(nn.Linear(width, width))
-        
-        # Output layer
-        if activation == 'tanh':
-            layers.append(nn.Tanh())
+
+        # Output layer (no activation after output)
         layers.append(nn.Linear(width, 1))
-        
+
         self.network = nn.Sequential(*layers)
-    
+        self._init_weights()
+
+    def _init_weights(self):
+        """Initialize weights based on activation function"""
+        for module in self.network.modules():
+            if isinstance(module, nn.Linear):
+                if self.activation == 'relu' or self.activation == 'silu':
+                    # He initialization for ReLU and SiLU
+                    nn.init.kaiming_normal_(module.weight, mode='fan_in', nonlinearity='relu')
+                    if module.bias is not None:
+                        nn.init.zeros_(module.bias)
+                elif self.activation == 'tanh':
+                    # Xavier initialization for tanh
+                    nn.init.xavier_normal_(module.weight)
+                    if module.bias is not None:
+                        nn.init.zeros_(module.bias)
+
     def forward(self, x):
         return self.network(x)
