@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -P YOUR_PROJECT_CODE
+#PBS -P p00
 #PBS -q normal
 #PBS -l walltime=24:00:00
 #PBS -l mem=32GB
@@ -8,7 +8,7 @@
 #PBS -l storage=scratch/YOUR_PROJECT_CODE
 #PBS -j oe
 #PBS -N section1_experiment
-#PBS -M your.email@example.com
+#PBS -M u7138718@anu.edu.au
 #PBS -m abe
 
 # PBS script for running Section 1 experiments on NCI Gadi
