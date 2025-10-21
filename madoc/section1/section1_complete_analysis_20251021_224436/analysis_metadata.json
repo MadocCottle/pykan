@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-10-21 22:45:14",
+  "base_directory": "/Users/main/Desktop/my_pykan/pykan/madoc/section1",
+  "output_directory": "section1_complete_analysis_20251021_224436",
+  "analysis_results": {
+    "section1_1": {
+      "status": "success",
+      "results_file": "/Users/main/Desktop/my_pykan/pykan/madoc/section1/sec1_results/section1_1_results_20251021_215324.pkl",
+      "models_dir": null,
+      "output_dir": "section1_complete_analysis_20251021_224436/section1_1_analysis",
+      "timestamp": "215324"
+    },
+    "section1_2": {
+      "status": "success",
+      "results_file": "/Users/main/Desktop/my_pykan/pykan/madoc/section1/sec2_results/section1_2_results_20251021_215407.pkl",
+      "models_dir": null,
+      "output_dir": "section1_complete_analysis_20251021_224436/section1_2_analysis",
+      "timestamp": "215407"
+    },
+    "section1_3": {
+      "status": "success",
+      "results_file": "/Users/main/Desktop/my_pykan/pykan/madoc/section1/sec3_results/section1_3_results_20251021_215515.pkl",
+      "models_dir": null,
+      "output_dir": "section1_complete_analysis_20251021_224436/section1_3_analysis",
+      "timestamp": "215515"
+    }
+  }
+}
