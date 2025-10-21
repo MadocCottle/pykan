@@ -20,7 +20,11 @@ import seaborn as sns
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 # Import centralized IO module
-from . import data_io
+try:
+    from . import data_io
+except ImportError:
+    # Allow running as script (not as package)
+    import data_io
 
 # Set plotting style
 sns.set_style("whitegrid")
@@ -92,6 +96,9 @@ class MetricsAnalyzer:
             # For KAN, iterate through grid sizes
             else:
                 for grid_key, metrics in data[dataset_key].items():
+                    # Skip metadata keys (like 'total_dataset_time', 'pruned') that aren't metric dicts
+                    if not isinstance(metrics, dict) or 'train' not in metrics:
+                        continue
                     rows.append(self._extract_metrics(
                         model_type, f"grid_{grid_key}", metrics
                     ))
@@ -181,8 +188,14 @@ class MetricsAnalyzer:
                            color=colors[model_type], linestyle='--' if model_type == 'mlp' else '-.')
 
         else:  # KAN
-            # Plot best grid size
-            best_grid = min(data.items(),
+            # Plot best grid size (filter out metadata keys first)
+            valid_items = [(k, v) for k, v in data.items()
+                          if isinstance(v, dict) and 'train' in v and metric in v]
+
+            if not valid_items:
+                return
+
+            best_grid = min(valid_items,
                           key=lambda x: x[1][metric][-1] if isinstance(x[1][metric], list) else x[1][metric])
             grid_key, metrics = best_grid
 
@@ -278,11 +291,15 @@ class MetricsAnalyzer:
                     'per_epoch': np.mean(per_epoch_times)
                 }
         else:
-            # Get best grid configuration
+            # Get best grid configuration (skip metadata keys)
             best_config = None
             best_test = float('inf')
 
             for grid_key, metrics in data.items():
+                # Skip metadata keys
+                if not isinstance(metrics, dict) or 'test' not in metrics:
+                    continue
+
                 final_test = metrics['test'][-1] if isinstance(metrics['test'], list) else metrics['test']
                 if final_test < best_test:
                     best_test = final_test
@@ -376,11 +393,14 @@ class MetricsAnalyzer:
                             scores.append(final_val)
         else:
             for grid_key, metrics in data.items():
-                if metric in metrics:
-                    val = metrics[metric]
-                    final_val = val[-1] if isinstance(val, list) else val
-                    if final_val is not None:
-                        scores.append(final_val)
+                # Skip metadata keys
+                if not isinstance(metrics, dict) or metric not in metrics:
+                    continue
+
+                val = metrics[metric]
+                final_val = val[-1] if isinstance(val, list) else val
+                if final_val is not None:
+                    scores.append(final_val)
 
         return min(scores) if scores else None
 

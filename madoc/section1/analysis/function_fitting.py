@@ -25,7 +25,11 @@ from kan import KAN, create_dataset
 from utils import data_funcs as dfs
 
 # Import centralized IO module
-from . import data_io
+try:
+    from . import data_io
+except ImportError:
+    # Allow running as script (not as package)
+    import data_io
 
 
 class FunctionFittingVisualizer:
