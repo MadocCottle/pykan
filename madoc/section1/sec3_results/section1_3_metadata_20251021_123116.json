@@ -1,0 +1,28 @@
+{
+  "timestamp": "20251021_123116",
+  "epochs": 100,
+  "device": "cpu",
+  "grids": [
+    3,
+    5,
+    10,
+    20,
+    50,
+    100
+  ],
+  "depths": [
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "activations": [
+    "tanh",
+    "relu",
+    "silu"
+  ],
+  "num_datasets": 4,
+  "kan_models_saved": false,
+  "pruned_models_saved": false
+}

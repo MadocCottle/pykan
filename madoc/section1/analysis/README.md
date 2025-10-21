@@ -10,7 +10,104 @@ The analysis suite provides three main types of visualizations:
 2. **Function Fitting** - Visualize how well NNs approximate the underlying functions
 3. **2D Heatmaps** - Detailed spatial analysis for 2D equations (Section 1.3)
 
-## Quick Start
+## Honours Thesis Workflow (RECOMMENDED)
+
+### Complete Section 1 Pipeline
+
+For writing an honours thesis, use this streamlined workflow to run all experiments and generate all analysis outputs:
+
+```bash
+# Step 1: Navigate to Section 1 directory
+cd /Users/main/Desktop/my_pykan/pykan/madoc/section1
+
+# Step 2: Run all three Section 1 experiments (adjust epochs as needed)
+python section1_1.py --epochs 100  # Function approximation
+python section1_2.py --epochs 100  # 1D Poisson PDE
+python section1_3.py --epochs 100  # 2D Poisson PDE
+
+# Step 3: Generate complete analysis for all experiments
+cd analysis
+python analyze_all_section1.py
+
+# Optional: Specify custom output directory
+python analyze_all_section1.py --output-dir my_thesis_section1_results
+```
+
+### What You Get
+
+After running `analyze_all_section1.py`, you'll have a complete directory structure with everything needed for thesis writing:
+
+```
+section1_complete_analysis_<timestamp>/
+├── SECTION1_THESIS_REPORT.md          # Master report for all Section 1
+├── analysis_metadata.json              # Metadata about the analysis run
+├── section1_1_analysis/                # Section 1.1: Function Approximation
+│   ├── 01_comparative_metrics/
+│   │   ├── all_datasets_heatmap_test.png      # Overall performance comparison
+│   │   ├── dataset_*_comparison_table.csv     # Exact numerical results
+│   │   ├── dataset_*_learning_curves_*.png    # Training dynamics
+│   │   └── dataset_*_training_times.png       # Computational cost
+│   ├── 02_function_fitting/
+│   │   └── function_fit_dataset_*.png         # Visual quality assessment
+│   └── ANALYSIS_SUMMARY.md                    # Detailed subsection report
+├── section1_2_analysis/                # Section 1.2: 1D Poisson PDE
+│   ├── 01_comparative_metrics/
+│   ├── 02_function_fitting/
+│   └── ANALYSIS_SUMMARY.md
+└── section1_3_analysis/                # Section 1.3: 2D Poisson PDE
+    ├── 01_comparative_metrics/
+    ├── 02_function_fitting/
+    ├── 03_heatmap_analysis/                   # 2D-specific spatial analysis
+    │   ├── cross_section_*.png                # 1D slices for detailed analysis
+    │   └── (heatmap visualizations)
+    └── ANALYSIS_SUMMARY.md
+```
+
+### Using Results for Thesis Writing
+
+The **SECTION1_THESIS_REPORT.md** provides:
+- Recommended thesis structure
+- Which figures to use for each subsection
+- Key points to extract from results
+- Cross-experiment comparisons
+
+**Key files for thesis:**
+1. **Tables**: Use CSV files in `01_comparative_metrics/` for numerical comparisons
+2. **Overall performance**: `all_datasets_heatmap_test.png` shows model comparison across all datasets
+3. **Learning curves**: Show training dynamics and convergence
+4. **Function fits**: Visual evidence of approximation quality
+5. **2D heatmaps**: Spatial error analysis for Section 1.3
+
+### Analyzing Specific Timestamp
+
+If you want to analyze a specific previous run:
+
+```bash
+# Find available timestamps
+ls ../sec1_results/section1_1_results_*.pkl
+
+# Analyze specific timestamp across all experiments
+python analyze_all_section1.py --timestamp 20251021_110446
+```
+
+### Quick Re-analysis
+
+If you've already run experiments and just want to regenerate analysis:
+
+```bash
+# Just run the analysis (uses latest results automatically)
+cd /Users/main/Desktop/my_pykan/pykan/madoc/section1/analysis
+python analyze_all_section1.py
+```
+
+The batch analyzer will automatically find the latest results from:
+- `../sec1_results/` for Section 1.1
+- `../sec2_results/` for Section 1.2
+- `../sec3_results/` for Section 1.3
+
+---
+
+## Quick Start (Individual Analysis)
 
 ### Run Complete Analysis
 
