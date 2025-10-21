@@ -30,17 +30,36 @@ Edit `run_section1.pbs` and update these lines with your details:
 
 ### 3. Submit Jobs
 
-Run experiments using `qsub` with variables:
+**Option A: Use wrapper scripts (recommended)**
 
 ```bash
 # Run Section 1.1 (Function Approximation) with 100 epochs
-qsub run_section1.pbs -v SCRIPT=section1_1.py,EPOCHS=100
+bash submit_section1_1.sh 100
 
 # Run Section 1.2 (1D Poisson PDE) with 200 epochs
-qsub run_section1.pbs -v SCRIPT=section1_2.py,EPOCHS=200
+bash submit_section1_2.sh 200
 
 # Run Section 1.3 (2D Poisson PDE) with 150 epochs
-qsub run_section1.pbs -v SCRIPT=section1_3.py,EPOCHS=150
+bash submit_section1_3.sh 150
+
+# Or use defaults (100, 200, 200 epochs respectively)
+bash submit_section1_1.sh
+bash submit_section1_2.sh
+bash submit_section1_3.sh
+```
+
+**Option B: Use qsub directly**
+
+```bash
+# IMPORTANT: -v flag must come BEFORE the PBS script name
+# Run Section 1.1 (Function Approximation) with 100 epochs
+qsub -v SCRIPT=section1_1.py,EPOCHS=100 run_section1.pbs
+
+# Run Section 1.2 (1D Poisson PDE) with 200 epochs
+qsub -v SCRIPT=section1_2.py,EPOCHS=200 run_section1.pbs
+
+# Run Section 1.3 (2D Poisson PDE) with 150 epochs
+qsub -v SCRIPT=section1_3.py,EPOCHS=150 run_section1.pbs
 ```
 
 ### 4. Monitor Jobs

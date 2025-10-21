@@ -4,6 +4,12 @@ Simple example: Solving 2D Poisson equation with KAN and MLP.
 This demonstrates the basic usage of the PDE testing infrastructure.
 """
 
+import sys
+from pathlib import Path
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 import torch
 from kan import KAN
 import pde_data

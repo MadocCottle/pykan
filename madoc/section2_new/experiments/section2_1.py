@@ -59,7 +59,6 @@ train_results = ensemble.train_experts(X_train, y_train, epochs=epochs, lr=0.01,
 print(f"\nTraining complete:")
 print(f"  Individual losses: {train_results['individual_losses']}")
 print(f"  Mean loss: {np.mean(train_results['individual_losses']):.6f}")
-print(f"  Training time: {train_results['training_time']:.2f}s")
 
 # ============= Variable Importance =============
 print("\n" + "="*60)
@@ -72,7 +71,8 @@ importance = analyzer.compute_consensus_importance(X_test, y_test, methods=['gra
 print("\nFeature importance (consensus):")
 for i, score in enumerate(importance['consensus']):
     print(f"  Feature {i}: {score:.4f}")
-print(f"Expert agreement: {importance['expert_agreement']:.3f}")
+if 'expert_agreement' in importance:
+    print(f"Expert agreement: {importance['expert_agreement']:.3f}")
 
 # ============= Expert Clustering =============
 print("\n" + "="*60)

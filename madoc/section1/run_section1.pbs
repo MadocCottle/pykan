@@ -13,17 +13,21 @@
 
 # PBS script for running Section 1 experiments on NCI Gadi
 #
-# Usage:
-#   qsub run_section1.pbs -v SCRIPT=section1_1.py,EPOCHS=100
-#   qsub run_section1.pbs -v SCRIPT=section1_2.py,EPOCHS=200
-#   qsub run_section1.pbs -v SCRIPT=section1_3.py,EPOCHS=150
+# Usage (Easy - use wrapper scripts):
+#   bash submit_section1_1.sh 100
+#   bash submit_section1_2.sh 200
+#   bash submit_section1_3.sh 150
+#
+# Usage (Advanced - direct qsub):
+#   qsub -v SCRIPT=section1_1.py,EPOCHS=100 run_section1.pbs
+#   qsub -v SCRIPT=section1_2.py,EPOCHS=200 run_section1.pbs
+#   qsub -v SCRIPT=section1_3.py,EPOCHS=150 run_section1.pbs
+#
+# IMPORTANT: When using qsub directly, -v flag must come BEFORE the script name!
 #
 # Variables:
 #   SCRIPT  - Which script to run (section1_1.py, section1_2.py, or section1_3.py)
 #   EPOCHS  - Number of training epochs (default: 10)
-#
-# Example:
-#   qsub run_section1.pbs -v SCRIPT=section1_1.py,EPOCHS=100
 
 # Exit on error
 set -e

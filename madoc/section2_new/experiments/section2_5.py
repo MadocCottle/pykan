@@ -69,18 +69,22 @@ print("\n" + "="*60)
 print("Evolution Analysis")
 print("="*60)
 
-print(f"\nFitness progression:")
-print(f"  Initial best fitness: {history['best_fitness_per_gen'][0]:.6f}")
-print(f"  Final best fitness: {history['best_fitness_per_gen'][-1]:.6f}")
-print(f"  Improvement: {((history['best_fitness_per_gen'][0] - history['best_fitness_per_gen'][-1]) / history['best_fitness_per_gen'][0] * 100):.2f}%")
+if 'best_fitness' in history and len(history['best_fitness']) > 0:
+    print(f"\nFitness progression:")
+    print(f"  Initial best fitness: {history['best_fitness'][0]:.6f}")
+    print(f"  Final best fitness: {history['best_fitness'][-1]:.6f}")
+    improvement = abs((history['best_fitness'][0] - history['best_fitness'][-1]) / abs(history['best_fitness'][0]) * 100)
+    print(f"  Improvement: {improvement:.2f}%")
 
-print(f"\nPopulation diversity:")
-print(f"  Initial diversity: {history['diversity_per_gen'][0]:.6f}")
-print(f"  Final diversity: {history['diversity_per_gen'][-1]:.6f}")
+if 'diversity' in history and len(history['diversity']) > 0:
+    print(f"\nPopulation diversity:")
+    print(f"  Initial diversity: {history['diversity'][0]:.6f}")
+    print(f"  Final diversity: {history['diversity'][-1]:.6f}")
 
-print(f"\nPareto frontier:")
-print(f"  Initial size: {history['pareto_size_per_gen'][0]}")
-print(f"  Final size: {history['pareto_size_per_gen'][-1]}")
+if 'pareto_size' in history and len(history['pareto_size']) > 0:
+    print(f"\nPareto frontier:")
+    print(f"  Initial size: {history['pareto_size'][0]}")
+    print(f"  Final size: {history['pareto_size'][-1]}")
 
 # ============= Best Architecture =============
 print("\n" + "="*60)

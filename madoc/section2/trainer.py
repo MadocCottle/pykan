@@ -2,6 +2,12 @@
 Training utilities for PDE solving with KAN and traditional neural networks.
 """
 
+import sys
+from pathlib import Path
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 import torch
 import torch.nn as nn
 from tqdm import tqdm

@@ -23,11 +23,21 @@ import sys
 from pathlib import Path
 
 # Add parent directories to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "section1"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Add madoc/ to path
 
-from section1.models.kan_variants import (
-    ChebyshevBasis, FourierBasis, RBFBasis
-)
+# Import basis functions (optional - may not be implemented yet)
+try:
+    from section1.models.kan_variants import (
+        ChebyshevBasis, FourierBasis, RBFBasis
+    )
+except ImportError:
+    # Fallback: Define placeholder basis classes
+    # Note: Heterogeneous KAN requires these basis implementations
+    raise ImportError(
+        "section1.models.kan_variants not found. "
+        "Heterogeneous KAN requires ChebyshevBasis, FourierBasis, and RBFBasis. "
+        "This feature may not be fully implemented yet."
+    )
 
 
 class HeterogeneousKANLayer(nn.Module):

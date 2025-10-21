@@ -60,7 +60,6 @@ history_avg = trainer_avg.train(X_train, y_train, epochs=epochs, lr=0.01, verbos
 print(f"\nAverage sync results:")
 print(f"  Synchronization events: {len(history_avg['sync_events'])}")
 print(f"  Final diversity: {history_avg['diversity'][-1]:.6f}")
-print(f"  Best model idx: {history_avg['best_model_idx']}")
 
 # ============= Population Training: Best =============
 print("\n" + "="*60)
@@ -84,7 +83,6 @@ history_best = trainer_best.train(X_train, y_train, epochs=epochs, lr=0.01, verb
 print(f"\nBest sync results:")
 print(f"  Synchronization events: {len(history_best['sync_events'])}")
 print(f"  Final diversity: {history_best['diversity'][-1]:.6f}")
-print(f"  Best model idx: {history_best['best_model_idx']}")
 
 # ============= Evaluation =============
 print("\n" + "="*60)

@@ -20,7 +20,7 @@ import torch
 import torch.nn as nn
 from typing import Optional, List
 
-# Add pykan to path
+# Add pykan to path (parent.parent.parent.parent = pykan/)
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from kan.MultKAN import KAN as MultKAN
@@ -91,13 +91,18 @@ class PyKANCompatible(MultKAN):
         self.grid_size = grid_size
         self.spline_order = spline_order
 
+        # Filter kwargs to only include MultKAN-supported parameters
+        # Remove basis-specific params (RBF: n_centers, Chebyshev: degree, etc.)
+        unsupported_params = {'n_centers', 'degree', 'num_frequencies', 'wavelet_type'}
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k not in unsupported_params}
+
         # Initialize MultKAN
         super().__init__(
             width=width,
             grid=grid_size,
             k=spline_order,
             device=device,
-            **kwargs
+            **filtered_kwargs
         )
 
     def __repr__(self):

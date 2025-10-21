@@ -28,13 +28,18 @@ from typing import List, Dict, Optional, Any
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Add madoc/ to path
+sys.path.insert(0, str(Path(__file__).parent.parent))  # Add section2_new/ to path
 
-from section1.models.kan_variants import RBF_KAN
+# Import KAN variants (use PyKAN if custom variants not available)
+try:
+    from section1.models.kan_variants import RBF_KAN
+except ImportError:
+    from models.pykan_wrapper import PyKANCompatible as RBF_KAN
 
 # Import pykan wrapper for B-spline support
 try:
-    from section2_new.models.pykan_wrapper import PyKANCompatible
+    from models.pykan_wrapper import PyKANCompatible
     _HAS_PYKAN = True
 except ImportError:
     _HAS_PYKAN = False

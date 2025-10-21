@@ -9,6 +9,12 @@ Provides data generation for various PDEs:
 - More PDEs can be added
 """
 
+import sys
+from pathlib import Path
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 import torch
 import numpy as np
 from kan import create_dataset

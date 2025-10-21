@@ -1,16 +1,17 @@
 # Requirements for madoc - Independent KAN Research Repository
-# This file includes PyKAN and all dependencies needed to run madoc as a standalone repo
+# This file includes all dependencies needed to run madoc experiments
 #
 # Installation:
 #   pip install -r requirements.txt
 #
-# Note: This installs PyKAN from the parent directory in editable mode
+# Note: PyKAN is NOT included in requirements.txt - it's imported locally via sys.path
+# All madoc Python files automatically add the parent directory to sys.path to access pykan
 
 # ============================================================================
-# CORE: PyKAN and its dependencies
+# CORE: Dependencies for madoc experiments
 # ============================================================================
-# Install PyKAN from parent directory (editable mode for latest code)
--e ../
+# NOTE: PyKAN is imported locally via sys.path from the parent directory
+# This allows madoc to use the latest pykan code without installing it as a package
 
 # PyTorch - Deep learning framework (CPU version)
 # For GPU version on Gadi, use: torch==2.2.2+cu118 with --extra-index-url
@@ -68,5 +69,5 @@ setuptools==65.5.0
 # VERSION NOTES
 # ============================================================================
 # Python requirement: >=3.6 (recommended: 3.9-3.11)
-# PyKAN version: 0.2.8 (from parent directory)
+# PyKAN version: Imported locally from ../pykan/ (parent directory)
 # Compatible with NCI Gadi modules: python3/3.10.4

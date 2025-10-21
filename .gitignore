@@ -12,4 +12,6 @@ expressiveness
 figures
 molecule
 applications
-experiments
+.venv/
+venv/
+*.pyc

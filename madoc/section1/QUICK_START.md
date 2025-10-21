@@ -24,15 +24,26 @@ nano run_section1.pbs
 
 ## Submit Jobs
 
+**Easy way (use wrapper scripts):**
+
 ```bash
 # Section 1.1: Function Approximation (100 epochs)
-qsub run_section1.pbs -v SCRIPT=section1_1.py,EPOCHS=100
+bash submit_section1_1.sh 100
 
 # Section 1.2: 1D Poisson PDE (200 epochs)
-qsub run_section1.pbs -v SCRIPT=section1_2.py,EPOCHS=200
+bash submit_section1_2.sh 200
 
 # Section 1.3: 2D Poisson PDE (200 epochs)
-qsub run_section1.pbs -v SCRIPT=section1_3.py,EPOCHS=200
+bash submit_section1_3.sh 200
+```
+
+**Alternative (direct qsub):**
+
+```bash
+# NOTE: -v flag must come BEFORE the PBS script!
+qsub -v SCRIPT=section1_1.py,EPOCHS=100 run_section1.pbs
+qsub -v SCRIPT=section1_2.py,EPOCHS=200 run_section1.pbs
+qsub -v SCRIPT=section1_3.py,EPOCHS=200 run_section1.pbs
 ```
 
 ## Check Status

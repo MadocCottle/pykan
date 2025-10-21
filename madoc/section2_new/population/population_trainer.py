@@ -23,9 +23,14 @@ import copy
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Add madoc/ to path
+sys.path.insert(0, str(Path(__file__).parent.parent))  # Add section2_new/ to path
 
-from section1.models.kan_variants import RBF_KAN
+# Import KAN variants (use PyKAN if custom variants not available)
+try:
+    from section1.models.kan_variants import RBF_KAN
+except ImportError:
+    from models.pykan_wrapper import PyKANCompatible as RBF_KAN
 
 
 class PopulationBasedKANTrainer:

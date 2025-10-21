@@ -22,10 +22,16 @@ from typing import Dict, List, Optional, Tuple
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Add madoc/ to path
+sys.path.insert(0, str(Path(__file__).parent.parent))  # Add section2_new/ to path
 
-from section1.models.kan_variants import RBF_KAN
-from section2_new.adaptive.importance_tracker import NodeImportanceTracker
+# Import KAN variants (use PyKAN if custom variants not available)
+try:
+    from section1.models.kan_variants import RBF_KAN
+except ImportError:
+    from models.pykan_wrapper import PyKANCompatible as RBF_KAN
+
+from adaptive.importance_tracker import NodeImportanceTracker
 
 
 class AdaptiveSelectiveKAN(nn.Module):

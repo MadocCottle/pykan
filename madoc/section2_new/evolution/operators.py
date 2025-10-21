@@ -38,9 +38,12 @@ def tournament_selection(
     parents = []
     pop_size = len(population)
 
+    # Cap tournament size to population size
+    actual_tournament_size = min(tournament_size, pop_size)
+
     for _ in range(n_parents):
         # Random tournament
-        tournament_indices = np.random.choice(pop_size, size=tournament_size, replace=False)
+        tournament_indices = np.random.choice(pop_size, size=actual_tournament_size, replace=False)
         tournament_fitness = [fitness_scores[i] for i in tournament_indices]
 
         # Select best from tournament

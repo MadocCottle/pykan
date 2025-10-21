@@ -28,12 +28,19 @@ import sys
 from pathlib import Path
 
 # Add parent directories to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "section1"))
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Add madoc/ to path
+sys.path.insert(0, str(Path(__file__).parent.parent))  # Add section2_new/ to path
 
-from section1.models.kan_variants import (
-    ChebyshevKAN, FourierKAN, WaveletKAN, RBF_KAN
-)
+# Import KAN variants (optional - may not all be implemented yet)
+try:
+    from section1.models.kan_variants import (
+        ChebyshevKAN, FourierKAN, WaveletKAN, RBF_KAN
+    )
+    _HAS_CUSTOM_KANS = True
+except ImportError:
+    _HAS_CUSTOM_KANS = False
+    # Placeholder classes - will only use PyKAN
+    ChebyshevKAN = FourierKAN = WaveletKAN = RBF_KAN = None
 
 # Import pykan wrapper for B-spline support
 try:
@@ -123,12 +130,16 @@ class KANExpertEnsemble:
             raise ValueError(f"Number of seeds ({len(self.seeds)}) must match n_experts ({n_experts})")
 
         # Map variant name to class
-        self.variant_map = {
-            'chebyshev': ChebyshevKAN,
-            'fourier': FourierKAN,
-            'wavelet': WaveletKAN,
-            'rbf': RBF_KAN
-        }
+        self.variant_map = {}
+
+        # Add custom KAN variants if available
+        if _HAS_CUSTOM_KANS:
+            self.variant_map.update({
+                'chebyshev': ChebyshevKAN,
+                'fourier': FourierKAN,
+                'wavelet': WaveletKAN,
+                'rbf': RBF_KAN
+            })
 
         # Add bspline if pykan is available
         if _HAS_PYKAN:
@@ -138,7 +149,8 @@ class KANExpertEnsemble:
             available = list(self.variant_map.keys())
             raise ValueError(
                 f"Unknown KAN variant: {kan_variant}. "
-                f"Available: {available}"
+                f"Available: {available}. "
+                f"Note: Custom KAN variants (chebyshev, fourier, etc.) may not be implemented yet."
             )
 
     def _create_expert(self, seed: int) -> nn.Module:

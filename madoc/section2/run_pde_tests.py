@@ -5,11 +5,16 @@ Usage:
     python run_pde_tests.py --pde 2d_poisson --models kan mlp siren --epochs 100
 """
 
+import sys
+from pathlib import Path
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 import argparse
 import json
 import pickle
 from datetime import datetime
-from pathlib import Path
 import torch
 import numpy as np
 
