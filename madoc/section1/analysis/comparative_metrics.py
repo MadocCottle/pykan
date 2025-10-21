@@ -10,16 +10,17 @@ This script creates tables and graphs comparing different models across:
 
 import sys
 from pathlib import Path
-import json
-import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, Optional, Union
 import seaborn as sns
 
 # Add pykan to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
+# Import centralized IO module
+from . import data_io
 
 # Set plotting style
 sns.set_style("whitegrid")
@@ -30,39 +31,26 @@ plt.rcParams['font.size'] = 10
 class MetricsAnalyzer:
     """Analyzes and visualizes comparative metrics across models"""
 
-    def __init__(self, results_path: str):
+    def __init__(self, results_path: Union[str, Path]):
         """
-        Initialize analyzer with results file
+        Initialize analyzer with results file or section ID
 
         Args:
-            results_path: Path to the .pkl or .json results file
+            results_path: Either:
+                - Path to the .pkl or .json results file (e.g., '/path/to/results.pkl')
+                - Section ID (e.g., 'section1_1') to auto-load latest results
         """
-        self.results_path = Path(results_path)
-        self.results = self._load_results()
-        self.metadata = self._load_metadata()
+        # Load results and metadata using centralized IO
+        self.results, self.metadata = data_io.load_results(results_path)
 
-    def _load_results(self) -> Dict:
-        """Load results from pickle or JSON file"""
-        if self.results_path.suffix == '.pkl':
-            with open(self.results_path, 'rb') as f:
-                return pickle.load(f)
-        elif self.results_path.suffix == '.json':
-            with open(self.results_path, 'r') as f:
-                return json.load(f)
+        # Store the results path for reference
+        results_path_str = str(results_path)
+        if results_path_str in data_io.SECTION_DIRS:
+            # If section ID was provided, get the actual path
+            info = data_io.find_latest_results(results_path_str)
+            self.results_path = info['results_file']
         else:
-            raise ValueError(f"Unsupported file format: {self.results_path.suffix}")
-
-    def _load_metadata(self) -> Optional[Dict]:
-        """Load metadata file if available"""
-        # Find metadata file with same timestamp
-        timestamp = self.results_path.stem.split('_')[-1]
-        section = '_'.join(self.results_path.stem.split('_')[:-2])
-        metadata_path = self.results_path.parent / f"{section}_metadata_{timestamp}.json"
-
-        if metadata_path.exists():
-            with open(metadata_path, 'r') as f:
-                return json.load(f)
-        return None
+            self.results_path = Path(results_path)
 
     def create_comparison_table(self, dataset_idx: int = 0, output_path: Optional[str] = None) -> pd.DataFrame:
         """

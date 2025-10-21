@@ -9,14 +9,12 @@ This script creates detailed heatmap visualizations for 2D equations:
 
 import sys
 from pathlib import Path
-import json
-import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import seaborn as sns
 import torch
-from typing import Dict, List, Tuple, Optional, Callable
+from typing import Dict, Optional, Callable, Union
 
 # Add section1 directory to path for utils imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -26,6 +24,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from kan import KAN
 from utils import data_funcs as dfs
 
+# Import centralized IO module
+from . import data_io
+
 # Set style
 sns.set_style("white")
 
@@ -33,17 +34,40 @@ sns.set_style("white")
 class Heatmap2DAnalyzer:
     """Analyzes 2D function fitting with detailed heatmaps"""
 
-    def __init__(self, results_path: str, models_dir: Optional[str] = None):
+    def __init__(self, results_path: Union[str, Path], models_dir: Optional[str] = None):
         """
         Initialize analyzer
 
         Args:
-            results_path: Path to results file
-            models_dir: Optional path to saved models
+            results_path: Either:
+                - Path to results file (.pkl or .json)
+                - Section ID (e.g., 'section1_3') to auto-load latest results
+            models_dir: Optional path to saved models. If None, will auto-discover.
         """
-        self.results_path = Path(results_path)
-        self.models_dir = Path(models_dir) if models_dir else None
-        self.results = self._load_results()
+        # Load results using centralized IO
+        self.results, _ = data_io.load_results(results_path)
+
+        # Handle results path and models directory
+        results_path_str = str(results_path)
+        if results_path_str in data_io.SECTION_DIRS:
+            # Section ID provided - get actual paths
+            info = data_io.find_latest_results(results_path_str)
+            self.results_path = info['results_file']
+            # Auto-discover models dir if not explicitly provided
+            if models_dir is None and info['models_dir']:
+                self.models_dir = info['models_dir']
+            else:
+                self.models_dir = Path(models_dir) if models_dir else None
+        else:
+            # Explicit path provided
+            self.results_path = Path(results_path)
+            if models_dir is None:
+                # Try to auto-discover models dir
+                discovered_dir = data_io.find_models_dir(self.results_path)
+                self.models_dir = discovered_dir
+            else:
+                self.models_dir = Path(models_dir)
+
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # 2D function definitions
@@ -53,15 +77,6 @@ class Heatmap2DAnalyzer:
             2: ('2D High-freq', dfs.f_poisson_2d_highfreq),
             3: ('2D Special', dfs.f_poisson_2d_spec),
         }
-
-    def _load_results(self) -> Dict:
-        """Load results"""
-        if self.results_path.suffix == '.pkl':
-            with open(self.results_path, 'rb') as f:
-                return pickle.load(f)
-        elif self.results_path.suffix == '.json':
-            with open(self.results_path, 'r') as f:
-                return json.load(f)
 
     def create_comparison_heatmaps(self, dataset_idx: int, true_func: Callable,
                                   func_name: str, model_type: str = 'kan',
