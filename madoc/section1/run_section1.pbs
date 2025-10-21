@@ -5,7 +5,7 @@
 #PBS -l mem=32GB
 #PBS -l ncpus=4
 #PBS -l jobfs=10GB
-#PBS -l storage=scratch/YOUR_PROJECT_CODE
+#PBS -l storage=scratch/p00
 #PBS -j oe
 #PBS -N section1_experiment
 #PBS -M u7138718@anu.edu.au
