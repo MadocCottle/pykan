@@ -3,9 +3,10 @@ from pathlib import Path
 import json
 import pickle
 from datetime import datetime
-# # Add the parent directory (pykan) to the Python path
-# sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-# print("what")
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 from kan import *
 import data_funcs as dfs
 import trad_nn as tnn

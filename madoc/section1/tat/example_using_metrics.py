@@ -4,6 +4,12 @@ This demonstrates how to use the dense_mse_error metric alongside
 the standard training/test metrics to get a more comprehensive view
 of model performance.
 """
+import sys
+from pathlib import Path
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
 from kan import KAN, create_dataset
 import torch
 from utils import data_funcs as dfs

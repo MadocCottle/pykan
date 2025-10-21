@@ -1,0 +1,19 @@
+{
+  "timestamp": "20251021_110446",
+  "num_models": 9,
+  "dataset_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "pruning_params": {
+    "node_th": 0.01,
+    "edge_th": 0.03
+  }
+}

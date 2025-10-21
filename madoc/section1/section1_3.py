@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 from kan import *
 from utils import data_funcs as dfs
 from utils import run_mlp_tests, run_siren_tests, run_kan_grid_tests, save_results

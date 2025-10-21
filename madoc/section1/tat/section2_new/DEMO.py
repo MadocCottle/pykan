@@ -25,9 +25,8 @@ import numpy as np
 import sys
 from pathlib import Path
 
-# Setup paths
-sys.path.insert(0, str(Path(__file__).parent.parent))
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+# Setup paths - add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent.parent))
 sys.path.insert(0, str(Path(__file__).parent / "ensemble"))
 sys.path.insert(0, str(Path(__file__).parent / "models"))
 sys.path.insert(0, str(Path(__file__).parent / "population"))

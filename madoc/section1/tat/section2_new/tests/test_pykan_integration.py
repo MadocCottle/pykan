@@ -17,10 +17,10 @@ import numpy as np
 import sys
 from pathlib import Path
 
-# Add paths
-repo_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(repo_root))
-sys.path.insert(0, str(repo_root / "section2_new"))
+# Add pykan to path (parent directory of madoc)
+pykan_root = Path(__file__).parent.parent.parent.parent.parent.parent
+sys.path.insert(0, str(pykan_root))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import pykan utilities
 from kan.utils import create_dataset

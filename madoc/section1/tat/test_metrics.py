@@ -1,4 +1,10 @@
 """Test script for the dense MSE error metrics"""
+import sys
+from pathlib import Path
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
 from kan import KAN, create_dataset
 import torch
 from utils.metrics import dense_mse_error, dense_mse_error_from_dataset

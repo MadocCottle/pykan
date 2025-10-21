@@ -1,4 +1,10 @@
 """Model training and testing utilities for Section 1 experiments"""
+import sys
+from pathlib import Path
+
+# Add pykan to path (parent directory of madoc)
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
 from kan import *
 from . import trad_nn as tnn
 from .metrics import dense_mse_error_from_dataset
