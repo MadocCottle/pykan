@@ -1,0 +1,2388 @@
+cpu
+Running with 5 epochs
+
+============================================================
+Starting Section 1.1 Training
+============================================================
+
+
+Training MLPs (with dense MSE metrics)...
+mlp
+  Training MLP: Dataset 0 (sin_freq1), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 4.452811e-01
+    Epoch 2/5: Dense MSE = 4.451505e-01
+    Epoch 3/5: Dense MSE = 6.067352e+02
+    Epoch 4/5: Dense MSE = 4.188333e-01
+    Epoch 5/5: Dense MSE = 3.210188e-01
+  Completed: 0.07s total, 0.014s/epoch, 16 params, Final dense MSE = 3.210188e-01
+  Training MLP: Dataset 0 (sin_freq1), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 3.408170e-01
+    Epoch 2/5: Dense MSE = 3.402238e-01
+    Epoch 3/5: Dense MSE = 3.402744e-01
+    Epoch 4/5: Dense MSE = 3.402997e-01
+    Epoch 5/5: Dense MSE = 3.403035e-01
+  Completed: 0.02s total, 0.004s/epoch, 16 params, Final dense MSE = 3.403035e-01
+  Training MLP: Dataset 0 (sin_freq1), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 4.603178e-01
+    Epoch 2/5: Dense MSE = 2.352700e-01
+    Epoch 3/5: Dense MSE = 1.611881e-01
+    Epoch 4/5: Dense MSE = 1.617097e-01
+    Epoch 5/5: Dense MSE = 1.477652e-01
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 1.477652e-01
+  Training MLP: Dataset 0 (sin_freq1), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 4.338423e-01
+    Epoch 2/5: Dense MSE = 2.206976e-01
+    Epoch 3/5: Dense MSE = 2.001321e-01
+    Epoch 4/5: Dense MSE = 1.585329e-01
+    Epoch 5/5: Dense MSE = 1.437739e-01
+  Completed: 0.07s total, 0.014s/epoch, 46 params, Final dense MSE = 1.437739e-01
+  Training MLP: Dataset 0 (sin_freq1), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 3.506090e-01
+    Epoch 2/5: Dense MSE = 3.213750e-01
+    Epoch 3/5: Dense MSE = 1.422443e-01
+    Epoch 4/5: Dense MSE = 6.420463e-02
+    Epoch 5/5: Dense MSE = 4.251898e-02
+  Completed: 0.06s total, 0.012s/epoch, 46 params, Final dense MSE = 4.251898e-02
+  Training MLP: Dataset 0 (sin_freq1), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 4.766081e-01
+    Epoch 2/5: Dense MSE = 1.607612e-01
+    Epoch 3/5: Dense MSE = 1.615218e-02
+    Epoch 4/5: Dense MSE = 1.209815e-02
+    Epoch 5/5: Dense MSE = 7.433816e-03
+  Completed: 0.06s total, 0.011s/epoch, 46 params, Final dense MSE = 7.433816e-03
+  Training MLP: Dataset 0 (sin_freq1), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 2.944918e-01
+    Epoch 2/5: Dense MSE = 2.147572e-01
+    Epoch 3/5: Dense MSE = 2.241469e-01
+    Epoch 4/5: Dense MSE = 1.812291e-01
+    Epoch 5/5: Dense MSE = 1.371166e-01
+  Completed: 0.07s total, 0.015s/epoch, 76 params, Final dense MSE = 1.371166e-01
+  Training MLP: Dataset 0 (sin_freq1), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 3.808200e-01
+    Epoch 2/5: Dense MSE = 1.351950e-01
+    Epoch 3/5: Dense MSE = 3.472364e-02
+    Epoch 4/5: Dense MSE = 1.229868e-02
+    Epoch 5/5: Dense MSE = 8.781836e-03
+  Completed: 0.06s total, 0.013s/epoch, 76 params, Final dense MSE = 8.781836e-03
+  Training MLP: Dataset 0 (sin_freq1), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 6.661320e+00
+    Epoch 2/5: Dense MSE = 1.753488e-01
+    Epoch 3/5: Dense MSE = 1.006170e+18
+    Epoch 4/5: Dense MSE = 1.006170e+18
+    Epoch 5/5: Dense MSE = 1.006170e+18
+  Completed: 0.03s total, 0.005s/epoch, 76 params, Final dense MSE = 1.006170e+18
+  Training MLP: Dataset 0 (sin_freq1), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 4.436719e-01
+    Epoch 2/5: Dense MSE = 4.446753e-01
+    Epoch 3/5: Dense MSE = 4.452806e-01
+    Epoch 4/5: Dense MSE = 4.454482e-01
+    Epoch 5/5: Dense MSE = 4.454780e-01
+  Completed: 0.08s total, 0.017s/epoch, 106 params, Final dense MSE = 4.454780e-01
+  Training MLP: Dataset 0 (sin_freq1), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 4.165082e-01
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.011s/epoch, 106 params, Final dense MSE = nan
+  Training MLP: Dataset 0 (sin_freq1), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 1.962487e-01
+    Epoch 2/5: Dense MSE = 8.674651e-02
+    Epoch 3/5: Dense MSE = 4.175454e-02
+    Epoch 4/5: Dense MSE = 1.491510e-02
+    Epoch 5/5: Dense MSE = 3.641262e-03
+  Completed: 0.08s total, 0.016s/epoch, 106 params, Final dense MSE = 3.641262e-03
+  Training MLP: Dataset 0 (sin_freq1), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 4.438410e-01
+    Epoch 2/5: Dense MSE = 4.449292e-01
+    Epoch 3/5: Dense MSE = 2.118309e+02
+    Epoch 4/5: Dense MSE = 2.966992e+04
+    Epoch 5/5: Dense MSE = 3.072637e+03
+  Completed: 0.09s total, 0.017s/epoch, 136 params, Final dense MSE = 3.072637e+03
+  Training MLP: Dataset 0 (sin_freq1), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 4.657294e-01
+    Epoch 2/5: Dense MSE = 4.657294e-01
+    Epoch 3/5: Dense MSE = 4.657294e-01
+    Epoch 4/5: Dense MSE = 4.657294e-01
+    Epoch 5/5: Dense MSE = 4.657294e-01
+  Completed: 0.01s total, 0.002s/epoch, 136 params, Final dense MSE = 4.657294e-01
+  Training MLP: Dataset 0 (sin_freq1), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 3.136475e-01
+    Epoch 2/5: Dense MSE = 5.333596e-02
+    Epoch 3/5: Dense MSE = 5.053132e-04
+    Epoch 4/5: Dense MSE = 5.624954e-05
+    Epoch 5/5: Dense MSE = 1.170485e-04
+  Completed: 0.09s total, 0.018s/epoch, 136 params, Final dense MSE = 1.170485e-04
+  Training MLP: Dataset 1 (sin_freq2), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 5.217316e-01
+    Epoch 2/5: Dense MSE = 5.379932e-01
+    Epoch 3/5: Dense MSE = 5.591959e-01
+    Epoch 4/5: Dense MSE = 5.983523e-01
+    Epoch 5/5: Dense MSE = 6.288438e-01
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 6.288438e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 5.093625e-01
+    Epoch 2/5: Dense MSE = 4.897726e-01
+    Epoch 3/5: Dense MSE = 4.880708e-01
+    Epoch 4/5: Dense MSE = 4.880788e-01
+    Epoch 5/5: Dense MSE = 4.880737e-01
+  Completed: 0.03s total, 0.005s/epoch, 16 params, Final dense MSE = 4.880737e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 5.062191e-01
+    Epoch 2/5: Dense MSE = 5.059363e-01
+    Epoch 3/5: Dense MSE = 5.502594e-01
+    Epoch 4/5: Dense MSE = 5.558344e-01
+    Epoch 5/5: Dense MSE = 5.540253e-01
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 5.540253e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 5.042229e-01
+    Epoch 2/5: Dense MSE = 5.126411e-01
+    Epoch 3/5: Dense MSE = 4.322512e-01
+    Epoch 4/5: Dense MSE = 4.327047e-01
+    Epoch 5/5: Dense MSE = 4.839234e-01
+  Completed: 0.06s total, 0.013s/epoch, 46 params, Final dense MSE = 4.839234e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 5.221753e-01
+    Epoch 2/5: Dense MSE = 4.917892e-01
+    Epoch 3/5: Dense MSE = 5.307419e-01
+    Epoch 4/5: Dense MSE = 4.345052e-01
+    Epoch 5/5: Dense MSE = 4.981107e-01
+  Completed: 0.06s total, 0.011s/epoch, 46 params, Final dense MSE = 4.981107e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 5.760061e-01
+    Epoch 2/5: Dense MSE = 5.409820e-01
+    Epoch 3/5: Dense MSE = 5.727543e-01
+    Epoch 4/5: Dense MSE = 2.875040e+00
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.012s/epoch, 46 params, Final dense MSE = nan
+  Training MLP: Dataset 1 (sin_freq2), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 5.463934e-01
+    Epoch 2/5: Dense MSE = 5.603629e-01
+    Epoch 3/5: Dense MSE = 4.312459e-01
+    Epoch 4/5: Dense MSE = 3.852416e-01
+    Epoch 5/5: Dense MSE = 3.479192e-01
+  Completed: 0.07s total, 0.015s/epoch, 76 params, Final dense MSE = 3.479192e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 4.747981e-01
+    Epoch 2/5: Dense MSE = 4.419611e-01
+    Epoch 3/5: Dense MSE = 4.454065e-01
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.012s/epoch, 76 params, Final dense MSE = nan
+  Training MLP: Dataset 1 (sin_freq2), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 5.496441e-01
+    Epoch 2/5: Dense MSE = 6.154749e-01
+    Epoch 3/5: Dense MSE = 2.184688e+00
+    Epoch 4/5: Dense MSE = 5.006053e-01
+    Epoch 5/5: Dense MSE = 4.347571e-01
+  Completed: 0.07s total, 0.014s/epoch, 76 params, Final dense MSE = 4.347571e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 5.024459e-01
+    Epoch 2/5: Dense MSE = 6.174792e-01
+    Epoch 3/5: Dense MSE = 7.388197e+01
+    Epoch 4/5: Dense MSE = 4.893745e-01
+    Epoch 5/5: Dense MSE = 4.893726e-01
+  Completed: 0.06s total, 0.013s/epoch, 106 params, Final dense MSE = 4.893726e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 4.737052e-01
+    Epoch 2/5: Dense MSE = 3.872569e+03
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.013s/epoch, 106 params, Final dense MSE = nan
+  Training MLP: Dataset 1 (sin_freq2), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 5.781569e-01
+    Epoch 2/5: Dense MSE = 1.307359e+00
+    Epoch 3/5: Dense MSE = 3.531992e-01
+    Epoch 4/5: Dense MSE = 3.076493e-01
+    Epoch 5/5: Dense MSE = 3.437964e-01
+  Completed: 0.08s total, 0.016s/epoch, 106 params, Final dense MSE = 3.437964e-01
+  Training MLP: Dataset 1 (sin_freq2), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 4.390853e-01
+    Epoch 2/5: Dense MSE = 3.977058e-01
+    Epoch 3/5: Dense MSE = 4.564999e+01
+    Epoch 4/5: Dense MSE = 2.982940e+03
+    Epoch 5/5: Dense MSE = 3.242001e+11
+  Completed: 0.10s total, 0.019s/epoch, 136 params, Final dense MSE = 3.242001e+11
+  Training MLP: Dataset 1 (sin_freq2), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 4.883184e-01
+    Epoch 2/5: Dense MSE = 6.758270e-01
+    Epoch 3/5: Dense MSE = 9.936632e+03
+    Epoch 4/5: Dense MSE = 4.947746e-01
+    Epoch 5/5: Dense MSE = 2.277726e+00
+  Completed: 0.08s total, 0.016s/epoch, 136 params, Final dense MSE = 2.277726e+00
+  Training MLP: Dataset 1 (sin_freq2), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 6.154661e-01
+    Epoch 2/5: Dense MSE = 3.964524e-01
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.08s total, 0.016s/epoch, 136 params, Final dense MSE = nan
+  Training MLP: Dataset 2 (sin_freq3), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 5.433628e-01
+    Epoch 2/5: Dense MSE = 5.561709e-01
+    Epoch 3/5: Dense MSE = 5.666161e-01
+    Epoch 4/5: Dense MSE = 5.771664e-01
+    Epoch 5/5: Dense MSE = 5.901634e-01
+  Completed: 0.05s total, 0.011s/epoch, 16 params, Final dense MSE = 5.901634e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 5.382524e-01
+    Epoch 2/5: Dense MSE = 5.527123e-01
+    Epoch 3/5: Dense MSE = 5.526846e-01
+    Epoch 4/5: Dense MSE = 5.526887e-01
+    Epoch 5/5: Dense MSE = 5.526894e-01
+  Completed: 0.04s total, 0.008s/epoch, 16 params, Final dense MSE = 5.526894e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 5.701160e-01
+    Epoch 2/5: Dense MSE = 5.792031e-01
+    Epoch 3/5: Dense MSE = 5.654533e-01
+    Epoch 4/5: Dense MSE = 5.950112e-01
+    Epoch 5/5: Dense MSE = 6.109612e-01
+  Completed: 0.05s total, 0.011s/epoch, 16 params, Final dense MSE = 6.109612e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 2.461936e+00
+    Epoch 2/5: Dense MSE = 5.420102e-01
+    Epoch 3/5: Dense MSE = 5.606740e-01
+    Epoch 4/5: Dense MSE = 3.735041e+02
+    Epoch 5/5: Dense MSE = 5.755153e-01
+  Completed: 0.07s total, 0.015s/epoch, 46 params, Final dense MSE = 5.755153e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 5.321523e-01
+    Epoch 2/5: Dense MSE = 5.370735e-01
+    Epoch 3/5: Dense MSE = 5.226492e-01
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.05s total, 0.011s/epoch, 46 params, Final dense MSE = nan
+  Training MLP: Dataset 2 (sin_freq3), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 5.607467e-01
+    Epoch 2/5: Dense MSE = 5.664671e-01
+    Epoch 3/5: Dense MSE = 5.764215e-01
+    Epoch 4/5: Dense MSE = 6.187975e-01
+    Epoch 5/5: Dense MSE = 7.799517e-01
+  Completed: 0.06s total, 0.012s/epoch, 46 params, Final dense MSE = 7.799517e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 5.272808e-01
+    Epoch 2/5: Dense MSE = 5.882990e-01
+    Epoch 3/5: Dense MSE = 7.353004e-01
+    Epoch 4/5: Dense MSE = 7.721998e-01
+    Epoch 5/5: Dense MSE = 7.284215e-01
+  Completed: 0.08s total, 0.016s/epoch, 76 params, Final dense MSE = 7.284215e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 5.274609e-01
+    Epoch 2/5: Dense MSE = 5.193033e-01
+    Epoch 3/5: Dense MSE = 5.403831e-01
+    Epoch 4/5: Dense MSE = 5.531856e-01
+    Epoch 5/5: Dense MSE = 5.699629e-01
+  Completed: 0.07s total, 0.013s/epoch, 76 params, Final dense MSE = 5.699629e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 6.446715e-01
+    Epoch 2/5: Dense MSE = 8.186496e-01
+    Epoch 3/5: Dense MSE = 7.767907e-01
+    Epoch 4/5: Dense MSE = 7.721156e-01
+    Epoch 5/5: Dense MSE = 7.033547e-01
+  Completed: 0.07s total, 0.015s/epoch, 76 params, Final dense MSE = 7.033547e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 5.207102e-01
+    Epoch 2/5: Dense MSE = 1.366102e+00
+    Epoch 3/5: Dense MSE = 5.271978e-01
+    Epoch 4/5: Dense MSE = 4.384066e-01
+    Epoch 5/5: Dense MSE = 3.889391e-01
+  Completed: 0.09s total, 0.019s/epoch, 106 params, Final dense MSE = 3.889391e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 5.161867e-01
+    Epoch 2/5: Dense MSE = 4.930638e-01
+    Epoch 3/5: Dense MSE = 4.830191e-01
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.07s total, 0.014s/epoch, 106 params, Final dense MSE = nan
+  Training MLP: Dataset 2 (sin_freq3), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 7.709775e-01
+    Epoch 2/5: Dense MSE = 5.995331e-01
+    Epoch 3/5: Dense MSE = 5.558630e-01
+    Epoch 4/5: Dense MSE = 5.659181e-01
+    Epoch 5/5: Dense MSE = 4.934304e-01
+  Completed: 0.08s total, 0.017s/epoch, 106 params, Final dense MSE = 4.934304e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 6.724468e-01
+    Epoch 2/5: Dense MSE = 5.902912e-01
+    Epoch 3/5: Dense MSE = 5.072313e-01
+    Epoch 4/5: Dense MSE = 5.072296e-01
+    Epoch 5/5: Dense MSE = 5.072153e-01
+  Completed: 0.07s total, 0.014s/epoch, 136 params, Final dense MSE = 5.072153e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 5.181466e-01
+    Epoch 2/5: Dense MSE = 5.099726e-01
+    Epoch 3/5: Dense MSE = 4.471503e-01
+    Epoch 4/5: Dense MSE = 5.360426e-01
+    Epoch 5/5: Dense MSE = 5.429531e-01
+  Completed: 0.08s total, 0.016s/epoch, 136 params, Final dense MSE = 5.429531e-01
+  Training MLP: Dataset 2 (sin_freq3), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 5.800713e-01
+    Epoch 2/5: Dense MSE = 5.109020e-01
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.08s total, 0.015s/epoch, 136 params, Final dense MSE = nan
+  Training MLP: Dataset 3 (sin_freq4), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 5.261568e-01
+    Epoch 2/5: Dense MSE = 5.294595e-01
+    Epoch 3/5: Dense MSE = 5.450117e-01
+    Epoch 4/5: Dense MSE = 5.501519e-01
+    Epoch 5/5: Dense MSE = 5.560896e-01
+  Completed: 0.05s total, 0.009s/epoch, 16 params, Final dense MSE = 5.560896e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 5.302210e-01
+    Epoch 2/5: Dense MSE = 5.349883e-01
+    Epoch 3/5: Dense MSE = 5.317868e-01
+    Epoch 4/5: Dense MSE = 5.303527e-01
+    Epoch 5/5: Dense MSE = 5.311382e-01
+  Completed: 0.05s total, 0.009s/epoch, 16 params, Final dense MSE = 5.311382e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 5.247874e-01
+    Epoch 2/5: Dense MSE = 5.250764e-01
+    Epoch 3/5: Dense MSE = 9.693066e+28
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = nan
+  Training MLP: Dataset 3 (sin_freq4), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 5.374770e-01
+    Epoch 2/5: Dense MSE = 5.478193e-01
+    Epoch 3/5: Dense MSE = 5.544440e-01
+    Epoch 4/5: Dense MSE = 5.562797e-01
+    Epoch 5/5: Dense MSE = 5.582448e-01
+  Completed: 0.08s total, 0.015s/epoch, 46 params, Final dense MSE = 5.582448e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 5.249352e-01
+    Epoch 2/5: Dense MSE = 5.249030e-01
+    Epoch 3/5: Dense MSE = 4.954500e-01
+    Epoch 4/5: Dense MSE = 4.946491e-01
+    Epoch 5/5: Dense MSE = 4.939636e-01
+  Completed: 0.06s total, 0.012s/epoch, 46 params, Final dense MSE = 4.939636e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 5.251694e-01
+    Epoch 2/5: Dense MSE = 6.103534e-01
+    Epoch 3/5: Dense MSE = 7.920372e-01
+    Epoch 4/5: Dense MSE = 4.607884e-01
+    Epoch 5/5: Dense MSE = 4.493583e-01
+  Completed: 0.06s total, 0.013s/epoch, 46 params, Final dense MSE = 4.493583e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 5.286834e-01
+    Epoch 2/5: Dense MSE = 5.388784e-01
+    Epoch 3/5: Dense MSE = 5.476471e-01
+    Epoch 4/5: Dense MSE = 5.763154e-01
+    Epoch 5/5: Dense MSE = 6.025235e-01
+  Completed: 0.08s total, 0.015s/epoch, 76 params, Final dense MSE = 6.025235e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 5.176138e-01
+    Epoch 2/5: Dense MSE = 5.162136e-01
+    Epoch 3/5: Dense MSE = 5.150048e-01
+    Epoch 4/5: Dense MSE = 5.150062e-01
+    Epoch 5/5: Dense MSE = 5.149593e-01
+  Completed: 0.04s total, 0.008s/epoch, 76 params, Final dense MSE = 5.149593e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 5.434955e-01
+    Epoch 2/5: Dense MSE = 6.143652e-01
+    Epoch 3/5: Dense MSE = 6.747589e-01
+    Epoch 4/5: Dense MSE = 6.837503e-01
+    Epoch 5/5: Dense MSE = 5.998932e-01
+  Completed: 0.07s total, 0.013s/epoch, 76 params, Final dense MSE = 5.998932e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 5.276714e-01
+    Epoch 2/5: Dense MSE = 5.654035e-01
+    Epoch 3/5: Dense MSE = 5.516902e-01
+    Epoch 4/5: Dense MSE = 5.524848e-01
+    Epoch 5/5: Dense MSE = 5.574222e-01
+  Completed: 0.09s total, 0.017s/epoch, 106 params, Final dense MSE = 5.574222e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 5.214531e-01
+    Epoch 2/5: Dense MSE = 5.090338e-01
+    Epoch 3/5: Dense MSE = 5.019367e-01
+    Epoch 4/5: Dense MSE = 4.665147e-01
+    Epoch 5/5: Dense MSE = 4.487386e-01
+  Completed: 0.07s total, 0.014s/epoch, 106 params, Final dense MSE = 4.487386e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 6.469678e-01
+    Epoch 2/5: Dense MSE = 2.199154e+00
+    Epoch 3/5: Dense MSE = 7.504649e-01
+    Epoch 4/5: Dense MSE = 5.460674e-01
+    Epoch 5/5: Dense MSE = 4.163467e-01
+  Completed: 0.08s total, 0.016s/epoch, 106 params, Final dense MSE = 4.163467e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 5.242664e-01
+    Epoch 2/5: Dense MSE = 5.372273e-01
+    Epoch 3/5: Dense MSE = 5.510517e-01
+    Epoch 4/5: Dense MSE = 5.551935e-01
+    Epoch 5/5: Dense MSE = 5.599903e-01
+  Completed: 0.10s total, 0.020s/epoch, 136 params, Final dense MSE = 5.599903e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 5.303761e-01
+    Epoch 2/5: Dense MSE = 5.275040e-01
+    Epoch 3/5: Dense MSE = 5.240772e-01
+    Epoch 4/5: Dense MSE = 5.103802e-01
+    Epoch 5/5: Dense MSE = 4.817552e-01
+  Completed: 0.08s total, 0.016s/epoch, 136 params, Final dense MSE = 4.817552e-01
+  Training MLP: Dataset 3 (sin_freq4), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 5.488129e-01
+    Epoch 2/5: Dense MSE = 6.609237e-01
+    Epoch 3/5: Dense MSE = 5.168247e-01
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.08s total, 0.017s/epoch, 136 params, Final dense MSE = nan
+  Training MLP: Dataset 4 (sin_freq5), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 5.214040e-01
+    Epoch 2/5: Dense MSE = 5.307927e-01
+    Epoch 3/5: Dense MSE = 5.475210e-01
+    Epoch 4/5: Dense MSE = 5.919969e-01
+    Epoch 5/5: Dense MSE = 6.266829e-01
+  Completed: 0.06s total, 0.012s/epoch, 16 params, Final dense MSE = 6.266829e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 5.087308e-01
+    Epoch 2/5: Dense MSE = 4.966467e-01
+    Epoch 3/5: Dense MSE = 4.833133e-01
+    Epoch 4/5: Dense MSE = 4.841316e-01
+    Epoch 5/5: Dense MSE = 4.843518e-01
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 4.843518e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 5.109425e-01
+    Epoch 2/5: Dense MSE = 5.124058e-01
+    Epoch 3/5: Dense MSE = 5.339963e-01
+    Epoch 4/5: Dense MSE = 5.587849e-01
+    Epoch 5/5: Dense MSE = 5.728018e-01
+  Completed: 0.05s total, 0.011s/epoch, 16 params, Final dense MSE = 5.728018e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 5.198026e-01
+    Epoch 2/5: Dense MSE = 5.372799e-01
+    Epoch 3/5: Dense MSE = 5.570267e-01
+    Epoch 4/5: Dense MSE = 6.715507e-01
+    Epoch 5/5: Dense MSE = 6.356318e-01
+  Completed: 0.07s total, 0.014s/epoch, 46 params, Final dense MSE = 6.356318e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 5.034561e-01
+    Epoch 2/5: Dense MSE = 5.030665e-01
+    Epoch 3/5: Dense MSE = 5.117308e-01
+    Epoch 4/5: Dense MSE = 5.013848e-01
+    Epoch 5/5: Dense MSE = 4.643416e-01
+  Completed: 0.06s total, 0.011s/epoch, 46 params, Final dense MSE = 4.643416e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 5.468266e-01
+    Epoch 2/5: Dense MSE = 1.118238e+00
+    Epoch 3/5: Dense MSE = 6.659789e-01
+    Epoch 4/5: Dense MSE = 6.608194e-01
+    Epoch 5/5: Dense MSE = 8.434848e-01
+  Completed: 0.06s total, 0.013s/epoch, 46 params, Final dense MSE = 8.434848e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 5.472783e-01
+    Epoch 2/5: Dense MSE = 6.318780e-01
+    Epoch 3/5: Dense MSE = 6.096918e-01
+    Epoch 4/5: Dense MSE = 6.386795e-01
+    Epoch 5/5: Dense MSE = 4.077532e+03
+  Completed: 0.08s total, 0.015s/epoch, 76 params, Final dense MSE = 4.077532e+03
+  Training MLP: Dataset 4 (sin_freq5), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 6.846673e-01
+    Epoch 2/5: Dense MSE = 5.046437e-01
+    Epoch 3/5: Dense MSE = 5.049359e-01
+    Epoch 4/5: Dense MSE = 5.043569e-01
+    Epoch 5/5: Dense MSE = 5.007802e-01
+  Completed: 0.07s total, 0.013s/epoch, 76 params, Final dense MSE = 5.007802e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 5.461289e-01
+    Epoch 2/5: Dense MSE = 6.452951e-01
+    Epoch 3/5: Dense MSE = 6.582351e-01
+    Epoch 4/5: Dense MSE = 7.421792e-01
+    Epoch 5/5: Dense MSE = 5.871158e-01
+  Completed: 0.07s total, 0.014s/epoch, 76 params, Final dense MSE = 5.871158e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 2.836975e+02
+    Epoch 2/5: Dense MSE = 5.276369e-01
+    Epoch 3/5: Dense MSE = 5.461305e-01
+    Epoch 4/5: Dense MSE = 6.528505e-01
+    Epoch 5/5: Dense MSE = 6.355568e-01
+  Completed: 0.09s total, 0.017s/epoch, 106 params, Final dense MSE = 6.355568e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 5.089153e-01
+    Epoch 2/5: Dense MSE = 5.158424e-01
+    Epoch 3/5: Dense MSE = 4.919755e-01
+    Epoch 4/5: Dense MSE = 4.848217e-01
+    Epoch 5/5: Dense MSE = 4.745922e-01
+  Completed: 0.07s total, 0.014s/epoch, 106 params, Final dense MSE = 4.745922e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 6.033816e-01
+    Epoch 2/5: Dense MSE = 8.632656e-01
+    Epoch 3/5: Dense MSE = 8.312670e-01
+    Epoch 4/5: Dense MSE = 7.545688e-01
+    Epoch 5/5: Dense MSE = 6.836166e-01
+  Completed: 0.08s total, 0.016s/epoch, 106 params, Final dense MSE = 6.836166e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 9.244255e-01
+    Epoch 2/5: Dense MSE = 5.727558e-01
+    Epoch 3/5: Dense MSE = 7.217097e-01
+    Epoch 4/5: Dense MSE = 7.573141e-01
+    Epoch 5/5: Dense MSE = 7.088543e-01
+  Completed: 0.10s total, 0.019s/epoch, 136 params, Final dense MSE = 7.088543e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 4.968680e-01
+    Epoch 2/5: Dense MSE = 5.048273e-01
+    Epoch 3/5: Dense MSE = 5.377745e-01
+    Epoch 4/5: Dense MSE = 5.079342e-01
+    Epoch 5/5: Dense MSE = 4.994066e-01
+  Completed: 0.08s total, 0.016s/epoch, 136 params, Final dense MSE = 4.994066e-01
+  Training MLP: Dataset 4 (sin_freq5), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 5.525493e-01
+    Epoch 2/5: Dense MSE = 6.794694e-01
+    Epoch 3/5: Dense MSE = 7.003868e-01
+    Epoch 4/5: Dense MSE = 8.245065e-01
+    Epoch 5/5: Dense MSE = 8.384867e-01
+  Completed: 0.09s total, 0.018s/epoch, 136 params, Final dense MSE = 8.384867e-01
+  Training MLP: Dataset 5 (piecewise), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 1.350933e-01
+    Epoch 2/5: Dense MSE = 1.287396e-01
+    Epoch 3/5: Dense MSE = 1.186069e-01
+    Epoch 4/5: Dense MSE = 1.161803e-01
+    Epoch 5/5: Dense MSE = 5.229755e-02
+  Completed: 0.03s total, 0.006s/epoch, 16 params, Final dense MSE = 5.229755e-02
+  Training MLP: Dataset 5 (piecewise), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 4.698283e-02
+    Epoch 2/5: Dense MSE = 4.343114e-02
+    Epoch 3/5: Dense MSE = 4.404829e-02
+    Epoch 4/5: Dense MSE = 4.404829e-02
+    Epoch 5/5: Dense MSE = 4.404829e-02
+  Completed: 0.02s total, 0.004s/epoch, 16 params, Final dense MSE = 4.404829e-02
+  Training MLP: Dataset 5 (piecewise), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 1.382247e-01
+    Epoch 2/5: Dense MSE = 1.157268e-01
+    Epoch 3/5: Dense MSE = 5.179981e-02
+    Epoch 4/5: Dense MSE = 5.667447e-02
+    Epoch 5/5: Dense MSE = 5.370592e-02
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 5.370592e-02
+  Training MLP: Dataset 5 (piecewise), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 8.153933e-02
+    Epoch 2/5: Dense MSE = 4.174109e-02
+    Epoch 3/5: Dense MSE = 2.865389e-02
+    Epoch 4/5: Dense MSE = 2.953830e-02
+    Epoch 5/5: Dense MSE = 2.235966e-02
+  Completed: 0.06s total, 0.013s/epoch, 46 params, Final dense MSE = 2.235966e-02
+  Training MLP: Dataset 5 (piecewise), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 7.894801e-02
+    Epoch 2/5: Dense MSE = 4.540663e-02
+    Epoch 3/5: Dense MSE = 4.069709e-02
+    Epoch 4/5: Dense MSE = 3.726398e-02
+    Epoch 5/5: Dense MSE = 3.204045e-02
+  Completed: 0.06s total, 0.012s/epoch, 46 params, Final dense MSE = 3.204045e-02
+  Training MLP: Dataset 5 (piecewise), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 3.343198e+03
+    Epoch 2/5: Dense MSE = 4.674214e-02
+    Epoch 3/5: Dense MSE = 3.605624e-02
+    Epoch 4/5: Dense MSE = 3.323989e-02
+    Epoch 5/5: Dense MSE = 3.786374e-02
+  Completed: 0.06s total, 0.012s/epoch, 46 params, Final dense MSE = 3.786374e-02
+  Training MLP: Dataset 5 (piecewise), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 7.211100e-02
+    Epoch 2/5: Dense MSE = 3.861762e-02
+    Epoch 3/5: Dense MSE = 2.306687e-02
+    Epoch 4/5: Dense MSE = 1.998162e-02
+    Epoch 5/5: Dense MSE = 1.799403e-02
+  Completed: 0.08s total, 0.016s/epoch, 76 params, Final dense MSE = 1.799403e-02
+  Training MLP: Dataset 5 (piecewise), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 8.569487e-02
+    Epoch 2/5: Dense MSE = 8.107328e-02
+    Epoch 3/5: Dense MSE = 2.603572e+00
+    Epoch 4/5: Dense MSE = 2.221398e-01
+    Epoch 5/5: Dense MSE = 2.221398e-01
+  Completed: 0.05s total, 0.009s/epoch, 76 params, Final dense MSE = 2.221398e-01
+  Training MLP: Dataset 5 (piecewise), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 6.929632e-02
+    Epoch 2/5: Dense MSE = 4.431376e-02
+    Epoch 3/5: Dense MSE = 2.324762e+00
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.07s total, 0.013s/epoch, 76 params, Final dense MSE = nan
+  Training MLP: Dataset 5 (piecewise), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 1.207187e-01
+    Epoch 2/5: Dense MSE = 5.251371e-02
+    Epoch 3/5: Dense MSE = 2.616430e-01
+    Epoch 4/5: Dense MSE = 2.221373e-01
+    Epoch 5/5: Dense MSE = 2.221388e-01
+  Completed: 0.07s total, 0.014s/epoch, 106 params, Final dense MSE = 2.221388e-01
+  Training MLP: Dataset 5 (piecewise), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 1.307326e-01
+    Epoch 2/5: Dense MSE = 3.836410e-02
+    Epoch 3/5: Dense MSE = 4.269939e-02
+    Epoch 4/5: Dense MSE = 4.116260e-02
+    Epoch 5/5: Dense MSE = 4.052752e-02
+  Completed: 0.07s total, 0.014s/epoch, 106 params, Final dense MSE = 4.052752e-02
+  Training MLP: Dataset 5 (piecewise), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 3.868303e-02
+    Epoch 2/5: Dense MSE = 3.938171e+00
+    Epoch 3/5: Dense MSE = 3.098122e-02
+    Epoch 4/5: Dense MSE = 5.352932e-02
+    Epoch 5/5: Dense MSE = 8.055051e-02
+  Completed: 0.10s total, 0.019s/epoch, 106 params, Final dense MSE = 8.055051e-02
+  Training MLP: Dataset 5 (piecewise), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 5.514268e-02
+    Epoch 2/5: Dense MSE = 3.630004e+03
+    Epoch 3/5: Dense MSE = 2.221396e-01
+    Epoch 4/5: Dense MSE = 2.221396e-01
+    Epoch 5/5: Dense MSE = 2.221396e-01
+  Completed: 0.07s total, 0.013s/epoch, 136 params, Final dense MSE = 2.221396e-01
+  Training MLP: Dataset 5 (piecewise), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 9.583534e-02
+    Epoch 2/5: Dense MSE = 5.769319e-02
+    Epoch 3/5: Dense MSE = 4.331429e-02
+    Epoch 4/5: Dense MSE = 4.183257e-02
+    Epoch 5/5: Dense MSE = 4.028986e-02
+  Completed: 0.08s total, 0.016s/epoch, 136 params, Final dense MSE = 4.028986e-02
+  Training MLP: Dataset 5 (piecewise), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 1.225068e+00
+    Epoch 2/5: Dense MSE = 3.588398e-02
+    Epoch 3/5: Dense MSE = 1.886533e-02
+    Epoch 4/5: Dense MSE = 1.678769e-02
+    Epoch 5/5: Dense MSE = 1.485955e-02
+  Completed: 0.09s total, 0.019s/epoch, 136 params, Final dense MSE = 1.485955e-02
+  Training MLP: Dataset 6 (sawtooth), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 9.598608e-02
+    Epoch 2/5: Dense MSE = 9.409506e-02
+    Epoch 3/5: Dense MSE = 9.508648e-02
+    Epoch 4/5: Dense MSE = 9.636731e-02
+    Epoch 5/5: Dense MSE = 9.655994e-02
+  Completed: 0.06s total, 0.011s/epoch, 16 params, Final dense MSE = 9.655994e-02
+  Training MLP: Dataset 6 (sawtooth), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 8.790597e-02
+    Epoch 2/5: Dense MSE = 8.798098e-02
+    Epoch 3/5: Dense MSE = 8.867167e-02
+    Epoch 4/5: Dense MSE = 8.806051e-02
+    Epoch 5/5: Dense MSE = 1.089204e-01
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 1.089204e-01
+  Training MLP: Dataset 6 (sawtooth), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 9.518011e-02
+    Epoch 2/5: Dense MSE = 9.599305e-02
+    Epoch 3/5: Dense MSE = 1.058060e-01
+    Epoch 4/5: Dense MSE = 1.087589e-01
+    Epoch 5/5: Dense MSE = 1.237759e-01
+  Completed: 0.05s total, 0.011s/epoch, 16 params, Final dense MSE = 1.237759e-01
+  Training MLP: Dataset 6 (sawtooth), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 8.864370e-02
+    Epoch 2/5: Dense MSE = 9.239985e-02
+    Epoch 3/5: Dense MSE = 9.752133e-02
+    Epoch 4/5: Dense MSE = 1.032993e-01
+    Epoch 5/5: Dense MSE = 1.075076e-01
+  Completed: 0.07s total, 0.013s/epoch, 46 params, Final dense MSE = 1.075076e-01
+  Training MLP: Dataset 6 (sawtooth), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 8.720536e-02
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.04s total, 0.008s/epoch, 46 params, Final dense MSE = nan
+  Training MLP: Dataset 6 (sawtooth), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 9.096476e-02
+    Epoch 2/5: Dense MSE = 9.569912e-02
+    Epoch 3/5: Dense MSE = 9.760119e-02
+    Epoch 4/5: Dense MSE = 9.452089e-02
+    Epoch 5/5: Dense MSE = 1.026687e-01
+  Completed: 0.07s total, 0.013s/epoch, 46 params, Final dense MSE = 1.026687e-01
+  Training MLP: Dataset 6 (sawtooth), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 1.089633e-01
+    Epoch 2/5: Dense MSE = 8.957142e-02
+    Epoch 3/5: Dense MSE = 8.533018e-02
+    Epoch 4/5: Dense MSE = 8.533017e-02
+    Epoch 5/5: Dense MSE = 8.533017e-02
+  Completed: 0.06s total, 0.011s/epoch, 76 params, Final dense MSE = 8.533017e-02
+  Training MLP: Dataset 6 (sawtooth), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 8.660774e-02
+    Epoch 2/5: Dense MSE = 8.749613e-02
+    Epoch 3/5: Dense MSE = 8.761875e-02
+    Epoch 4/5: Dense MSE = 8.812759e-02
+    Epoch 5/5: Dense MSE = 8.609041e-02
+  Completed: 0.07s total, 0.014s/epoch, 76 params, Final dense MSE = 8.609041e-02
+  Training MLP: Dataset 6 (sawtooth), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 9.563377e-02
+    Epoch 2/5: Dense MSE = 1.176709e-01
+    Epoch 3/5: Dense MSE = 1.970195e-01
+    Epoch 4/5: Dense MSE = 1.993678e-01
+    Epoch 5/5: Dense MSE = 2.501810e-01
+  Completed: 0.07s total, 0.015s/epoch, 76 params, Final dense MSE = 2.501810e-01
+  Training MLP: Dataset 6 (sawtooth), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 9.150251e-02
+    Epoch 2/5: Dense MSE = 9.457068e-02
+    Epoch 3/5: Dense MSE = 9.767868e-02
+    Epoch 4/5: Dense MSE = 9.676605e-02
+    Epoch 5/5: Dense MSE = 9.741545e-02
+  Completed: 0.09s total, 0.019s/epoch, 106 params, Final dense MSE = 9.741545e-02
+  Training MLP: Dataset 6 (sawtooth), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 8.794147e-02
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.012s/epoch, 106 params, Final dense MSE = nan
+  Training MLP: Dataset 6 (sawtooth), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 9.348183e-02
+    Epoch 2/5: Dense MSE = 9.789533e-02
+    Epoch 3/5: Dense MSE = 1.449100e-01
+    Epoch 4/5: Dense MSE = 2.211628e-01
+    Epoch 5/5: Dense MSE = 1.253049e-01
+  Completed: 0.08s total, 0.017s/epoch, 106 params, Final dense MSE = 1.253049e-01
+  Training MLP: Dataset 6 (sawtooth), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 8.835249e-02
+    Epoch 2/5: Dense MSE = 9.460346e-02
+    Epoch 3/5: Dense MSE = 9.407824e-02
+    Epoch 4/5: Dense MSE = 9.576371e-02
+    Epoch 5/5: Dense MSE = 9.620165e-02
+  Completed: 0.18s total, 0.036s/epoch, 136 params, Final dense MSE = 9.620165e-02
+  Training MLP: Dataset 6 (sawtooth), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 8.842680e-02
+    Epoch 2/5: Dense MSE = 8.848327e-02
+    Epoch 3/5: Dense MSE = 8.023489e+01
+    Epoch 4/5: Dense MSE = 9.588100e-02
+    Epoch 5/5: Dense MSE = 8.643387e-02
+  Completed: 0.09s total, 0.017s/epoch, 136 params, Final dense MSE = 8.643387e-02
+  Training MLP: Dataset 6 (sawtooth), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 1.130888e-01
+    Epoch 2/5: Dense MSE = 1.542187e-01
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.08s total, 0.017s/epoch, 136 params, Final dense MSE = nan
+  Training MLP: Dataset 7 (polynomial), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 1.256293e-02
+    Epoch 2/5: Dense MSE = 2.145279e-03
+    Epoch 3/5: Dense MSE = 4.122925e-04
+    Epoch 4/5: Dense MSE = 3.417258e-04
+    Epoch 5/5: Dense MSE = 2.284399e-04
+  Completed: 0.06s total, 0.011s/epoch, 16 params, Final dense MSE = 2.284399e-04
+  Training MLP: Dataset 7 (polynomial), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 5.349177e+00
+    Epoch 2/5: Dense MSE = 2.989321e-02
+    Epoch 3/5: Dense MSE = 2.989321e-02
+    Epoch 4/5: Dense MSE = 2.989321e-02
+    Epoch 5/5: Dense MSE = 2.989321e-02
+  Completed: 0.01s total, 0.002s/epoch, 16 params, Final dense MSE = 2.989321e-02
+  Training MLP: Dataset 7 (polynomial), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 5.749411e-01
+    Epoch 2/5: Dense MSE = 4.253664e-01
+    Epoch 3/5: Dense MSE = 8.701244e-03
+    Epoch 4/5: Dense MSE = 2.320020e-03
+    Epoch 5/5: Dense MSE = 1.846092e-03
+  Completed: 0.05s total, 0.011s/epoch, 16 params, Final dense MSE = 1.846092e-03
+  Training MLP: Dataset 7 (polynomial), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 1.948718e+00
+    Epoch 2/5: Dense MSE = 8.019246e-03
+    Epoch 3/5: Dense MSE = 8.772548e-04
+    Epoch 4/5: Dense MSE = 5.201935e-04
+    Epoch 5/5: Dense MSE = 4.799377e-04
+  Completed: 0.07s total, 0.013s/epoch, 46 params, Final dense MSE = 4.799377e-04
+  Training MLP: Dataset 7 (polynomial), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 1.051893e-02
+    Epoch 2/5: Dense MSE = 3.828764e-03
+    Epoch 3/5: Dense MSE = 2.268854e-03
+    Epoch 4/5: Dense MSE = 1.453898e-03
+    Epoch 5/5: Dense MSE = 1.238146e-03
+  Completed: 0.06s total, 0.011s/epoch, 46 params, Final dense MSE = 1.238146e-03
+  Training MLP: Dataset 7 (polynomial), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 6.365864e-02
+    Epoch 2/5: Dense MSE = 5.051464e-03
+    Epoch 3/5: Dense MSE = 2.690795e-03
+    Epoch 4/5: Dense MSE = 5.438021e-03
+    Epoch 5/5: Dense MSE = 1.647696e-03
+  Completed: 0.06s total, 0.012s/epoch, 46 params, Final dense MSE = 1.647696e-03
+  Training MLP: Dataset 7 (polynomial), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 4.467093e-03
+    Epoch 2/5: Dense MSE = 2.616460e-03
+    Epoch 3/5: Dense MSE = 3.714646e-04
+    Epoch 4/5: Dense MSE = 8.488501e-05
+    Epoch 5/5: Dense MSE = 4.408534e-05
+  Completed: 0.07s total, 0.015s/epoch, 76 params, Final dense MSE = 4.408534e-05
+  Training MLP: Dataset 7 (polynomial), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 2.031941e-02
+    Epoch 2/5: Dense MSE = 3.476152e-03
+    Epoch 3/5: Dense MSE = 1.625700e-03
+    Epoch 4/5: Dense MSE = 1.621166e-03
+    Epoch 5/5: Dense MSE = 1.566839e-03
+  Completed: 0.06s total, 0.013s/epoch, 76 params, Final dense MSE = 1.566839e-03
+  Training MLP: Dataset 7 (polynomial), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 1.316675e-02
+    Epoch 2/5: Dense MSE = 1.122291e-03
+    Epoch 3/5: Dense MSE = 2.145680e-04
+    Epoch 4/5: Dense MSE = 1.475300e-04
+    Epoch 5/5: Dense MSE = 1.503916e-04
+  Completed: 0.07s total, 0.014s/epoch, 76 params, Final dense MSE = 1.503916e-04
+  Training MLP: Dataset 7 (polynomial), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 1.243671e-02
+    Epoch 2/5: Dense MSE = 5.715224e-04
+    Epoch 3/5: Dense MSE = 2.236540e-04
+    Epoch 4/5: Dense MSE = 4.915509e-04
+    Epoch 5/5: Dense MSE = 4.495535e-04
+  Completed: 0.09s total, 0.019s/epoch, 106 params, Final dense MSE = 4.495535e-04
+  Training MLP: Dataset 7 (polynomial), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 4.227542e-02
+    Epoch 2/5: Dense MSE = 3.039255e-03
+    Epoch 3/5: Dense MSE = 3.174672e-03
+    Epoch 4/5: Dense MSE = 2.476641e-03
+    Epoch 5/5: Dense MSE = 2.400142e-03
+  Completed: 0.07s total, 0.014s/epoch, 106 params, Final dense MSE = 2.400142e-03
+  Training MLP: Dataset 7 (polynomial), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 2.363929e-02
+    Epoch 2/5: Dense MSE = 7.017425e-04
+    Epoch 3/5: Dense MSE = 3.436366e-04
+    Epoch 4/5: Dense MSE = 2.596457e-05
+    Epoch 5/5: Dense MSE = 2.567473e-05
+  Completed: 0.07s total, 0.013s/epoch, 106 params, Final dense MSE = 2.567473e-05
+  Training MLP: Dataset 7 (polynomial), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 6.398897e-03
+    Epoch 2/5: Dense MSE = 7.117372e-03
+    Epoch 3/5: Dense MSE = 1.835644e-04
+    Epoch 4/5: Dense MSE = 6.859712e-05
+    Epoch 5/5: Dense MSE = 6.859712e-05
+  Completed: 0.08s total, 0.015s/epoch, 136 params, Final dense MSE = 6.859712e-05
+  Training MLP: Dataset 7 (polynomial), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 1.778316e+00
+    Epoch 2/5: Dense MSE = 1.778316e+00
+    Epoch 3/5: Dense MSE = 1.778316e+00
+    Epoch 4/5: Dense MSE = 1.778316e+00
+    Epoch 5/5: Dense MSE = 1.778316e+00
+  Completed: 0.01s total, 0.001s/epoch, 136 params, Final dense MSE = 1.778316e+00
+  Training MLP: Dataset 7 (polynomial), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 7.964563e-03
+    Epoch 2/5: Dense MSE = 9.568410e-04
+    Epoch 3/5: Dense MSE = 2.596707e-04
+    Epoch 4/5: Dense MSE = 1.934246e-04
+    Epoch 5/5: Dense MSE = 6.243910e-05
+  Completed: 0.09s total, 0.018s/epoch, 136 params, Final dense MSE = 6.243910e-05
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=2, activation=tanh
+    Epoch 1/5: Dense MSE = 9.464540e+03
+    Epoch 2/5: Dense MSE = 9.375816e+03
+    Epoch 3/5: Dense MSE = 9.326944e+03
+    Epoch 4/5: Dense MSE = 9.311752e+03
+    Epoch 5/5: Dense MSE = 9.306304e+03
+  Completed: 0.05s total, 0.011s/epoch, 16 params, Final dense MSE = 9.306304e+03
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=2, activation=relu
+    Epoch 1/5: Dense MSE = 1.403632e+04
+    Epoch 2/5: Dense MSE = 1.351240e+04
+    Epoch 3/5: Dense MSE = 1.343545e+04
+    Epoch 4/5: Dense MSE = 1.343405e+04
+    Epoch 5/5: Dense MSE = 1.343403e+04
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 1.343403e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=2, activation=silu
+    Epoch 1/5: Dense MSE = 1.383662e+04
+    Epoch 2/5: Dense MSE = 1.419719e+04
+    Epoch 3/5: Dense MSE = 1.283856e+04
+    Epoch 4/5: Dense MSE = 1.199351e+04
+    Epoch 5/5: Dense MSE = 1.208955e+04
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 1.208955e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=3, activation=tanh
+    Epoch 1/5: Dense MSE = 1.100402e+04
+    Epoch 2/5: Dense MSE = 1.085407e+04
+    Epoch 3/5: Dense MSE = 1.087747e+04
+    Epoch 4/5: Dense MSE = 1.081660e+04
+    Epoch 5/5: Dense MSE = 1.081591e+04
+  Completed: 0.06s total, 0.013s/epoch, 46 params, Final dense MSE = 1.081591e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=3, activation=relu
+    Epoch 1/5: Dense MSE = 1.219807e+04
+    Epoch 2/5: Dense MSE = 1.361315e+04
+    Epoch 3/5: Dense MSE = 1.374429e+04
+    Epoch 4/5: Dense MSE = 1.375237e+04
+    Epoch 5/5: Dense MSE = 1.374384e+04
+  Completed: 0.05s total, 0.010s/epoch, 46 params, Final dense MSE = 1.374384e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=3, activation=silu
+    Epoch 1/5: Dense MSE = 1.416982e+04
+    Epoch 2/5: Dense MSE = 1.437209e+04
+    Epoch 3/5: Dense MSE = 1.513522e+04
+    Epoch 4/5: Dense MSE = 1.220196e+04
+    Epoch 5/5: Dense MSE = 1.220698e+04
+  Completed: 0.06s total, 0.013s/epoch, 46 params, Final dense MSE = 1.220698e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=4, activation=tanh
+    Epoch 1/5: Dense MSE = 1.221848e+04
+    Epoch 2/5: Dense MSE = 1.220333e+04
+    Epoch 3/5: Dense MSE = 4.129186e+05
+    Epoch 4/5: Dense MSE = 1.212783e+04
+    Epoch 5/5: Dense MSE = 1.212783e+04
+  Completed: 0.04s total, 0.008s/epoch, 76 params, Final dense MSE = 1.212783e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=4, activation=relu
+    Epoch 1/5: Dense MSE = 1.230731e+04
+    Epoch 2/5: Dense MSE = 1.369070e+04
+    Epoch 3/5: Dense MSE = 1.371738e+04
+    Epoch 4/5: Dense MSE = 1.364357e+04
+    Epoch 5/5: Dense MSE = 1.034523e+04
+  Completed: 0.06s total, 0.013s/epoch, 76 params, Final dense MSE = 1.034523e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=4, activation=silu
+    Epoch 1/5: Dense MSE = 1.219971e+04
+    Epoch 2/5: Dense MSE = 1.219971e+04
+    Epoch 3/5: Dense MSE = 1.219971e+04
+    Epoch 4/5: Dense MSE = 1.219971e+04
+    Epoch 5/5: Dense MSE = 1.219971e+04
+  Completed: 0.01s total, 0.002s/epoch, 76 params, Final dense MSE = 1.219971e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=5, activation=tanh
+    Epoch 1/5: Dense MSE = 1.220220e+04
+    Epoch 2/5: Dense MSE = 4.418883e+06
+    Epoch 3/5: Dense MSE = 1.151284e+06
+    Epoch 4/5: Dense MSE = 1.214151e+04
+    Epoch 5/5: Dense MSE = 1.194642e+04
+  Completed: 0.07s total, 0.015s/epoch, 106 params, Final dense MSE = 1.194642e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=5, activation=relu
+    Epoch 1/5: Dense MSE = 1.220336e+04
+    Epoch 2/5: Dense MSE = 1.220336e+04
+    Epoch 3/5: Dense MSE = 1.220336e+04
+    Epoch 4/5: Dense MSE = 1.220336e+04
+    Epoch 5/5: Dense MSE = 1.220336e+04
+  Completed: 0.01s total, 0.002s/epoch, 106 params, Final dense MSE = 1.220336e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=5, activation=silu
+    Epoch 1/5: Dense MSE = 1.220060e+04
+    Epoch 2/5: Dense MSE = 1.220041e+04
+    Epoch 3/5: Dense MSE = 1.220017e+04
+    Epoch 4/5: Dense MSE = 1.219988e+04
+    Epoch 5/5: Dense MSE = 1.219952e+04
+  Completed: 0.05s total, 0.010s/epoch, 106 params, Final dense MSE = 1.219952e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=6, activation=tanh
+    Epoch 1/5: Dense MSE = 4.846441e+08
+    Epoch 2/5: Dense MSE = 1.220335e+04
+    Epoch 3/5: Dense MSE = 1.220335e+04
+    Epoch 4/5: Dense MSE = 1.220335e+04
+    Epoch 5/5: Dense MSE = 1.220337e+04
+  Completed: 0.03s total, 0.005s/epoch, 136 params, Final dense MSE = 1.220337e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=6, activation=relu
+    Epoch 1/5: Dense MSE = 1.220336e+04
+    Epoch 2/5: Dense MSE = 1.220336e+04
+    Epoch 3/5: Dense MSE = 1.220336e+04
+    Epoch 4/5: Dense MSE = 1.220336e+04
+    Epoch 5/5: Dense MSE = 1.220336e+04
+  Completed: 0.01s total, 0.002s/epoch, 136 params, Final dense MSE = 1.220336e+04
+  Training MLP: Dataset 8 (poisson_1d_highfreq), depth=6, activation=silu
+    Epoch 1/5: Dense MSE = 1.219839e+04
+    Epoch 2/5: Dense MSE = 1.219839e+04
+    Epoch 3/5: Dense MSE = 1.219839e+04
+    Epoch 4/5: Dense MSE = 1.219839e+04
+    Epoch 5/5: Dense MSE = 1.219839e+04
+  Completed: 0.01s total, 0.003s/epoch, 136 params, Final dense MSE = 1.219839e+04
+  Best MLP for dataset 0: depth=6, activation=silu, dense_mse=1.170485e-04
+  Best MLP for dataset 1: depth=5, activation=silu, dense_mse=3.437964e-01
+  Best MLP for dataset 2: depth=5, activation=tanh, dense_mse=3.889391e-01
+  Best MLP for dataset 3: depth=5, activation=silu, dense_mse=4.163467e-01
+  Best MLP for dataset 4: depth=3, activation=relu, dense_mse=4.643416e-01
+  Best MLP for dataset 5: depth=6, activation=silu, dense_mse=1.485955e-02
+  Best MLP for dataset 6: depth=4, activation=tanh, dense_mse=8.533017e-02
+  Best MLP for dataset 7: depth=5, activation=silu, dense_mse=2.567473e-05
+  Best MLP for dataset 8: depth=2, activation=tanh, dense_mse=9.306304e+03
+MLP training complete: 8.86s total
+
+Training SIRENs (with dense MSE metrics)...
+siren
+  Training SIREN: Dataset 0 (sin_freq1), depth=2
+    Epoch 1/5: Dense MSE = 4.213849e-01
+    Epoch 2/5: Dense MSE = 4.232990e-01
+    Epoch 3/5: Dense MSE = 4.082674e-01
+    Epoch 4/5: Dense MSE = 4.026631e-01
+    Epoch 5/5: Dense MSE = 3.906546e-01
+  Completed: 0.06s total, 0.012s/epoch, 16 params, Final dense MSE = 3.906546e-01
+  Training SIREN: Dataset 0 (sin_freq1), depth=3
+    Epoch 1/5: Dense MSE = 1.075537e-01
+    Epoch 2/5: Dense MSE = 4.447702e-02
+    Epoch 3/5: Dense MSE = 1.863628e-02
+    Epoch 4/5: Dense MSE = 1.190643e-02
+    Epoch 5/5: Dense MSE = 2.036952e-02
+  Completed: 0.08s total, 0.016s/epoch, 46 params, Final dense MSE = 2.036952e-02
+  Training SIREN: Dataset 0 (sin_freq1), depth=4
+    Epoch 1/5: Dense MSE = 3.534590e-01
+    Epoch 2/5: Dense MSE = 1.174611e-01
+    Epoch 3/5: Dense MSE = 8.709012e-02
+    Epoch 4/5: Dense MSE = 1.023216e-01
+    Epoch 5/5: Dense MSE = 9.348024e-02
+  Completed: 0.09s total, 0.018s/epoch, 76 params, Final dense MSE = 9.348024e-02
+  Training SIREN: Dataset 0 (sin_freq1), depth=5
+    Epoch 1/5: Dense MSE = nan
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.08s total, 0.016s/epoch, 106 params, Final dense MSE = nan
+  Training SIREN: Dataset 0 (sin_freq1), depth=6
+    Epoch 1/5: Dense MSE = nan
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.14s total, 0.027s/epoch, 136 params, Final dense MSE = nan
+  Training SIREN: Dataset 1 (sin_freq2), depth=2
+    Epoch 1/5: Dense MSE = 3.684575e-06
+    Epoch 2/5: Dense MSE = 3.253535e-10
+    Epoch 3/5: Dense MSE = 3.253535e-10
+    Epoch 4/5: Dense MSE = 3.253535e-10
+    Epoch 5/5: Dense MSE = 3.253535e-10
+  Completed: 0.02s total, 0.004s/epoch, 16 params, Final dense MSE = 3.253535e-10
+  Training SIREN: Dataset 1 (sin_freq2), depth=3
+    Epoch 1/5: Dense MSE = 1.129246e-01
+    Epoch 2/5: Dense MSE = 4.979855e-02
+    Epoch 3/5: Dense MSE = 1.434426e-01
+    Epoch 4/5: Dense MSE = 5.826411e-02
+    Epoch 5/5: Dense MSE = 7.046018e-02
+  Completed: 0.10s total, 0.019s/epoch, 46 params, Final dense MSE = 7.046018e-02
+  Training SIREN: Dataset 1 (sin_freq2), depth=4
+    Epoch 1/5: Dense MSE = 1.021254e-01
+    Epoch 2/5: Dense MSE = 1.078493e-01
+    Epoch 3/5: Dense MSE = 1.134973e-01
+    Epoch 4/5: Dense MSE = 1.079230e-01
+    Epoch 5/5: Dense MSE = 8.715194e-02
+  Completed: 0.11s total, 0.022s/epoch, 76 params, Final dense MSE = 8.715194e-02
+  Training SIREN: Dataset 1 (sin_freq2), depth=5
+    Epoch 1/5: Dense MSE = 5.982730e-02
+    Epoch 2/5: Dense MSE = 2.480020e-03
+    Epoch 3/5: Dense MSE = 7.782826e-04
+    Epoch 4/5: Dense MSE = 2.668821e-04
+    Epoch 5/5: Dense MSE = 1.241558e-04
+  Completed: 0.14s total, 0.028s/epoch, 106 params, Final dense MSE = 1.241558e-04
+  Training SIREN: Dataset 1 (sin_freq2), depth=6
+    Epoch 1/5: Dense MSE = 1.255130e-01
+    Epoch 2/5: Dense MSE = 7.692060e-03
+    Epoch 3/5: Dense MSE = 1.983105e-04
+    Epoch 4/5: Dense MSE = 1.487381e-05
+    Epoch 5/5: Dense MSE = 6.200217e-06
+  Completed: 0.16s total, 0.032s/epoch, 136 params, Final dense MSE = 6.200217e-06
+  Training SIREN: Dataset 2 (sin_freq3), depth=2
+    Epoch 1/5: Dense MSE = 5.245163e-01
+    Epoch 2/5: Dense MSE = 5.272623e-01
+    Epoch 3/5: Dense MSE = 5.408359e-01
+    Epoch 4/5: Dense MSE = 5.395442e-01
+    Epoch 5/5: Dense MSE = 5.410630e-01
+  Completed: 0.06s total, 0.012s/epoch, 16 params, Final dense MSE = 5.410630e-01
+  Training SIREN: Dataset 2 (sin_freq3), depth=3
+    Epoch 1/5: Dense MSE = 8.922500e-04
+    Epoch 2/5: Dense MSE = 7.718842e-05
+    Epoch 3/5: Dense MSE = 1.797490e-05
+    Epoch 4/5: Dense MSE = 1.350904e-05
+    Epoch 5/5: Dense MSE = 9.224899e-06
+  Completed: 0.07s total, 0.015s/epoch, 46 params, Final dense MSE = 9.224899e-06
+  Training SIREN: Dataset 2 (sin_freq3), depth=4
+    Epoch 1/5: Dense MSE = 5.089300e-01
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.07s total, 0.014s/epoch, 76 params, Final dense MSE = nan
+  Training SIREN: Dataset 2 (sin_freq3), depth=5
+    Epoch 1/5: Dense MSE = 1.926306e-01
+    Epoch 2/5: Dense MSE = 1.260617e-01
+    Epoch 3/5: Dense MSE = 1.014189e-01
+    Epoch 4/5: Dense MSE = 1.037170e-01
+    Epoch 5/5: Dense MSE = 8.313490e-02
+  Completed: 0.10s total, 0.020s/epoch, 106 params, Final dense MSE = 8.313490e-02
+  Training SIREN: Dataset 2 (sin_freq3), depth=6
+    Epoch 1/5: Dense MSE = 1.262925e-01
+    Epoch 2/5: Dense MSE = 1.230255e-02
+    Epoch 3/5: Dense MSE = 1.536555e-03
+    Epoch 4/5: Dense MSE = 4.252758e-04
+    Epoch 5/5: Dense MSE = 2.554656e-04
+  Completed: 0.12s total, 0.024s/epoch, 136 params, Final dense MSE = 2.554656e-04
+  Training SIREN: Dataset 3 (sin_freq4), depth=2
+    Epoch 1/5: Dense MSE = 6.252435e-01
+    Epoch 2/5: Dense MSE = 7.624254e-01
+    Epoch 3/5: Dense MSE = 8.530890e-01
+    Epoch 4/5: Dense MSE = 9.308287e-01
+    Epoch 5/5: Dense MSE = 9.945131e-01
+  Completed: 0.06s total, 0.013s/epoch, 16 params, Final dense MSE = 9.945131e-01
+  Training SIREN: Dataset 3 (sin_freq4), depth=3
+    Epoch 1/5: Dense MSE = 4.914735e-02
+    Epoch 2/5: Dense MSE = 5.780772e-03
+    Epoch 3/5: Dense MSE = 2.832003e-03
+    Epoch 4/5: Dense MSE = 3.147677e-03
+    Epoch 5/5: Dense MSE = 6.301504e-03
+  Completed: 0.09s total, 0.018s/epoch, 46 params, Final dense MSE = 6.301504e-03
+  Training SIREN: Dataset 3 (sin_freq4), depth=4
+    Epoch 1/5: Dense MSE = 2.893486e-01
+    Epoch 2/5: Dense MSE = 8.274847e-02
+    Epoch 3/5: Dense MSE = 8.953671e-02
+    Epoch 4/5: Dense MSE = 1.010234e-01
+    Epoch 5/5: Dense MSE = 1.084744e-01
+  Completed: 0.11s total, 0.021s/epoch, 76 params, Final dense MSE = 1.084744e-01
+  Training SIREN: Dataset 3 (sin_freq4), depth=5
+    Epoch 1/5: Dense MSE = 2.695315e-01
+    Epoch 2/5: Dense MSE = 2.332921e-01
+    Epoch 3/5: Dense MSE = 1.541561e-01
+    Epoch 4/5: Dense MSE = 1.341790e-01
+    Epoch 5/5: Dense MSE = 1.282388e-01
+  Completed: 0.10s total, 0.021s/epoch, 106 params, Final dense MSE = 1.282388e-01
+  Training SIREN: Dataset 3 (sin_freq4), depth=6
+    Epoch 1/5: Dense MSE = nan
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.08s total, 0.015s/epoch, 136 params, Final dense MSE = nan
+  Training SIREN: Dataset 4 (sin_freq5), depth=2
+    Epoch 1/5: Dense MSE = 5.049745e-01
+    Epoch 2/5: Dense MSE = 5.075839e-01
+    Epoch 3/5: Dense MSE = 5.091200e-01
+    Epoch 4/5: Dense MSE = 5.091919e-01
+    Epoch 5/5: Dense MSE = 5.091392e-01
+  Completed: 0.05s total, 0.010s/epoch, 16 params, Final dense MSE = 5.091392e-01
+  Training SIREN: Dataset 4 (sin_freq5), depth=3
+    Epoch 1/5: Dense MSE = 2.027386e-01
+    Epoch 2/5: Dense MSE = 9.965240e-02
+    Epoch 3/5: Dense MSE = 8.584955e-02
+    Epoch 4/5: Dense MSE = 8.547941e-02
+    Epoch 5/5: Dense MSE = 7.895708e-02
+  Completed: 0.09s total, 0.018s/epoch, 46 params, Final dense MSE = 7.895708e-02
+  Training SIREN: Dataset 4 (sin_freq5), depth=4
+    Epoch 1/5: Dense MSE = nan
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.08s total, 0.015s/epoch, 76 params, Final dense MSE = nan
+  Training SIREN: Dataset 4 (sin_freq5), depth=5
+    Epoch 1/5: Dense MSE = inf
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.08s total, 0.015s/epoch, 106 params, Final dense MSE = nan
+  Training SIREN: Dataset 4 (sin_freq5), depth=6
+    Epoch 1/5: Dense MSE = 9.447986e-02
+    Epoch 2/5: Dense MSE = 4.947735e-03
+    Epoch 3/5: Dense MSE = 3.893202e-04
+    Epoch 4/5: Dense MSE = 5.292962e-05
+    Epoch 5/5: Dense MSE = 4.180383e-05
+  Completed: 0.12s total, 0.023s/epoch, 136 params, Final dense MSE = 4.180383e-05
+  Training SIREN: Dataset 5 (piecewise), depth=2
+    Epoch 1/5: Dense MSE = 4.599911e-02
+    Epoch 2/5: Dense MSE = 3.271379e-02
+    Epoch 3/5: Dense MSE = 3.532767e-02
+    Epoch 4/5: Dense MSE = 3.558111e-02
+    Epoch 5/5: Dense MSE = 3.529734e-02
+  Completed: 0.06s total, 0.011s/epoch, 16 params, Final dense MSE = 3.529734e-02
+  Training SIREN: Dataset 5 (piecewise), depth=3
+    Epoch 1/5: Dense MSE = 2.108072e-02
+    Epoch 2/5: Dense MSE = 2.108394e-02
+    Epoch 3/5: Dense MSE = 2.233803e-02
+    Epoch 4/5: Dense MSE = 1.262608e-02
+    Epoch 5/5: Dense MSE = 7.871339e-03
+  Completed: 0.07s total, 0.014s/epoch, 46 params, Final dense MSE = 7.871339e-03
+  Training SIREN: Dataset 5 (piecewise), depth=4
+    Epoch 1/5: Dense MSE = 1.290352e-01
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.013s/epoch, 76 params, Final dense MSE = nan
+  Training SIREN: Dataset 5 (piecewise), depth=5
+    Epoch 1/5: Dense MSE = 2.890207e-02
+    Epoch 2/5: Dense MSE = 1.038882e-02
+    Epoch 3/5: Dense MSE = 1.757258e-02
+    Epoch 4/5: Dense MSE = 2.479420e-02
+    Epoch 5/5: Dense MSE = 2.639961e-02
+  Completed: 0.10s total, 0.020s/epoch, 106 params, Final dense MSE = 2.639961e-02
+  Training SIREN: Dataset 5 (piecewise), depth=6
+    Epoch 1/5: Dense MSE = 5.491052e-02
+    Epoch 2/5: Dense MSE = 1.611083e-02
+    Epoch 3/5: Dense MSE = 2.092066e-02
+    Epoch 4/5: Dense MSE = 5.276135e-02
+    Epoch 5/5: Dense MSE = 5.372506e-02
+  Completed: 0.11s total, 0.023s/epoch, 136 params, Final dense MSE = 5.372506e-02
+  Training SIREN: Dataset 6 (sawtooth), depth=2
+    Epoch 1/5: Dense MSE = 1.072235e-01
+    Epoch 2/5: Dense MSE = 1.121313e-01
+    Epoch 3/5: Dense MSE = 1.147271e-01
+    Epoch 4/5: Dense MSE = 1.165924e-01
+    Epoch 5/5: Dense MSE = 1.173757e-01
+  Completed: 0.06s total, 0.011s/epoch, 16 params, Final dense MSE = 1.173757e-01
+  Training SIREN: Dataset 6 (sawtooth), depth=3
+    Epoch 1/5: Dense MSE = 4.434572e-02
+    Epoch 2/5: Dense MSE = 3.569579e-02
+    Epoch 3/5: Dense MSE = 3.764001e-02
+    Epoch 4/5: Dense MSE = 3.657610e-02
+    Epoch 5/5: Dense MSE = 3.510241e-02
+  Completed: 0.07s total, 0.014s/epoch, 46 params, Final dense MSE = 3.510241e-02
+  Training SIREN: Dataset 6 (sawtooth), depth=4
+    Epoch 1/5: Dense MSE = 3.704118e-02
+    Epoch 2/5: Dense MSE = 2.438361e-02
+    Epoch 3/5: Dense MSE = 2.393734e-02
+    Epoch 4/5: Dense MSE = 2.441171e-02
+    Epoch 5/5: Dense MSE = 2.401067e-02
+  Completed: 0.09s total, 0.018s/epoch, 76 params, Final dense MSE = 2.401067e-02
+  Training SIREN: Dataset 6 (sawtooth), depth=5
+    Epoch 1/5: Dense MSE = 1.095528e-02
+    Epoch 2/5: Dense MSE = 5.194577e-03
+    Epoch 3/5: Dense MSE = 4.287886e-03
+    Epoch 4/5: Dense MSE = 4.617663e-03
+    Epoch 5/5: Dense MSE = 3.971056e-03
+  Completed: 0.10s total, 0.021s/epoch, 106 params, Final dense MSE = 3.971056e-03
+  Training SIREN: Dataset 6 (sawtooth), depth=6
+    Epoch 1/5: Dense MSE = 6.524940e-02
+    Epoch 2/5: Dense MSE = 4.831800e-02
+    Epoch 3/5: Dense MSE = 4.918331e-02
+    Epoch 4/5: Dense MSE = 4.054407e-02
+    Epoch 5/5: Dense MSE = 3.809445e-02
+  Completed: 0.12s total, 0.024s/epoch, 136 params, Final dense MSE = 3.809445e-02
+  Training SIREN: Dataset 7 (polynomial), depth=2
+    Epoch 1/5: Dense MSE = 1.807066e+00
+    Epoch 2/5: Dense MSE = 2.161511e+00
+    Epoch 3/5: Dense MSE = 2.237789e+00
+    Epoch 4/5: Dense MSE = 2.113841e+06
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.011s/epoch, 16 params, Final dense MSE = nan
+  Training SIREN: Dataset 7 (polynomial), depth=3
+    Epoch 1/5: Dense MSE = 1.055580e+00
+    Epoch 2/5: Dense MSE = 5.230973e-01
+    Epoch 3/5: Dense MSE = 3.293110e-01
+    Epoch 4/5: Dense MSE = 2.036867e-01
+    Epoch 5/5: Dense MSE = 2.023322e-01
+  Completed: 0.07s total, 0.014s/epoch, 46 params, Final dense MSE = 2.023322e-01
+  Training SIREN: Dataset 7 (polynomial), depth=4
+    Epoch 1/5: Dense MSE = 1.040227e+00
+    Epoch 2/5: Dense MSE = 9.315879e-01
+    Epoch 3/5: Dense MSE = 9.505507e-01
+    Epoch 4/5: Dense MSE = 9.289188e-01
+    Epoch 5/5: Dense MSE = 9.048885e-01
+  Completed: 0.08s total, 0.017s/epoch, 76 params, Final dense MSE = 9.048885e-01
+  Training SIREN: Dataset 7 (polynomial), depth=5
+    Epoch 1/5: Dense MSE = 1.365440e+00
+    Epoch 2/5: Dense MSE = 1.067889e+00
+    Epoch 3/5: Dense MSE = 1.054118e+00
+    Epoch 4/5: Dense MSE = 1.080902e+00
+    Epoch 5/5: Dense MSE = 1.021878e+00
+  Completed: 0.10s total, 0.020s/epoch, 106 params, Final dense MSE = 1.021878e+00
+  Training SIREN: Dataset 7 (polynomial), depth=6
+    Epoch 1/5: Dense MSE = nan
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.07s total, 0.014s/epoch, 136 params, Final dense MSE = nan
+  Training SIREN: Dataset 8 (poisson_1d_highfreq), depth=2
+    Epoch 1/5: Dense MSE = 1.624560e+04
+    Epoch 2/5: Dense MSE = 1.220334e+04
+    Epoch 3/5: Dense MSE = 1.220413e+04
+    Epoch 4/5: Dense MSE = 1.222765e+04
+    Epoch 5/5: Dense MSE = 1.259391e+04
+  Completed: 0.05s total, 0.011s/epoch, 16 params, Final dense MSE = 1.259391e+04
+  Training SIREN: Dataset 8 (poisson_1d_highfreq), depth=3
+    Epoch 1/5: Dense MSE = 1.216891e+04
+    Epoch 2/5: Dense MSE = 1.224256e+04
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.012s/epoch, 46 params, Final dense MSE = nan
+  Training SIREN: Dataset 8 (poisson_1d_highfreq), depth=4
+    Epoch 1/5: Dense MSE = nan
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.06s total, 0.011s/epoch, 76 params, Final dense MSE = nan
+  Training SIREN: Dataset 8 (poisson_1d_highfreq), depth=5
+    Epoch 1/5: Dense MSE = nan
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.09s total, 0.018s/epoch, 106 params, Final dense MSE = nan
+  Training SIREN: Dataset 8 (poisson_1d_highfreq), depth=6
+    Epoch 1/5: Dense MSE = nan
+    Epoch 2/5: Dense MSE = nan
+    Epoch 3/5: Dense MSE = nan
+    Epoch 4/5: Dense MSE = nan
+    Epoch 5/5: Dense MSE = nan
+  Completed: 0.09s total, 0.018s/epoch, 136 params, Final dense MSE = nan
+  Best SIREN for dataset 0: depth=3, dense_mse=2.036952e-02
+  Best SIREN for dataset 1: depth=2, dense_mse=3.253535e-10
+  Best SIREN for dataset 2: depth=3, dense_mse=9.224899e-06
+  Best SIREN for dataset 3: depth=3, dense_mse=6.301504e-03
+  Best SIREN for dataset 4: depth=6, dense_mse=4.180383e-05
+  Best SIREN for dataset 5: depth=3, dense_mse=7.871339e-03
+  Best SIREN for dataset 6: depth=5, dense_mse=3.971056e-03
+  Best SIREN for dataset 7: depth=3, dense_mse=2.023322e-01
+  Best SIREN for dataset 8: depth=2, dense_mse=1.259391e+04
+SIREN training complete: 3.84s total
+
+Training KANs (with dense MSE metrics)...
+kan
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 0 (sin_freq1), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 5.409684e-03
+    Epoch 2/30: Dense MSE = 5.409684e-03
+    Epoch 3/30: Dense MSE = 5.409684e-03
+    Epoch 4/30: Dense MSE = 5.409684e-03
+    Epoch 5/30: Dense MSE = 5.409684e-03
+  Grid 3 completed: 0.54s total, 0.109s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 0 (sin_freq1), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.661339e-04
+    Epoch 7/30: Dense MSE = 2.661339e-04
+    Epoch 8/30: Dense MSE = 2.661339e-04
+    Epoch 9/30: Dense MSE = 2.661339e-04
+    Epoch 10/30: Dense MSE = 2.661339e-04
+  Grid 5 completed: 0.66s total, 0.132s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 0 (sin_freq1), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 2.293156e-03
+    Epoch 12/30: Dense MSE = 2.293156e-03
+    Epoch 13/30: Dense MSE = 2.293156e-03
+    Epoch 14/30: Dense MSE = 2.293156e-03
+    Epoch 15/30: Dense MSE = 2.293156e-03
+  Grid 10 completed: 0.72s total, 0.144s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 0 (sin_freq1), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 1.823329e-03
+    Epoch 17/30: Dense MSE = 1.823329e-03
+    Epoch 18/30: Dense MSE = 1.823329e-03
+    Epoch 19/30: Dense MSE = 1.823329e-03
+    Epoch 20/30: Dense MSE = 1.823329e-03
+  Grid 20 completed: 0.87s total, 0.173s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 0 (sin_freq1), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 4.928777e-02
+    Epoch 22/30: Dense MSE = 4.928777e-02
+    Epoch 23/30: Dense MSE = 4.928777e-02
+    Epoch 24/30: Dense MSE = 4.928777e-02
+    Epoch 25/30: Dense MSE = 4.928777e-02
+  Grid 50 completed: 1.29s total, 0.258s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 0 (sin_freq1), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 4.543605e-02
+    Epoch 27/30: Dense MSE = 4.543605e-02
+    Epoch 28/30: Dense MSE = 4.543605e-02
+    Epoch 29/30: Dense MSE = 4.543605e-02
+    Epoch 30/30: Dense MSE = 4.543605e-02
+  Grid 100 completed: 2.53s total, 0.506s/epoch, 1090 params
+  Dataset 0 (sin_freq1) complete: 6.61s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 1 (sin_freq2), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 9.846260e-03
+    Epoch 2/30: Dense MSE = 9.846260e-03
+    Epoch 3/30: Dense MSE = 9.846260e-03
+    Epoch 4/30: Dense MSE = 9.846260e-03
+    Epoch 5/30: Dense MSE = 9.846260e-03
+  Grid 3 completed: 0.60s total, 0.119s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 1 (sin_freq2), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.854631e-03
+    Epoch 7/30: Dense MSE = 2.854631e-03
+    Epoch 8/30: Dense MSE = 2.854631e-03
+    Epoch 9/30: Dense MSE = 2.854631e-03
+    Epoch 10/30: Dense MSE = 2.854631e-03
+  Grid 5 completed: 0.67s total, 0.134s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 1 (sin_freq2), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 8.620501e-03
+    Epoch 12/30: Dense MSE = 8.620501e-03
+    Epoch 13/30: Dense MSE = 8.620501e-03
+    Epoch 14/30: Dense MSE = 8.620501e-03
+    Epoch 15/30: Dense MSE = 8.620501e-03
+  Grid 10 completed: 0.80s total, 0.159s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 1 (sin_freq2), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 4.787023e-03
+    Epoch 17/30: Dense MSE = 4.787023e-03
+    Epoch 18/30: Dense MSE = 4.787023e-03
+    Epoch 19/30: Dense MSE = 4.787023e-03
+    Epoch 20/30: Dense MSE = 4.787023e-03
+  Grid 20 completed: 0.87s total, 0.174s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 1 (sin_freq2), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 1.478654e-01
+    Epoch 22/30: Dense MSE = 1.478654e-01
+    Epoch 23/30: Dense MSE = 1.478654e-01
+    Epoch 24/30: Dense MSE = 1.478654e-01
+    Epoch 25/30: Dense MSE = 1.478654e-01
+  Grid 50 completed: 1.40s total, 0.281s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 1 (sin_freq2), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.084500e-01
+    Epoch 27/30: Dense MSE = 1.084500e-01
+    Epoch 28/30: Dense MSE = 1.084500e-01
+    Epoch 29/30: Dense MSE = 1.084500e-01
+    Epoch 30/30: Dense MSE = 1.084500e-01
+  Grid 100 completed: 2.54s total, 0.509s/epoch, 1090 params
+  Dataset 1 (sin_freq2) complete: 6.88s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 2 (sin_freq3), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 7.792827e-02
+    Epoch 2/30: Dense MSE = 7.792827e-02
+    Epoch 3/30: Dense MSE = 7.792827e-02
+    Epoch 4/30: Dense MSE = 7.792827e-02
+    Epoch 5/30: Dense MSE = 7.792827e-02
+  Grid 3 completed: 0.65s total, 0.129s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 2 (sin_freq3), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.230184e-03
+    Epoch 7/30: Dense MSE = 2.230184e-03
+    Epoch 8/30: Dense MSE = 2.230184e-03
+    Epoch 9/30: Dense MSE = 2.230184e-03
+    Epoch 10/30: Dense MSE = 2.230184e-03
+  Grid 5 completed: 0.77s total, 0.154s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 2 (sin_freq3), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 6.799262e-03
+    Epoch 12/30: Dense MSE = 6.799262e-03
+    Epoch 13/30: Dense MSE = 6.799262e-03
+    Epoch 14/30: Dense MSE = 6.799262e-03
+    Epoch 15/30: Dense MSE = 6.799262e-03
+  Grid 10 completed: 0.88s total, 0.177s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 2 (sin_freq3), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 3.253003e-03
+    Epoch 17/30: Dense MSE = 3.253003e-03
+    Epoch 18/30: Dense MSE = 3.253003e-03
+    Epoch 19/30: Dense MSE = 3.253003e-03
+    Epoch 20/30: Dense MSE = 3.253003e-03
+  Grid 20 completed: 1.15s total, 0.229s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 2 (sin_freq3), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 8.776647e-02
+    Epoch 22/30: Dense MSE = 8.776647e-02
+    Epoch 23/30: Dense MSE = 8.776647e-02
+    Epoch 24/30: Dense MSE = 8.776647e-02
+    Epoch 25/30: Dense MSE = 8.776647e-02
+  Grid 50 completed: 1.57s total, 0.315s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 2 (sin_freq3), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 4.505282e-02
+    Epoch 27/30: Dense MSE = 4.505282e-02
+    Epoch 28/30: Dense MSE = 4.505282e-02
+    Epoch 29/30: Dense MSE = 4.505282e-02
+    Epoch 30/30: Dense MSE = 4.505282e-02
+  Grid 100 completed: 2.77s total, 0.553s/epoch, 1090 params
+  Dataset 2 (sin_freq3) complete: 7.78s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 3 (sin_freq4), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 2.022233e-01
+    Epoch 2/30: Dense MSE = 2.022233e-01
+    Epoch 3/30: Dense MSE = 2.022233e-01
+    Epoch 4/30: Dense MSE = 2.022233e-01
+    Epoch 5/30: Dense MSE = 2.022233e-01
+  Grid 3 completed: 0.49s total, 0.097s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 3 (sin_freq4), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 6.208274e-01
+    Epoch 7/30: Dense MSE = 6.208274e-01
+    Epoch 8/30: Dense MSE = 6.208274e-01
+    Epoch 9/30: Dense MSE = 6.208274e-01
+    Epoch 10/30: Dense MSE = 6.208274e-01
+  Grid 5 completed: 0.60s total, 0.120s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 3 (sin_freq4), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 2.349974e+00
+    Epoch 12/30: Dense MSE = 2.349974e+00
+    Epoch 13/30: Dense MSE = 2.349974e+00
+    Epoch 14/30: Dense MSE = 2.349974e+00
+    Epoch 15/30: Dense MSE = 2.349974e+00
+  Grid 10 completed: 0.66s total, 0.132s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 3 (sin_freq4), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 1.070180e+00
+    Epoch 17/30: Dense MSE = 1.070180e+00
+    Epoch 18/30: Dense MSE = 1.070180e+00
+    Epoch 19/30: Dense MSE = 1.070180e+00
+    Epoch 20/30: Dense MSE = 1.070180e+00
+  Grid 20 completed: 0.79s total, 0.159s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 3 (sin_freq4), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 2.240237e-01
+    Epoch 22/30: Dense MSE = 2.240237e-01
+    Epoch 23/30: Dense MSE = 2.240237e-01
+    Epoch 24/30: Dense MSE = 2.240237e-01
+    Epoch 25/30: Dense MSE = 2.240237e-01
+  Grid 50 completed: 1.23s total, 0.247s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 3 (sin_freq4), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.022974e-01
+    Epoch 27/30: Dense MSE = 1.022974e-01
+    Epoch 28/30: Dense MSE = 1.022974e-01
+    Epoch 29/30: Dense MSE = 1.022974e-01
+    Epoch 30/30: Dense MSE = 1.022974e-01
+  Grid 100 completed: 2.30s total, 0.460s/epoch, 1090 params
+  Dataset 3 (sin_freq4) complete: 6.07s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 4 (sin_freq5), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 4.348654e-01
+    Epoch 2/30: Dense MSE = 4.348654e-01
+    Epoch 3/30: Dense MSE = 4.348654e-01
+    Epoch 4/30: Dense MSE = 4.348654e-01
+    Epoch 5/30: Dense MSE = 4.348654e-01
+  Grid 3 completed: 0.54s total, 0.107s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 4 (sin_freq5), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 7.800109e-01
+    Epoch 7/30: Dense MSE = 7.800109e-01
+    Epoch 8/30: Dense MSE = 7.800109e-01
+    Epoch 9/30: Dense MSE = 7.800109e-01
+    Epoch 10/30: Dense MSE = 7.800109e-01
+  Grid 5 completed: 0.77s total, 0.154s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 4 (sin_freq5), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 4.052315e-01
+    Epoch 12/30: Dense MSE = 4.052315e-01
+    Epoch 13/30: Dense MSE = 4.052315e-01
+    Epoch 14/30: Dense MSE = 4.052315e-01
+    Epoch 15/30: Dense MSE = 4.052315e-01
+  Grid 10 completed: 0.77s total, 0.154s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 4 (sin_freq5), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 7.156167e-01
+    Epoch 17/30: Dense MSE = 7.156167e-01
+    Epoch 18/30: Dense MSE = 7.156167e-01
+    Epoch 19/30: Dense MSE = 7.156167e-01
+    Epoch 20/30: Dense MSE = 7.156167e-01
+  Grid 20 completed: 0.89s total, 0.178s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 4 (sin_freq5), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 1.161034e+00
+    Epoch 22/30: Dense MSE = 1.161034e+00
+    Epoch 23/30: Dense MSE = 1.161034e+00
+    Epoch 24/30: Dense MSE = 1.161034e+00
+    Epoch 25/30: Dense MSE = 1.161034e+00
+  Grid 50 completed: 1.46s total, 0.291s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 4 (sin_freq5), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.762524e-01
+    Epoch 27/30: Dense MSE = 1.762524e-01
+    Epoch 28/30: Dense MSE = 1.762524e-01
+    Epoch 29/30: Dense MSE = 1.762524e-01
+    Epoch 30/30: Dense MSE = 1.762524e-01
+  Grid 100 completed: 2.88s total, 0.575s/epoch, 1090 params
+  Dataset 4 (sin_freq5) complete: 7.31s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 5 (piecewise), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 1.031294e-02
+    Epoch 2/30: Dense MSE = 1.031294e-02
+    Epoch 3/30: Dense MSE = 1.031294e-02
+    Epoch 4/30: Dense MSE = 1.031294e-02
+    Epoch 5/30: Dense MSE = 1.031294e-02
+  Grid 3 completed: 0.58s total, 0.116s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 5 (piecewise), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.066100e-02
+    Epoch 7/30: Dense MSE = 2.066100e-02
+    Epoch 8/30: Dense MSE = 2.066100e-02
+    Epoch 9/30: Dense MSE = 2.066100e-02
+    Epoch 10/30: Dense MSE = 2.066100e-02
+  Grid 5 completed: 0.64s total, 0.127s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 5 (piecewise), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 2.964040e-02
+    Epoch 12/30: Dense MSE = 2.964040e-02
+    Epoch 13/30: Dense MSE = 2.964040e-02
+    Epoch 14/30: Dense MSE = 2.964040e-02
+    Epoch 15/30: Dense MSE = 2.964040e-02
+  Grid 10 completed: 0.74s total, 0.148s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 5 (piecewise), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 3.640664e-01
+    Epoch 17/30: Dense MSE = 3.640664e-01
+    Epoch 18/30: Dense MSE = 3.640664e-01
+    Epoch 19/30: Dense MSE = 3.640664e-01
+    Epoch 20/30: Dense MSE = 3.640664e-01
+  Grid 20 completed: 1.05s total, 0.209s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 5 (piecewise), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 2.695034e-01
+    Epoch 22/30: Dense MSE = 2.695034e-01
+    Epoch 23/30: Dense MSE = 2.695034e-01
+    Epoch 24/30: Dense MSE = 2.695034e-01
+    Epoch 25/30: Dense MSE = 2.695034e-01
+  Grid 50 completed: 1.34s total, 0.268s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 5 (piecewise), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.313602e-01
+    Epoch 27/30: Dense MSE = 1.313602e-01
+    Epoch 28/30: Dense MSE = 1.313602e-01
+    Epoch 29/30: Dense MSE = 1.313602e-01
+    Epoch 30/30: Dense MSE = 1.313602e-01
+  Grid 100 completed: 2.15s total, 0.429s/epoch, 1090 params
+  Dataset 5 (piecewise) complete: 6.49s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 6 (sawtooth), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 1.260784e-01
+    Epoch 2/30: Dense MSE = 1.260784e-01
+    Epoch 3/30: Dense MSE = 1.260784e-01
+    Epoch 4/30: Dense MSE = 1.260784e-01
+    Epoch 5/30: Dense MSE = 1.260784e-01
+  Grid 3 completed: 0.53s total, 0.106s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 6 (sawtooth), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 8.339639e-02
+    Epoch 7/30: Dense MSE = 8.339639e-02
+    Epoch 8/30: Dense MSE = 8.339639e-02
+    Epoch 9/30: Dense MSE = 8.339639e-02
+    Epoch 10/30: Dense MSE = 8.339639e-02
+  Grid 5 completed: 0.61s total, 0.123s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 6 (sawtooth), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 4.091528e-02
+    Epoch 12/30: Dense MSE = 4.091528e-02
+    Epoch 13/30: Dense MSE = 4.091528e-02
+    Epoch 14/30: Dense MSE = 4.091528e-02
+    Epoch 15/30: Dense MSE = 4.091528e-02
+  Grid 10 completed: 0.71s total, 0.142s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 6 (sawtooth), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 5.045535e-02
+    Epoch 17/30: Dense MSE = 5.045535e-02
+    Epoch 18/30: Dense MSE = 5.045535e-02
+    Epoch 19/30: Dense MSE = 5.045535e-02
+    Epoch 20/30: Dense MSE = 5.045535e-02
+  Grid 20 completed: 0.79s total, 0.157s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 6 (sawtooth), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 3.643569e-02
+    Epoch 22/30: Dense MSE = 3.643569e-02
+    Epoch 23/30: Dense MSE = 3.643569e-02
+    Epoch 24/30: Dense MSE = 3.643569e-02
+    Epoch 25/30: Dense MSE = 3.643569e-02
+  Grid 50 completed: 1.24s total, 0.249s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 6 (sawtooth), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 3.570567e-02
+    Epoch 27/30: Dense MSE = 3.570567e-02
+    Epoch 28/30: Dense MSE = 3.570567e-02
+    Epoch 29/30: Dense MSE = 3.570567e-02
+    Epoch 30/30: Dense MSE = 3.570567e-02
+  Grid 100 completed: 2.26s total, 0.452s/epoch, 1090 params
+  Dataset 6 (sawtooth) complete: 6.14s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 7 (polynomial), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 1.272803e-04
+    Epoch 2/30: Dense MSE = 1.272803e-04
+    Epoch 3/30: Dense MSE = 1.272803e-04
+    Epoch 4/30: Dense MSE = 1.272803e-04
+    Epoch 5/30: Dense MSE = 1.272803e-04
+  Grid 3 completed: 0.61s total, 0.121s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 7 (polynomial), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 8.170183e-05
+    Epoch 7/30: Dense MSE = 8.170183e-05
+    Epoch 8/30: Dense MSE = 8.170183e-05
+    Epoch 9/30: Dense MSE = 8.170183e-05
+    Epoch 10/30: Dense MSE = 8.170183e-05
+  Grid 5 completed: 0.69s total, 0.139s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 7 (polynomial), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 1.404048e-02
+    Epoch 12/30: Dense MSE = 1.404048e-02
+    Epoch 13/30: Dense MSE = 1.404048e-02
+    Epoch 14/30: Dense MSE = 1.404048e-02
+    Epoch 15/30: Dense MSE = 1.404048e-02
+  Grid 10 completed: 0.81s total, 0.161s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 7 (polynomial), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 2.681528e-02
+    Epoch 17/30: Dense MSE = 2.681528e-02
+    Epoch 18/30: Dense MSE = 2.681528e-02
+    Epoch 19/30: Dense MSE = 2.681528e-02
+    Epoch 20/30: Dense MSE = 2.681528e-02
+  Grid 20 completed: 0.94s total, 0.187s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 7 (polynomial), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 1.449833e-01
+    Epoch 22/30: Dense MSE = 1.449833e-01
+    Epoch 23/30: Dense MSE = 1.449833e-01
+    Epoch 24/30: Dense MSE = 1.449833e-01
+    Epoch 25/30: Dense MSE = 1.449833e-01
+  Grid 50 completed: 1.41s total, 0.282s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 7 (polynomial), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.781424e-01
+    Epoch 27/30: Dense MSE = 1.781424e-01
+    Epoch 28/30: Dense MSE = 1.781424e-01
+    Epoch 29/30: Dense MSE = 1.781424e-01
+    Epoch 30/30: Dense MSE = 1.781424e-01
+  Grid 100 completed: 2.66s total, 0.531s/epoch, 1090 params
+  Dataset 7 (polynomial) complete: 7.11s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 8 (poisson_1d_highfreq), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 1.494632e+04
+    Epoch 2/30: Dense MSE = 1.494632e+04
+    Epoch 3/30: Dense MSE = 1.494632e+04
+    Epoch 4/30: Dense MSE = 1.494632e+04
+    Epoch 5/30: Dense MSE = 1.494632e+04
+  Grid 3 completed: 0.60s total, 0.119s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.161383e+03
+    Epoch 7/30: Dense MSE = 2.161383e+03
+    Epoch 8/30: Dense MSE = 2.161383e+03
+    Epoch 9/30: Dense MSE = 2.161383e+03
+    Epoch 10/30: Dense MSE = 2.161383e+03
+  Grid 5 completed: 0.73s total, 0.147s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 6.617263e+03
+    Epoch 12/30: Dense MSE = 6.617263e+03
+    Epoch 13/30: Dense MSE = 6.617263e+03
+    Epoch 14/30: Dense MSE = 6.617263e+03
+    Epoch 15/30: Dense MSE = 6.617263e+03
+  Grid 10 completed: 0.88s total, 0.176s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 1.011065e+04
+    Epoch 17/30: Dense MSE = 1.011065e+04
+    Epoch 18/30: Dense MSE = 1.011065e+04
+    Epoch 19/30: Dense MSE = 1.011065e+04
+    Epoch 20/30: Dense MSE = 1.011065e+04
+  Grid 20 completed: 1.00s total, 0.199s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 6.265076e+03
+    Epoch 22/30: Dense MSE = 6.265076e+03
+    Epoch 23/30: Dense MSE = 6.265076e+03
+    Epoch 24/30: Dense MSE = 6.265076e+03
+    Epoch 25/30: Dense MSE = 6.265076e+03
+  Grid 50 completed: 1.50s total, 0.301s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.069594e+04
+    Epoch 27/30: Dense MSE = 1.069594e+04
+    Epoch 28/30: Dense MSE = 1.069594e+04
+    Epoch 29/30: Dense MSE = 1.069594e+04
+    Epoch 30/30: Dense MSE = 1.069594e+04
+  Grid 100 completed: 2.49s total, 0.498s/epoch, 1090 params
+  Dataset 8 (poisson_1d_highfreq) complete: 7.20s total
+KAN training complete: 61.60s total
+
+Training KANs with pruning (with dense MSE metrics)...
+kan_pruning
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 0 (sin_freq1), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 5.409684e-03
+    Epoch 2/30: Dense MSE = 5.409684e-03
+    Epoch 3/30: Dense MSE = 5.409684e-03
+    Epoch 4/30: Dense MSE = 5.409684e-03
+    Epoch 5/30: Dense MSE = 5.409684e-03
+  Grid 3 completed: 0.57s total, 0.114s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 0 (sin_freq1), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.661339e-04
+    Epoch 7/30: Dense MSE = 2.661339e-04
+    Epoch 8/30: Dense MSE = 2.661339e-04
+    Epoch 9/30: Dense MSE = 2.661339e-04
+    Epoch 10/30: Dense MSE = 2.661339e-04
+  Grid 5 completed: 0.70s total, 0.140s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 0 (sin_freq1), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 2.293156e-03
+    Epoch 12/30: Dense MSE = 2.293156e-03
+    Epoch 13/30: Dense MSE = 2.293156e-03
+    Epoch 14/30: Dense MSE = 2.293156e-03
+    Epoch 15/30: Dense MSE = 2.293156e-03
+  Grid 10 completed: 0.87s total, 0.174s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 0 (sin_freq1), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 1.823329e-03
+    Epoch 17/30: Dense MSE = 1.823329e-03
+    Epoch 18/30: Dense MSE = 1.823329e-03
+    Epoch 19/30: Dense MSE = 1.823329e-03
+    Epoch 20/30: Dense MSE = 1.823329e-03
+  Grid 20 completed: 0.94s total, 0.188s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 0 (sin_freq1), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 4.928777e-02
+    Epoch 22/30: Dense MSE = 4.928777e-02
+    Epoch 23/30: Dense MSE = 4.928777e-02
+    Epoch 24/30: Dense MSE = 4.928777e-02
+    Epoch 25/30: Dense MSE = 4.928777e-02
+  Grid 50 completed: 1.43s total, 0.287s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 0 (sin_freq1), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 4.543605e-02
+    Epoch 27/30: Dense MSE = 4.543605e-02
+    Epoch 28/30: Dense MSE = 4.543605e-02
+    Epoch 29/30: Dense MSE = 4.543605e-02
+    Epoch 30/30: Dense MSE = 4.543605e-02
+  Grid 100 completed: 2.73s total, 0.546s/epoch, 1090 params
+  Pruning KAN: Dataset 0 (sin_freq1)
+saving model version 0.12
+  Pruning completed: 0.06s, 1090 params, Dense MSE = 4.543605e-02
+  Dataset 0 (sin_freq1) complete: 7.24s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 1 (sin_freq2), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 9.846260e-03
+    Epoch 2/30: Dense MSE = 9.846260e-03
+    Epoch 3/30: Dense MSE = 9.846260e-03
+    Epoch 4/30: Dense MSE = 9.846260e-03
+    Epoch 5/30: Dense MSE = 9.846260e-03
+  Grid 3 completed: 0.61s total, 0.121s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 1 (sin_freq2), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.854631e-03
+    Epoch 7/30: Dense MSE = 2.854631e-03
+    Epoch 8/30: Dense MSE = 2.854631e-03
+    Epoch 9/30: Dense MSE = 2.854631e-03
+    Epoch 10/30: Dense MSE = 2.854631e-03
+  Grid 5 completed: 0.66s total, 0.131s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 1 (sin_freq2), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 8.620501e-03
+    Epoch 12/30: Dense MSE = 8.620501e-03
+    Epoch 13/30: Dense MSE = 8.620501e-03
+    Epoch 14/30: Dense MSE = 8.620501e-03
+    Epoch 15/30: Dense MSE = 8.620501e-03
+  Grid 10 completed: 0.85s total, 0.170s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 1 (sin_freq2), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 4.787023e-03
+    Epoch 17/30: Dense MSE = 4.787023e-03
+    Epoch 18/30: Dense MSE = 4.787023e-03
+    Epoch 19/30: Dense MSE = 4.787023e-03
+    Epoch 20/30: Dense MSE = 4.787023e-03
+  Grid 20 completed: 0.99s total, 0.198s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 1 (sin_freq2), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 1.478654e-01
+    Epoch 22/30: Dense MSE = 1.478654e-01
+    Epoch 23/30: Dense MSE = 1.478654e-01
+    Epoch 24/30: Dense MSE = 1.478654e-01
+    Epoch 25/30: Dense MSE = 1.478654e-01
+  Grid 50 completed: 1.46s total, 0.291s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 1 (sin_freq2), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.084500e-01
+    Epoch 27/30: Dense MSE = 1.084500e-01
+    Epoch 28/30: Dense MSE = 1.084500e-01
+    Epoch 29/30: Dense MSE = 1.084500e-01
+    Epoch 30/30: Dense MSE = 1.084500e-01
+  Grid 100 completed: 2.84s total, 0.568s/epoch, 1090 params
+  Pruning KAN: Dataset 1 (sin_freq2)
+saving model version 0.12
+  Pruning completed: 0.06s, 1090 params, Dense MSE = 1.084500e-01
+  Dataset 1 (sin_freq2) complete: 7.40s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 2 (sin_freq3), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 7.792827e-02
+    Epoch 2/30: Dense MSE = 7.792827e-02
+    Epoch 3/30: Dense MSE = 7.792827e-02
+    Epoch 4/30: Dense MSE = 7.792827e-02
+    Epoch 5/30: Dense MSE = 7.792827e-02
+  Grid 3 completed: 0.66s total, 0.131s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 2 (sin_freq3), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.230184e-03
+    Epoch 7/30: Dense MSE = 2.230184e-03
+    Epoch 8/30: Dense MSE = 2.230184e-03
+    Epoch 9/30: Dense MSE = 2.230184e-03
+    Epoch 10/30: Dense MSE = 2.230184e-03
+  Grid 5 completed: 0.75s total, 0.151s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 2 (sin_freq3), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 6.799262e-03
+    Epoch 12/30: Dense MSE = 6.799262e-03
+    Epoch 13/30: Dense MSE = 6.799262e-03
+    Epoch 14/30: Dense MSE = 6.799262e-03
+    Epoch 15/30: Dense MSE = 6.799262e-03
+  Grid 10 completed: 0.82s total, 0.164s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 2 (sin_freq3), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 3.253003e-03
+    Epoch 17/30: Dense MSE = 3.253003e-03
+    Epoch 18/30: Dense MSE = 3.253003e-03
+    Epoch 19/30: Dense MSE = 3.253003e-03
+    Epoch 20/30: Dense MSE = 3.253003e-03
+  Grid 20 completed: 0.94s total, 0.188s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 2 (sin_freq3), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 8.776647e-02
+    Epoch 22/30: Dense MSE = 8.776647e-02
+    Epoch 23/30: Dense MSE = 8.776647e-02
+    Epoch 24/30: Dense MSE = 8.776647e-02
+    Epoch 25/30: Dense MSE = 8.776647e-02
+  Grid 50 completed: 1.47s total, 0.293s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 2 (sin_freq3), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 4.505282e-02
+    Epoch 27/30: Dense MSE = 4.505282e-02
+    Epoch 28/30: Dense MSE = 4.505282e-02
+    Epoch 29/30: Dense MSE = 4.505282e-02
+    Epoch 30/30: Dense MSE = 4.505282e-02
+  Grid 100 completed: 2.66s total, 0.533s/epoch, 1090 params
+  Pruning KAN: Dataset 2 (sin_freq3)
+saving model version 0.12
+  Pruning completed: 0.06s, 1090 params, Dense MSE = 4.505282e-02
+  Dataset 2 (sin_freq3) complete: 7.30s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 3 (sin_freq4), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 2.022233e-01
+    Epoch 2/30: Dense MSE = 2.022233e-01
+    Epoch 3/30: Dense MSE = 2.022233e-01
+    Epoch 4/30: Dense MSE = 2.022233e-01
+    Epoch 5/30: Dense MSE = 2.022233e-01
+  Grid 3 completed: 0.49s total, 0.099s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 3 (sin_freq4), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 6.208274e-01
+    Epoch 7/30: Dense MSE = 6.208274e-01
+    Epoch 8/30: Dense MSE = 6.208274e-01
+    Epoch 9/30: Dense MSE = 6.208274e-01
+    Epoch 10/30: Dense MSE = 6.208274e-01
+  Grid 5 completed: 0.60s total, 0.120s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 3 (sin_freq4), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 2.349974e+00
+    Epoch 12/30: Dense MSE = 2.349974e+00
+    Epoch 13/30: Dense MSE = 2.349974e+00
+    Epoch 14/30: Dense MSE = 2.349974e+00
+    Epoch 15/30: Dense MSE = 2.349974e+00
+  Grid 10 completed: 0.71s total, 0.142s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 3 (sin_freq4), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 1.070180e+00
+    Epoch 17/30: Dense MSE = 1.070180e+00
+    Epoch 18/30: Dense MSE = 1.070180e+00
+    Epoch 19/30: Dense MSE = 1.070180e+00
+    Epoch 20/30: Dense MSE = 1.070180e+00
+  Grid 20 completed: 0.82s total, 0.163s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 3 (sin_freq4), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 2.240237e-01
+    Epoch 22/30: Dense MSE = 2.240237e-01
+    Epoch 23/30: Dense MSE = 2.240237e-01
+    Epoch 24/30: Dense MSE = 2.240237e-01
+    Epoch 25/30: Dense MSE = 2.240237e-01
+  Grid 50 completed: 1.43s total, 0.287s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 3 (sin_freq4), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.022974e-01
+    Epoch 27/30: Dense MSE = 1.022974e-01
+    Epoch 28/30: Dense MSE = 1.022974e-01
+    Epoch 29/30: Dense MSE = 1.022974e-01
+    Epoch 30/30: Dense MSE = 1.022974e-01
+  Grid 100 completed: 2.44s total, 0.488s/epoch, 1090 params
+  Pruning KAN: Dataset 3 (sin_freq4)
+saving model version 0.12
+  Pruning completed: 0.05s, 1090 params, Dense MSE = 1.022974e-01
+  Dataset 3 (sin_freq4) complete: 6.49s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 4 (sin_freq5), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 4.348654e-01
+    Epoch 2/30: Dense MSE = 4.348654e-01
+    Epoch 3/30: Dense MSE = 4.348654e-01
+    Epoch 4/30: Dense MSE = 4.348654e-01
+    Epoch 5/30: Dense MSE = 4.348654e-01
+  Grid 3 completed: 0.51s total, 0.102s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 4 (sin_freq5), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 7.800109e-01
+    Epoch 7/30: Dense MSE = 7.800109e-01
+    Epoch 8/30: Dense MSE = 7.800109e-01
+    Epoch 9/30: Dense MSE = 7.800109e-01
+    Epoch 10/30: Dense MSE = 7.800109e-01
+  Grid 5 completed: 0.66s total, 0.132s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 4 (sin_freq5), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 4.052315e-01
+    Epoch 12/30: Dense MSE = 4.052315e-01
+    Epoch 13/30: Dense MSE = 4.052315e-01
+    Epoch 14/30: Dense MSE = 4.052315e-01
+    Epoch 15/30: Dense MSE = 4.052315e-01
+  Grid 10 completed: 0.73s total, 0.147s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 4 (sin_freq5), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 7.156167e-01
+    Epoch 17/30: Dense MSE = 7.156167e-01
+    Epoch 18/30: Dense MSE = 7.156167e-01
+    Epoch 19/30: Dense MSE = 7.156167e-01
+    Epoch 20/30: Dense MSE = 7.156167e-01
+  Grid 20 completed: 0.80s total, 0.161s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 4 (sin_freq5), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 1.161034e+00
+    Epoch 22/30: Dense MSE = 1.161034e+00
+    Epoch 23/30: Dense MSE = 1.161034e+00
+    Epoch 24/30: Dense MSE = 1.161034e+00
+    Epoch 25/30: Dense MSE = 1.161034e+00
+  Grid 50 completed: 1.32s total, 0.263s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 4 (sin_freq5), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.762524e-01
+    Epoch 27/30: Dense MSE = 1.762524e-01
+    Epoch 28/30: Dense MSE = 1.762524e-01
+    Epoch 29/30: Dense MSE = 1.762524e-01
+    Epoch 30/30: Dense MSE = 1.762524e-01
+  Grid 100 completed: 2.36s total, 0.471s/epoch, 1090 params
+  Pruning KAN: Dataset 4 (sin_freq5)
+saving model version 0.12
+  Pruning completed: 0.05s, 1090 params, Dense MSE = 1.762524e-01
+  Dataset 4 (sin_freq5) complete: 6.38s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 5 (piecewise), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 1.031294e-02
+    Epoch 2/30: Dense MSE = 1.031294e-02
+    Epoch 3/30: Dense MSE = 1.031294e-02
+    Epoch 4/30: Dense MSE = 1.031294e-02
+    Epoch 5/30: Dense MSE = 1.031294e-02
+  Grid 3 completed: 0.56s total, 0.113s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 5 (piecewise), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.066100e-02
+    Epoch 7/30: Dense MSE = 2.066100e-02
+    Epoch 8/30: Dense MSE = 2.066100e-02
+    Epoch 9/30: Dense MSE = 2.066100e-02
+    Epoch 10/30: Dense MSE = 2.066100e-02
+  Grid 5 completed: 0.66s total, 0.133s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 5 (piecewise), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 2.964040e-02
+    Epoch 12/30: Dense MSE = 2.964040e-02
+    Epoch 13/30: Dense MSE = 2.964040e-02
+    Epoch 14/30: Dense MSE = 2.964040e-02
+    Epoch 15/30: Dense MSE = 2.964040e-02
+  Grid 10 completed: 0.77s total, 0.154s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 5 (piecewise), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 3.640664e-01
+    Epoch 17/30: Dense MSE = 3.640664e-01
+    Epoch 18/30: Dense MSE = 3.640664e-01
+    Epoch 19/30: Dense MSE = 3.640664e-01
+    Epoch 20/30: Dense MSE = 3.640664e-01
+  Grid 20 completed: 0.88s total, 0.176s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 5 (piecewise), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 2.695034e-01
+    Epoch 22/30: Dense MSE = 2.695034e-01
+    Epoch 23/30: Dense MSE = 2.695034e-01
+    Epoch 24/30: Dense MSE = 2.695034e-01
+    Epoch 25/30: Dense MSE = 2.695034e-01
+  Grid 50 completed: 1.45s total, 0.290s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 5 (piecewise), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.313602e-01
+    Epoch 27/30: Dense MSE = 1.313602e-01
+    Epoch 28/30: Dense MSE = 1.313602e-01
+    Epoch 29/30: Dense MSE = 1.313602e-01
+    Epoch 30/30: Dense MSE = 1.313602e-01
+  Grid 100 completed: 2.42s total, 0.484s/epoch, 1090 params
+  Pruning KAN: Dataset 5 (piecewise)
+saving model version 0.12
+  Pruning completed: 0.05s, 1090 params, Dense MSE = 1.313602e-01
+  Dataset 5 (piecewise) complete: 6.75s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 6 (sawtooth), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 1.260784e-01
+    Epoch 2/30: Dense MSE = 1.260784e-01
+    Epoch 3/30: Dense MSE = 1.260784e-01
+    Epoch 4/30: Dense MSE = 1.260784e-01
+    Epoch 5/30: Dense MSE = 1.260784e-01
+  Grid 3 completed: 0.60s total, 0.121s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 6 (sawtooth), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 8.339639e-02
+    Epoch 7/30: Dense MSE = 8.339639e-02
+    Epoch 8/30: Dense MSE = 8.339639e-02
+    Epoch 9/30: Dense MSE = 8.339639e-02
+    Epoch 10/30: Dense MSE = 8.339639e-02
+  Grid 5 completed: 0.63s total, 0.126s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 6 (sawtooth), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 4.091528e-02
+    Epoch 12/30: Dense MSE = 4.091528e-02
+    Epoch 13/30: Dense MSE = 4.091528e-02
+    Epoch 14/30: Dense MSE = 4.091528e-02
+    Epoch 15/30: Dense MSE = 4.091528e-02
+  Grid 10 completed: 0.74s total, 0.148s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 6 (sawtooth), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 5.045535e-02
+    Epoch 17/30: Dense MSE = 5.045535e-02
+    Epoch 18/30: Dense MSE = 5.045535e-02
+    Epoch 19/30: Dense MSE = 5.045535e-02
+    Epoch 20/30: Dense MSE = 5.045535e-02
+  Grid 20 completed: 0.83s total, 0.167s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 6 (sawtooth), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 3.643569e-02
+    Epoch 22/30: Dense MSE = 3.643569e-02
+    Epoch 23/30: Dense MSE = 3.643569e-02
+    Epoch 24/30: Dense MSE = 3.643569e-02
+    Epoch 25/30: Dense MSE = 3.643569e-02
+  Grid 50 completed: 1.43s total, 0.286s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 6 (sawtooth), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 3.570567e-02
+    Epoch 27/30: Dense MSE = 3.570567e-02
+    Epoch 28/30: Dense MSE = 3.570567e-02
+    Epoch 29/30: Dense MSE = 3.570567e-02
+    Epoch 30/30: Dense MSE = 3.570567e-02
+  Grid 100 completed: 2.39s total, 0.479s/epoch, 1090 params
+  Pruning KAN: Dataset 6 (sawtooth)
+saving model version 0.12
+  Pruning completed: 0.06s, 1090 params, Dense MSE = 3.570567e-02
+  Dataset 6 (sawtooth) complete: 6.63s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 7 (polynomial), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 1.272803e-04
+    Epoch 2/30: Dense MSE = 1.272803e-04
+    Epoch 3/30: Dense MSE = 1.272803e-04
+    Epoch 4/30: Dense MSE = 1.272803e-04
+    Epoch 5/30: Dense MSE = 1.272803e-04
+  Grid 3 completed: 0.53s total, 0.106s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 7 (polynomial), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 8.170183e-05
+    Epoch 7/30: Dense MSE = 8.170183e-05
+    Epoch 8/30: Dense MSE = 8.170183e-05
+    Epoch 9/30: Dense MSE = 8.170183e-05
+    Epoch 10/30: Dense MSE = 8.170183e-05
+  Grid 5 completed: 0.67s total, 0.133s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 7 (polynomial), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 1.404048e-02
+    Epoch 12/30: Dense MSE = 1.404048e-02
+    Epoch 13/30: Dense MSE = 1.404048e-02
+    Epoch 14/30: Dense MSE = 1.404048e-02
+    Epoch 15/30: Dense MSE = 1.404048e-02
+  Grid 10 completed: 0.72s total, 0.144s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 7 (polynomial), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 2.681528e-02
+    Epoch 17/30: Dense MSE = 2.681528e-02
+    Epoch 18/30: Dense MSE = 2.681528e-02
+    Epoch 19/30: Dense MSE = 2.681528e-02
+    Epoch 20/30: Dense MSE = 2.681528e-02
+  Grid 20 completed: 0.90s total, 0.180s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 7 (polynomial), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 1.449833e-01
+    Epoch 22/30: Dense MSE = 1.449833e-01
+    Epoch 23/30: Dense MSE = 1.449833e-01
+    Epoch 24/30: Dense MSE = 1.449833e-01
+    Epoch 25/30: Dense MSE = 1.449833e-01
+  Grid 50 completed: 1.33s total, 0.265s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 7 (polynomial), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.781424e-01
+    Epoch 27/30: Dense MSE = 1.781424e-01
+    Epoch 28/30: Dense MSE = 1.781424e-01
+    Epoch 29/30: Dense MSE = 1.781424e-01
+    Epoch 30/30: Dense MSE = 1.781424e-01
+  Grid 100 completed: 2.40s total, 0.479s/epoch, 1090 params
+  Pruning KAN: Dataset 7 (polynomial)
+saving model version 0.12
+  Pruning completed: 0.05s, 872 params, Dense MSE = 1.783081e-01
+  Dataset 7 (polynomial) complete: 6.54s total
+checkpoint directory created: ./model
+saving model version 0.0
+  Training KAN: Dataset 8 (poisson_1d_highfreq), grid=3
+saving model version 0.1
+    Epoch 1/30: Dense MSE = 1.494632e+04
+    Epoch 2/30: Dense MSE = 1.494632e+04
+    Epoch 3/30: Dense MSE = 1.494632e+04
+    Epoch 4/30: Dense MSE = 1.494632e+04
+    Epoch 5/30: Dense MSE = 1.494632e+04
+  Grid 3 completed: 0.52s total, 0.105s/epoch, 120 params
+saving model version 0.2
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=5
+saving model version 0.3
+    Epoch 6/30: Dense MSE = 2.161383e+03
+    Epoch 7/30: Dense MSE = 2.161383e+03
+    Epoch 8/30: Dense MSE = 2.161383e+03
+    Epoch 9/30: Dense MSE = 2.161383e+03
+    Epoch 10/30: Dense MSE = 2.161383e+03
+  Grid 5 completed: 0.64s total, 0.128s/epoch, 140 params
+saving model version 0.4
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=10
+saving model version 0.5
+    Epoch 11/30: Dense MSE = 6.617263e+03
+    Epoch 12/30: Dense MSE = 6.617263e+03
+    Epoch 13/30: Dense MSE = 6.617263e+03
+    Epoch 14/30: Dense MSE = 6.617263e+03
+    Epoch 15/30: Dense MSE = 6.617263e+03
+  Grid 10 completed: 0.77s total, 0.154s/epoch, 190 params
+saving model version 0.6
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=20
+saving model version 0.7
+    Epoch 16/30: Dense MSE = 1.011065e+04
+    Epoch 17/30: Dense MSE = 1.011065e+04
+    Epoch 18/30: Dense MSE = 1.011065e+04
+    Epoch 19/30: Dense MSE = 1.011065e+04
+    Epoch 20/30: Dense MSE = 1.011065e+04
+  Grid 20 completed: 0.93s total, 0.186s/epoch, 290 params
+saving model version 0.8
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=50
+saving model version 0.9
+    Epoch 21/30: Dense MSE = 6.265076e+03
+    Epoch 22/30: Dense MSE = 6.265076e+03
+    Epoch 23/30: Dense MSE = 6.265076e+03
+    Epoch 24/30: Dense MSE = 6.265076e+03
+    Epoch 25/30: Dense MSE = 6.265076e+03
+  Grid 50 completed: 1.44s total, 0.289s/epoch, 590 params
+saving model version 0.10
+  Refining KAN: Dataset 8 (poisson_1d_highfreq), grid=100
+saving model version 0.11
+    Epoch 26/30: Dense MSE = 1.069594e+04
+    Epoch 27/30: Dense MSE = 1.069594e+04
+    Epoch 28/30: Dense MSE = 1.069594e+04
+    Epoch 29/30: Dense MSE = 1.069594e+04
+    Epoch 30/30: Dense MSE = 1.069594e+04
+  Grid 100 completed: 2.50s total, 0.500s/epoch, 1090 params
+  Pruning KAN: Dataset 8 (poisson_1d_highfreq)
+saving model version 0.12
+  Pruning completed: 0.04s, 872 params, Dense MSE = 1.067594e+04
+  Dataset 8 (poisson_1d_highfreq) complete: 6.81s total
+KAN pruning training complete: 62.50s total
+
+
+============================================================
+TIMING SUMMARY - Section 1.1
+============================================================
+MLP training:                8.86s (  6.5%)
+SIREN training:              3.84s (  2.8%)
+KAN training:               61.60s ( 45.0%)
+KAN pruning training:       62.50s ( 45.7%)
+------------------------------------------------------------
+Total time:                  136.81s
+Average per dataset:           15.20s
+============================================================
+
+
+Results summary:
+  mlp: 675 rows, 11 columns
+  siren: 225 rows, 10 columns
+  kan: 270 rows, 11 columns
+  kan_pruning: 279 rows, 11 columns
+
+================================================================================
+BEST DENSE MSE SUMMARY (across all hyperparameters)
+================================================================================
+Dataset                  MLP                 SIREN               KAN                 KAN_PRUNING         
+--------------------------------------------------------------------------------
+sin_freq1                5.624954e-05        1.190643e-02        2.661339e-04        2.661339e-04        
+sin_freq2                3.076493e-01        3.253535e-10        2.854631e-03        2.854631e-03        
+sin_freq3                3.889391e-01        9.224899e-06        2.230184e-03        2.230184e-03        
+sin_freq4                4.163467e-01        2.832003e-03        1.022974e-01        1.022974e-01        
+sin_freq5                4.643416e-01        4.180383e-05        1.762524e-01        1.762524e-01        
+piecewise                1.485955e-02        7.871339e-03        1.031294e-02        1.031294e-02        
+sawtooth                 8.533017e-02        3.971056e-03        3.570567e-02        3.570567e-02        
+polynomial               2.567473e-05        2.023322e-01        8.170183e-05        8.170183e-05        
+poisson_1d_highfreq      9.306304e+03        1.216891e+04        2.161383e+03        2.161383e+03        
+
+--------------------------------------------------------------------------------
+KAN PRUNED RESULTS:
+--------------------------------------------------------------------------------
+sin_freq1                4.543605e-02
+sin_freq2                1.084500e-01
+sin_freq3                4.505282e-02
+sin_freq4                1.022974e-01
+sin_freq5                1.762524e-01
+piecewise                1.313602e-01
+sawtooth                 3.570567e-02
+polynomial               1.783081e-01
+poisson_1d_highfreq      1.067594e+04
+================================================================================
+
+Saved to /Users/main/Desktop/my_pykan/pykan/madoc/section1/results/sec1_results/section1_1_20251022_224221.*
+Metadata stored in DataFrame attributes (access via df.attrs)

@@ -19,7 +19,7 @@ grid: !!python/object/apply:numpy.core.multiarray.scalar
   - -1
   - 0
 - !!binary |
-  BQAAAAAAAAA=
+  FAAAAAAAAAA=
 grid_eps: 0.02
 grid_range:
 - -1

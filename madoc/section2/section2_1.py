@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from kan import *
 from utils import data_funcs as dfs
 from utils import save_run, track_time, print_timing_summary, count_parameters, dense_mse_error_from_dataset
-from lm_optimizer import LevenbergMarquardt
+import torch_levenberg_marquardt as tlm
 import argparse
 import time
 import pandas as pd
@@ -130,7 +130,7 @@ def run_kan_optimizer_tests(datasets, grids, epochs, device, optimizer_name, tru
 
 
 def run_kan_lm_tests(datasets, grids, epochs, device, true_functions=None, dataset_names=None):
-    """Run KAN tests with custom LM optimizer
+    """Run KAN tests with torch-levenberg-marquardt optimizer
 
     Args:
         datasets: List of datasets
@@ -175,23 +175,27 @@ def run_kan_lm_tests(datasets, grids, epochs, device, true_functions=None, datas
             num_params = count_parameters(model)
             grid_param_counts.append(num_params)
 
-            # Train with LM optimizer manually
-            optimizer = LevenbergMarquardt(model.parameters(), lr=1.0, damping=1e-3)
-            criterion = nn.MSELoss()
+            # Train with torch-levenberg-marquardt optimizer
+            lm_module = tlm.training.LevenbergMarquardtModule(
+                model=model,
+                loss_fn=tlm.loss.MSELoss(),
+                learning_rate=1.0,
+                attempts_per_step=10,
+                solve_method='qr'
+            )
 
             for epoch in range(epochs):
-                def closure():
-                    optimizer.zero_grad()
-                    pred = model(dataset['train_input'])
-                    loss = criterion(pred, dataset['train_label'])
-                    loss.backward()
-                    return loss
+                # Perform one training step with LM
+                inputs = dataset['train_input']
+                targets = dataset['train_label']
 
-                optimizer.step(closure)
+                outputs, loss, stop_training, logs = lm_module.training_step(inputs, targets)
 
+                # Track losses
                 with torch.no_grad():
                     train_pred = model(dataset['train_input'])
                     test_pred = model(dataset['test_input'])
+                    criterion = nn.MSELoss()
                     train_loss = criterion(train_pred, dataset['train_label']).item()
                     test_loss = criterion(test_pred, dataset['test_label']).item()
                     train_losses.append(train_loss)

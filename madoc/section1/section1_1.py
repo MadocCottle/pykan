@@ -12,7 +12,7 @@ import argparse
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Section 1.1: Function Approximation')
-parser.add_argument('--epochs', type=int, default=10, help='Number of epochs for training (default: 10)')
+parser.add_argument('--epochs', type=int, default=100, help='Number of epochs for training (default: 100, matching KAN paper)')
 args = parser.parse_args()
 
 epochs = args.epochs

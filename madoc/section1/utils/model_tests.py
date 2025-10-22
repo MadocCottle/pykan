@@ -68,14 +68,17 @@ def train_model(model, dataset, epochs, device, true_function):
         device: Device to run on
         true_function: True function for computing dense MSE (required)
 
-    Returns: train_losses, test_losses, total_time, time_per_epoch, dense_mse_errors
+    Returns: train_losses, test_losses, total_time, time_per_epoch, final_dense_mse
     """
-    optimizer = torch.optim.LBFGS(model.parameters())
+    # Use standard PyTorch LBFGS with stable parameters
+    # Line search helps prevent divergence
+    optimizer = torch.optim.LBFGS(model.parameters(), lr=1.0, max_iter=20,
+                                  tolerance_grad=1e-7, tolerance_change=1e-9,
+                                  history_size=50, line_search_fn="strong_wolfe")
     criterion = nn.MSELoss()
 
     train_losses = []
     test_losses = []
-    dense_mse_errors = []
 
     start_time = time.time()
 
@@ -86,6 +89,10 @@ def train_model(model, dataset, epochs, device, true_function):
             train_pred = model(dataset['train_input'])
             loss = criterion(train_pred, dataset['train_label'])
             loss.backward()
+
+            # Add gradient clipping to prevent explosions
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+
             return loss
 
         optimizer.step(closure)
@@ -96,19 +103,30 @@ def train_model(model, dataset, epochs, device, true_function):
             test_pred = model(dataset['test_input'])
             train_loss = criterion(train_pred, dataset['train_label']).item()
             test_loss = criterion(test_pred, dataset['test_label']).item()
+
+            # Check for NaN/Inf and stop training if detected
+            import math
+            if math.isnan(train_loss) or math.isinf(train_loss):
+                print(f"    WARNING: Training diverged at epoch {epoch+1} (loss={train_loss:.6e})")
+                # Fill remaining epochs with nan
+                for _ in range(epoch, epochs):
+                    train_losses.append(float('nan'))
+                    test_losses.append(float('nan'))
+                break
+
             train_losses.append(train_loss)
             test_losses.append(test_loss)
-
-            # Always compute dense MSE on broader domain
-            dense_mse = dense_mse_error_from_dataset(model, dataset, true_function,
-                                                     num_samples=10000, device=device)
-            dense_mse_errors.append(dense_mse)
-            print(f"    Epoch {epoch+1}/{epochs}: Dense MSE = {dense_mse:.6e}")
 
     total_time = time.time() - start_time
     time_per_epoch = total_time / epochs if epochs > 0 else 0
 
-    return train_losses, test_losses, total_time, time_per_epoch, dense_mse_errors
+    # Compute dense MSE only once at the end
+    with torch.no_grad():
+        final_dense_mse = dense_mse_error_from_dataset(model, dataset, true_function,
+                                                        num_samples=10000, device=device)
+    print(f"    Final Dense MSE = {final_dense_mse:.6e}")
+
+    return train_losses, test_losses, total_time, time_per_epoch, final_dense_mse
 
 def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions, dataset_names=None):
     """Train MLPs with varying depths and activations across multiple datasets
@@ -148,7 +166,7 @@ def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions,
                 model = tnn.MLP(in_features=n_var, width=5, depth=d, activation=act).to(device)
                 num_params = count_parameters(model)
                 print(f"  Training MLP: Dataset {i} ({dataset_name}), depth={d}, activation={act}")
-                train_loss, test_loss, total_time, time_per_epoch, dense_mse = train_model(
+                train_loss, test_loss, total_time, time_per_epoch, final_dense_mse = train_model(
                     model, dataset, epochs, device, true_func
                 )
 
@@ -162,17 +180,16 @@ def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions,
                         'epoch': epoch,
                         'train_loss': train_loss[epoch],
                         'test_loss': test_loss[epoch],
-                        'dense_mse': dense_mse[epoch],
+                        'dense_mse': final_dense_mse,  # Same value for all epochs
                         'total_time': total_time,
                         'time_per_epoch': time_per_epoch,
                         'num_params': num_params
                     })
 
-                print(f"  Completed: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params, Final dense MSE = {dense_mse[-1]:.6e}")
+                print(f"  Completed: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
 
                 # Track best model per dataset (lowest final dense_mse)
                 # Filter out NaN/Inf values to avoid saving diverged models
-                final_dense_mse = dense_mse[-1]
                 import math
                 if not math.isnan(final_dense_mse) and not math.isinf(final_dense_mse):
                     if i not in best_models_info or final_dense_mse < best_models_info[i]['dense_mse']:
@@ -226,7 +243,7 @@ def run_siren_tests(datasets, depths, epochs, device, true_functions, dataset_na
             model = tnn.SIREN(in_features=n_var, hidden_features=5, hidden_layers=d-2, out_features=1).to(device)
             num_params = count_parameters(model)
             print(f"  Training SIREN: Dataset {i} ({dataset_name}), depth={d}")
-            train_loss, test_loss, total_time, time_per_epoch, dense_mse = train_model(
+            train_loss, test_loss, total_time, time_per_epoch, final_dense_mse = train_model(
                 model, dataset, epochs, device, true_func
             )
 
@@ -239,17 +256,16 @@ def run_siren_tests(datasets, depths, epochs, device, true_functions, dataset_na
                     'epoch': epoch,
                     'train_loss': train_loss[epoch],
                     'test_loss': test_loss[epoch],
-                    'dense_mse': dense_mse[epoch],
+                    'dense_mse': final_dense_mse,  # Same value for all epochs
                     'total_time': total_time,
                     'time_per_epoch': time_per_epoch,
                     'num_params': num_params
                 })
 
-            print(f"  Completed: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params, Final dense MSE = {dense_mse[-1]:.6e}")
+            print(f"  Completed: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
 
             # Track best model per dataset (lowest final dense_mse)
             # Filter out NaN/Inf values to avoid saving diverged models
-            final_dense_mse = dense_mse[-1]
             import math
             if not math.isnan(final_dense_mse) and not math.isinf(final_dense_mse):
                 if i not in best_models_info or final_dense_mse < best_models_info[i]['dense_mse']:
@@ -297,7 +313,6 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
     for i, dataset in enumerate(datasets):
         train_losses = []
         test_losses = []
-        dense_mse_errors = []
         n_var = dataset['train_input'].shape[1]
         true_func = true_functions[i]
         dataset_name = dataset_names[i]
@@ -322,18 +337,15 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
             train_losses += train_results['train_loss']
             test_losses += train_results['test_loss']
 
-            # Compute dense MSE for each epoch in this grid
-            for epoch_in_grid in range(epochs):
-                with torch.no_grad():
-                    dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
-                                                            num_samples=10000, device=device)
-                    dense_mse_errors.append(dense_mse)
-                    global_epoch = j * epochs + epoch_in_grid + 1
-                    print(f"    Epoch {global_epoch}/{len(grids)*epochs}: Dense MSE = {dense_mse:.6e}")
-
             grid_time = time.time() - grid_start_time
             grid_times.append(grid_time)
             print(f"  Grid {grid_size} completed: {grid_time:.2f}s total, {grid_time/epochs:.3f}s/epoch, {num_params} params")
+
+        # Compute dense MSE only once at the end
+        with torch.no_grad():
+            final_dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
+                                                           num_samples=10000, device=device)
+        print(f"    Final Dense MSE = {final_dense_mse:.6e}")
 
         total_dataset_time = time.time() - dataset_start_time
         models[i] = model
@@ -349,7 +361,7 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
                     'epoch': global_epoch,
                     'train_loss': train_losses[global_epoch],
                     'test_loss': test_losses[global_epoch],
-                    'dense_mse': dense_mse_errors[global_epoch],
+                    'dense_mse': final_dense_mse,  # Same value for all epochs
                     'total_time': grid_times[j],
                     'time_per_epoch': grid_times[j] / epochs,
                     'num_params': grid_param_counts[j],

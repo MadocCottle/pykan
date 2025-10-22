@@ -54,6 +54,7 @@ class MLP(nn.Module):
     def __init__(self, in_features=1, width=5, depth=2, activation='tanh'):
         super().__init__()
         self.activation = activation
+        self.depth = depth  # Store depth for initialization
         layers = []
 
         # Input layer
@@ -84,17 +85,25 @@ class MLP(nn.Module):
         self._init_weights()
 
     def _init_weights(self):
-        """Initialize weights: He for ReLU/SiLU, Xavier for tanh"""
+        """Initialize weights: He for ReLU/SiLU, Xavier for tanh
+
+        Uses conservative initialization with smaller gain for deeper networks
+        to prevent gradient explosion during initial forward passes.
+        """
+        # Scale down initialization for deeper networks
+        gain = 1.0 / max(1.0, (self.depth - 1) / 2.0)
+
         for module in self.network.modules():
             if isinstance(module, nn.Linear):
                 if self.activation == 'relu' or self.activation == 'silu':
-                    # He initialization for ReLU and SiLU
+                    # He initialization for ReLU and SiLU with depth-dependent gain
                     nn.init.kaiming_normal_(module.weight, mode='fan_in', nonlinearity='relu')
+                    module.weight.data *= gain
                     if module.bias is not None:
                         nn.init.zeros_(module.bias)
                 elif self.activation == 'tanh':
-                    # Xavier initialization for tanh
-                    nn.init.xavier_normal_(module.weight)
+                    # Xavier initialization for tanh with depth-dependent gain
+                    nn.init.xavier_normal_(module.weight, gain=gain)
                     if module.bias is not None:
                         nn.init.zeros_(module.bias)
 

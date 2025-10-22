@@ -47,7 +47,7 @@ symbolic.funs_name.1:
   - '0'
   - '0'
   - '0'
-symbolic_enabled: false
+symbolic_enabled: true
 width:
 - - 2
   - 0

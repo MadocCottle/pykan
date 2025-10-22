@@ -16,6 +16,10 @@ Do two tests. One with this as an alternative to the normal grid densification p
 
 Follow the instructions in heuristic.md to use the build in features of pykan, rather than making your own system
 
+# 2.2.2 - Adaptive density (reduction)
+
+In the interests of remaining below the interpolation threshold, reduce the density of nodes that would have been pruned down to a minimum.
+
 ## Section 2.3 - Merge_KAN
 
 Similar to mixture of experts but very distinct. Train a variety of different KANs using different depths, basis functions (and maybe optomisers). Train each of these configurations from a variety of starting seeds. Then prune them until smaller KANs each reach the distinct sets of functional dependences mentioned in section 4 of the KANs paper in.
