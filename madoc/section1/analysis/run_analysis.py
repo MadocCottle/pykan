@@ -8,39 +8,25 @@ It automatically detects whether results are 1D or 2D and generates appropriate 
 import sys
 from pathlib import Path
 import argparse
-import json
 from datetime import datetime
 
 # Add analysis directory to path for local imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-# Import analysis modules (now in the same directory)
-from comparative_metrics import MetricsAnalyzer
-from function_fitting import FunctionFittingVisualizer
-from heatmap_2d_fits import Heatmap2DAnalyzer
-
-
-def detect_section_type(results_path: Path) -> str:
-    """
-    Detect which section the results are from based on filename
-
-    Returns:
-        'section1_1', 'section1_2', or 'section1_3'
-    """
-    filename = results_path.stem
-    if 'section1_1' in filename:
-        return 'section1_1'
-    elif 'section1_2' in filename:
-        return 'section1_2'
-    elif 'section1_3' in filename:
-        return 'section1_3'
-    else:
-        raise ValueError(f"Cannot detect section type from filename: {filename}")
-
-
-def is_2d_section(section_type: str) -> bool:
-    """Check if section contains 2D data"""
-    return section_type == 'section1_3'
+# Import analysis modules
+try:
+    from . import data_io
+    from . import report_utils as ru
+    from .comparative_metrics import MetricsAnalyzer
+    from .function_fitting import FunctionFittingVisualizer
+    from .heatmap_2d_fits import Heatmap2DAnalyzer
+except ImportError:
+    # Allow running as script
+    import data_io
+    import report_utils as ru
+    from comparative_metrics import MetricsAnalyzer
+    from function_fitting import FunctionFittingVisualizer
+    from heatmap_2d_fits import Heatmap2DAnalyzer
 
 
 def run_full_analysis(results_file: str, models_dir: str = None, output_base_dir: str = None):
@@ -57,19 +43,20 @@ def run_full_analysis(results_file: str, models_dir: str = None, output_base_dir
     if not results_path.exists():
         raise FileNotFoundError(f"Results file not found: {results_file}")
 
-    # Detect section type
-    section_type = detect_section_type(results_path)
-    is_2d = is_2d_section(section_type)
+    # Detect section type using centralized function
+    section_type = data_io.detect_section_type(results_path)
+    is_2d = data_io.is_2d_section(section_type)
+    section_config = data_io.get_section_config(section_type)
 
-    print("="*70)
+    ru.print_separator()
     print("Section 1 Analysis Pipeline")
-    print("="*70)
+    ru.print_separator()
     print(f"Results file: {results_path}")
     print(f"Section type: {section_type}")
-    print(f"Dimension: {'2D' if is_2d else '1D'}")
+    print(f"Dimension: {ru.get_dimensionality_text(is_2d)}")
     if models_dir:
         print(f"Models directory: {models_dir}")
-    print("="*70)
+    ru.print_separator()
     print()
 
     # Create output directory
@@ -77,18 +64,13 @@ def run_full_analysis(results_file: str, models_dir: str = None, output_base_dir
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         output_base_dir = f'analysis_output_{section_type}_{timestamp}'
 
-    output_path = Path(output_base_dir)
-    output_path.mkdir(exist_ok=True, parents=True)
-
-    print(f"Output directory: {output_path.absolute()}")
+    output_path = ru.create_output_dir(output_base_dir)
     print()
 
     # ========================================================================
     # Step 1: Comparative Metrics Analysis
     # ========================================================================
-    print("\n" + "="*70)
-    print("Step 1: Generating Comparative Metrics Visualizations")
-    print("="*70)
+    ru.print_section_header("Step 1: Generating Comparative Metrics Visualizations")
 
     metrics_dir = output_path / '01_comparative_metrics'
     metrics_dir.mkdir(exist_ok=True)
@@ -96,18 +78,16 @@ def run_full_analysis(results_file: str, models_dir: str = None, output_base_dir
     try:
         metrics_analyzer = MetricsAnalyzer(str(results_path))
         metrics_analyzer.generate_all_visualizations(str(metrics_dir))
-        print("✓ Comparative metrics analysis complete")
+        ru.print_status("Comparative metrics analysis complete")
     except Exception as e:
-        print(f"✗ Error in comparative metrics analysis: {e}")
+        ru.print_status(f"Error in comparative metrics analysis: {e}", success=False)
         import traceback
         traceback.print_exc()
 
     # ========================================================================
     # Step 2: Function Fitting Visualizations
     # ========================================================================
-    print("\n" + "="*70)
-    print("Step 2: Generating Function Fitting Visualizations")
-    print("="*70)
+    ru.print_section_header("Step 2: Generating Function Fitting Visualizations")
 
     function_fit_dir = output_path / '02_function_fitting'
     function_fit_dir.mkdir(exist_ok=True)
@@ -115,9 +95,9 @@ def run_full_analysis(results_file: str, models_dir: str = None, output_base_dir
     try:
         fitting_visualizer = FunctionFittingVisualizer(str(results_path), models_dir)
         fitting_visualizer.generate_all_function_fits(str(function_fit_dir), is_2d=is_2d)
-        print("✓ Function fitting visualizations complete")
+        ru.print_status("Function fitting visualizations complete")
     except Exception as e:
-        print(f"✗ Error in function fitting visualization: {e}")
+        ru.print_status(f"Error in function fitting visualization: {e}", success=False)
         import traceback
         traceback.print_exc()
 
@@ -125,9 +105,7 @@ def run_full_analysis(results_file: str, models_dir: str = None, output_base_dir
     # Step 3: 2D Heatmap Analysis (only for 2D sections)
     # ========================================================================
     if is_2d:
-        print("\n" + "="*70)
-        print("Step 3: Generating 2D Heatmap Analysis")
-        print("="*70)
+        ru.print_section_header("Step 3: Generating 2D Heatmap Analysis")
 
         heatmap_dir = output_path / '03_heatmap_analysis'
         heatmap_dir.mkdir(exist_ok=True)
@@ -135,9 +113,9 @@ def run_full_analysis(results_file: str, models_dir: str = None, output_base_dir
         try:
             heatmap_analyzer = Heatmap2DAnalyzer(str(results_path), models_dir)
             heatmap_analyzer.generate_all_heatmaps(str(heatmap_dir))
-            print("✓ Heatmap analysis complete")
+            ru.print_status("Heatmap analysis complete")
         except Exception as e:
-            print(f"✗ Error in heatmap analysis: {e}")
+            ru.print_status(f"Error in heatmap analysis: {e}", success=False)
             import traceback
             traceback.print_exc()
     else:
@@ -146,176 +124,53 @@ def run_full_analysis(results_file: str, models_dir: str = None, output_base_dir
     # ========================================================================
     # Generate Summary Report
     # ========================================================================
-    print("\n" + "="*70)
-    print("Generating Summary Report")
-    print("="*70)
+    ru.print_section_header("Generating Summary Report")
 
-    summary = generate_summary_report(results_path, output_path, section_type, is_2d, models_dir)
+    summary = generate_summary_report(results_path, section_config, is_2d, models_dir)
     summary_path = output_path / 'ANALYSIS_SUMMARY.md'
 
     with open(summary_path, 'w') as f:
         f.write(summary)
 
-    print(f"✓ Summary report saved to: {summary_path}")
+    ru.print_status(f"Summary report saved to: {summary_path}")
 
     # ========================================================================
     # Complete
     # ========================================================================
-    print("\n" + "="*70)
-    print("Analysis Complete!")
-    print("="*70)
+    ru.print_section_header("Analysis Complete!")
     print(f"\nAll outputs saved to: {output_path.absolute()}")
     print(f"Summary report: {summary_path.absolute()}")
     print()
 
 
-def generate_summary_report(results_path: Path, output_path: Path,
-                           section_type: str, is_2d: bool, models_dir: str) -> str:
-    """Generate markdown summary report"""
+def generate_summary_report(results_path: Path, section_config: dict, is_2d: bool, models_dir: str) -> str:
+    """
+    Generate markdown summary report using template
 
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    Args:
+        results_path: Path to results file
+        section_config: Section configuration dict
+        is_2d: Whether data is 2D
+        models_dir: Models directory path or None
 
-    report = f"""# Analysis Summary Report
+    Returns:
+        Rendered report string
+    """
+    template_path = ru.load_analysis_summary_template()
 
-**Generated:** {timestamp}
+    variables = {
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'results_filename': results_path.name,
+        'section_type': next(k for k, v in data_io.SECTION_CONFIG.items()
+                            if v == section_config),
+        'dimensionality': ru.get_dimensionality_text(is_2d),
+        'models_dir': ru.format_models_dir(models_dir),
+        'function_fitting_details': ru.get_function_fitting_details(is_2d),
+        'heatmap_section': ru.get_heatmap_section(is_2d),
+        'detailed_analysis_extra': ru.get_detailed_analysis_extra(is_2d),
+    }
 
-## Input Data
-
-- **Results File:** `{results_path.name}`
-- **Section Type:** {section_type}
-- **Dimensionality:** {'2D' if is_2d else '1D'}
-- **Models Directory:** {models_dir if models_dir else 'Not provided'}
-
-## Generated Outputs
-
-### 1. Comparative Metrics Analysis
-
-Location: `01_comparative_metrics/`
-
-This directory contains:
-- **Comparison tables** (CSV) for each dataset showing final MSE, training times, etc.
-- **Learning curves** showing train/test/dense MSE over epochs
-- **Training time comparisons** across all model types
-- **Performance heatmaps** showing final MSE across all datasets and models
-
-Files generated:
-- `dataset_<N>_comparison_table.csv` - Detailed metrics for dataset N
-- `dataset_<N>_learning_curves_<metric>.png` - Learning curves for each metric
-- `dataset_<N>_training_times.png` - Training time comparisons
-- `all_datasets_heatmap_<metric>.png` - Overall performance heatmaps
-
-### 2. Function Fitting Visualizations
-
-Location: `02_function_fitting/`
-
-This directory contains visualizations comparing neural network predictions with true functions:
-
-"""
-
-    if is_2d:
-        report += """
-For 2D functions:
-- **Surface plots** showing true function vs NN prediction
-- **Contour plots** for easier comparison
-- **MSE calculations** displayed on each plot
-
-Each visualization shows all model types (MLP, SIREN, KAN, KAN with pruning) side-by-side.
-"""
-    else:
-        report += """
-For 1D functions:
-- **Line plots** showing true function vs NN output
-- **Point-by-point comparisons** across the domain
-- **MSE calculations** for each model
-
-Each visualization compares all model types (MLP, SIREN, KAN, KAN with pruning).
-"""
-
-    if is_2d:
-        report += """
-### 3. Heatmap Analysis (2D Only)
-
-Location: `03_heatmap_analysis/`
-
-Detailed heatmap analysis for 2D functions:
-- **Comparison heatmaps** - Side-by-side views of true function, prediction, and error
-- **Error analysis** - Absolute error, signed error, and relative error maps
-- **Cross-section plots** - 1D slices at fixed x₁ and x₂ values
-- **Error quantile maps** - Identifying high-error regions
-- **Error statistics** - Quantitative breakdown by region
-
-Files generated per function and model:
-- `heatmap_<N>_<function>_<model>.png` - Detailed comparison heatmaps
-- `cross_section_<N>_<function>.png` - Cross-section comparisons
-- `error_quantile_<N>_<function>_<model>.png` - Error quantile analysis
-"""
-
-    report += """
-## How to Use These Results
-
-### Quick Start
-
-1. **Start with the heatmaps** in `01_comparative_metrics/all_datasets_heatmap_test.png` to see overall model performance
-2. **Review learning curves** to understand training dynamics
-3. **Examine function fits** to see how well models approximate each function
-4. **Check training times** if computational efficiency is important
-
-### Detailed Analysis
-
-For each dataset/function of interest:
-
-1. Open the **comparison table CSV** to see exact numerical values
-2. Look at **learning curves** to check for overfitting or convergence issues
-3. Examine **function fitting plots** to visually assess approximation quality
-"""
-
-    if is_2d:
-        report += """4. Review **heatmap analysis** to identify problematic regions in the domain
-5. Check **cross-sections** to understand behavior along specific dimensions
-6. Use **error quantile maps** to find where models struggle most
-"""
-
-    report += """
-### Key Metrics
-
-- **Train MSE**: Error on training data (lower is better)
-- **Test MSE**: Error on test data (lower is better, indicates generalization)
-- **Dense MSE**: Dense sampling MSE (better indicator of true approximation quality)
-- **Total Time**: Complete training time in seconds
-- **Time per Epoch**: Average time per training epoch
-
-## Model Comparison
-
-The analysis compares four model types:
-
-1. **MLP**: Traditional multilayer perceptron with various depths and activations
-2. **SIREN**: Sinusoidal activation networks, specialized for periodic functions
-3. **KAN**: Kolmogorov-Arnold Networks with various grid sizes
-4. **KAN with Pruning**: Pruned KAN models for efficiency
-
-## Notes
-
-- MSE values are on a log scale in learning curves for better visualization
-- Relative error in heatmaps is capped at 100% for visualization
-- Cross-sections are taken at x = 0.25, 0.5, and 0.75
-- Error quantiles divide errors into 5 regions: Q1 (0-25%), Q2 (25-50%), Q3 (50-75%), Q4 (75-90%), Q5 (>90%)
-
-## Next Steps
-
-Based on this analysis, you can:
-
-1. Identify which model type performs best for your application
-2. Determine if more training epochs are needed (check learning curves)
-3. Find problematic regions in the domain that need special attention
-4. Balance accuracy vs computational cost using the timing data
-5. Make informed decisions about hyperparameter tuning
-
----
-
-*This report was automatically generated by the Section 1 Analysis Pipeline.*
-"""
-
-    return report
+    return ru.render_template(template_path, **variables)
 
 
 def main():

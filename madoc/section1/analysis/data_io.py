@@ -33,12 +33,30 @@ from typing import Dict, Optional, Tuple, Union
 from datetime import datetime
 
 
-# Section ID to results directory mapping
-SECTION_DIRS = {
-    'section1_1': 'sec1_results',
-    'section1_2': 'sec2_results',
-    'section1_3': 'sec3_results',
+# Section configuration with full metadata
+SECTION_CONFIG = {
+    'section1_1': {
+        'results_dir': 'sec1_results',
+        'name': 'Section 1.1: Function Approximation',
+        'is_2d': False,
+        'description': 'Sinusoids, piecewise, sawtooth, polynomial, and high-frequency functions'
+    },
+    'section1_2': {
+        'results_dir': 'sec2_results',
+        'name': 'Section 1.2: 1D Poisson PDE',
+        'is_2d': False,
+        'description': '1D Poisson equation with various forcing functions'
+    },
+    'section1_3': {
+        'results_dir': 'sec3_results',
+        'name': 'Section 1.3: 2D Poisson PDE',
+        'is_2d': True,
+        'description': '2D Poisson equation with sin, polynomial, high-frequency, and special forcings'
+    }
 }
+
+# Backward compatibility: keep SECTION_DIRS as simple mapping
+SECTION_DIRS = {sid: config['results_dir'] for sid, config in SECTION_CONFIG.items()}
 
 
 class ResultsNotFoundError(Exception):
@@ -49,6 +67,65 @@ class ResultsNotFoundError(Exception):
 class InvalidSectionError(Exception):
     """Raised when an invalid section ID is provided"""
     pass
+
+
+def get_section_config(section_id: str) -> Dict:
+    """
+    Get full configuration for a section
+
+    Args:
+        section_id: Section identifier (e.g., 'section1_1')
+
+    Returns:
+        Dictionary with section configuration
+
+    Raises:
+        InvalidSectionError: If section_id not recognized
+    """
+    if section_id not in SECTION_CONFIG:
+        raise InvalidSectionError(
+            f"Invalid section ID: {section_id}. "
+            f"Valid options: {list(SECTION_CONFIG.keys())}"
+        )
+    return SECTION_CONFIG[section_id]
+
+
+def is_2d_section(section_id: str) -> bool:
+    """
+    Check if a section contains 2D data
+
+    Args:
+        section_id: Section identifier (e.g., 'section1_1')
+
+    Returns:
+        True if section is 2D, False otherwise
+
+    Raises:
+        InvalidSectionError: If section_id not recognized
+    """
+    return get_section_config(section_id)['is_2d']
+
+
+def detect_section_type(results_path: Union[str, Path]) -> str:
+    """
+    Detect section type from results file path
+
+    Args:
+        results_path: Path to results file
+
+    Returns:
+        Section identifier (e.g., 'section1_1')
+
+    Raises:
+        ValueError: If section type cannot be detected
+    """
+    filename = Path(results_path).stem
+
+    for section_id in SECTION_CONFIG.keys():
+        if section_id in filename:
+            return section_id
+
+    raise ValueError(f"Cannot detect section type from filename: {filename}")
 
 
 def get_analysis_base_dir() -> Path:
@@ -417,15 +494,20 @@ def print_available_results(base_dir: Optional[Path] = None):
 
 # Convenience exports
 __all__ = [
+    'SECTION_CONFIG',
+    'SECTION_DIRS',
     'load_results',
     'load_section_results',
     'load_results_file',
     'load_metadata_file',
     'find_latest_results',
     'find_models_dir',
+    'get_section_config',
     'get_section_results_dir',
     'get_all_available_results',
     'print_available_results',
+    'is_2d_section',
+    'detect_section_type',
     'ResultsNotFoundError',
     'InvalidSectionError',
 ]
