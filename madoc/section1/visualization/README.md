@@ -10,33 +10,40 @@ This folder contains tools and guides for visualizing the results from Section 1
 
 ### Plotting Scripts
 
-- **[plot_best_dense_mse.py](plot_best_dense_mse.py)**: Plots the dense MSE evolution over training epochs for the best performing model from each class (MLP, SIREN, KAN, KAN+Pruning).
+- **[plot_best_loss.py](plot_best_loss.py)**: Plots the training and test loss evolution over training epochs for the best performing model from each class (MLP, SIREN, KAN, KAN+Pruning).
 
 - **[plot_function_fit.py](plot_function_fit.py)**: Plots the learned functions vs ground truth for the best model from each class across all datasets. Shows actual function fits to visualize what each model learned.
 
 ## Quick Start
 
-### Plot Best Dense MSE Evolution
+### Plot Best Loss Curves
 
 ```bash
-# Plot for dataset 0 (most recent run)
-python plot_best_dense_mse.py --dataset 0
+# Plot test loss for dataset 0 (most recent run)
+python plot_best_loss.py --dataset 0
+
+# Plot training loss
+python plot_best_loss.py --dataset 0 --loss-type train
+
+# Plot both train and test loss side-by-side
+python plot_best_loss.py --dataset 0 --loss-type both
 
 # Plot for specific dataset and timestamp
-python plot_best_dense_mse.py --dataset 5 --timestamp 20251022_201159
+python plot_best_loss.py --dataset 5 --timestamp 20251022_201159
 
 # Plot for different section
-python plot_best_dense_mse.py --section section1_2 --dataset 0
+python plot_best_loss.py --section section1_2 --dataset 0
 ```
 
 **Options:**
 - `--section`: Section to load (default: `section1_1`)
 - `--timestamp`: Specific timestamp to load (default: most recent)
 - `--dataset`: Dataset index to analyze (default: 0)
+- `--loss-type`: Which loss to plot - `train`, `test`, or `both` (default: `test`)
 
 **Output:**
-- PNG file: `best_dense_mse_dataset_{dataset_idx}_{timestamp}.png`
-- Shows log-scale dense MSE vs epoch for the best model from each class
+- PNG file: `best_loss_curves_dataset_{dataset_idx}_{timestamp}.png`
+- Shows log-scale loss vs epoch for the best model from each class
 
 ### Plot Function Fits
 
@@ -90,7 +97,7 @@ from utils import load_run
 def plot_my_visualization(section='section1_1', timestamp=None):
     # Find latest timestamp if not provided
     if timestamp is None:
-        # ... (see plot_best_dense_mse.py for example)
+        # ... (see plot_best_loss.py for example)
         pass
 
     # Load results
@@ -160,4 +167,4 @@ All generated plots are saved to this folder with descriptive filenames includin
 - Dataset index (if applicable)
 - Timestamp of the source data
 
-Example: `best_dense_mse_dataset_0_20251022_201159.png`
+Example: `best_loss_curves_dataset_0_20251022_201159.png`

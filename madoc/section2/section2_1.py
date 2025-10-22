@@ -92,12 +92,13 @@ def run_kan_optimizer_tests(datasets, grids, epochs, device, optimizer_name, tru
             train_losses += train_results['train_loss']
             test_losses += train_results['test_loss']
 
-            # Compute dense MSE for each epoch in this grid
-            for epoch_in_grid in range(epochs):
-                with torch.no_grad():
-                    dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
-                                                            num_samples=10000, device=device)
-                    dense_mse_errors.append(dense_mse)
+            # Compute dense MSE once at the end of this grid's training
+            with torch.no_grad():
+                dense_mse_final = dense_mse_error_from_dataset(model, dataset, true_func,
+                                                        num_samples=10000, device=device)
+            # Store the same final dense MSE for all epochs in this grid
+            for _ in range(epochs):
+                dense_mse_errors.append(dense_mse_final)
 
             grid_time = time.time() - grid_start_time
             grid_times.append(grid_time)
@@ -201,10 +202,13 @@ def run_kan_lm_tests(datasets, grids, epochs, device, true_functions=None, datas
                     train_losses.append(train_loss)
                     test_losses.append(test_loss)
 
-                    # Compute dense MSE
-                    dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
-                                                            num_samples=10000, device=device)
-                    dense_mse_errors.append(dense_mse)
+            # Compute dense MSE once at the end of this grid's training
+            with torch.no_grad():
+                dense_mse_final = dense_mse_error_from_dataset(model, dataset, true_func,
+                                                        num_samples=10000, device=device)
+            # Store the same final dense MSE for all epochs in this grid
+            for _ in range(epochs):
+                dense_mse_errors.append(dense_mse_final)
 
             grid_time = time.time() - grid_start_time
             grid_times.append(grid_time)
