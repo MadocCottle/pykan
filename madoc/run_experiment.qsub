@@ -3,7 +3,7 @@
 #PBS -q normal
 #PBS -l wd
 #PBS -j oe
-#PBS -M your.email@example.com
+#PBS -M u7138718@anu.edu.au
 #PBS -m abe
 
 # =============================================================================
@@ -13,19 +13,12 @@
 # This PBS script runs PyKAN madoc experiments on NCI Gadi.
 # Results are collected in a timestamped folder for easy retrieval.
 #
-# =============================================================================
-# REQUIRED: Set your NCI project code
-# =============================================================================
-# TODO: Replace 'YOUR_PROJECT' with your actual NCI project code (e.g., ab12, xy34)
-# This is used for:
-#   - PBS project allocation (#PBS -P)
-#   - Storage access (#PBS -l storage)
 #
 # You can either:
 #   1. Edit the line below directly, OR
 #   2. Pass it via qsub: qsub -v PROJECT=ab12,...
 #
-PROJECT=${PROJECT:-YOUR_PROJECT}
+PROJECT=${PROJECT:-p00}
 
 #PBS -P ${PROJECT}
 #PBS -l storage=scratch/${PROJECT}+gdata/${PROJECT}
