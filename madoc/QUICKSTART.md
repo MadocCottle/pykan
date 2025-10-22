@@ -1,8 +1,13 @@
 # Quick Start - NCI Gadi Job Submission
 
-## Problem You Encountered
+## Critical Fixes Applied
 
+### Fix 1: PBS Directives Cannot Use Variables
 The error `"You have not requested a project to charge for this job"` occurred because **PBS directives cannot use shell variables**.
+
+### Fix 2: Results Directory Creation Bug (FIXED)
+**Issue**: The script tried to log to a directory that didn't exist yet, causing silent failures.
+**Fix**: Results directory is now created **immediately** before any log calls (line 72).
 
 ### What Was Wrong
 

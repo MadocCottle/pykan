@@ -67,6 +67,13 @@ cd "${SCRIPT_DIR}"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RESULTS_DIR="${SCRIPT_DIR}/job_results_${TIMESTAMP}"
 
+# Create results directory IMMEDIATELY (before any log calls)
+# This is critical - log() function needs this directory to exist
+mkdir -p "${RESULTS_DIR}" || {
+    echo "FATAL ERROR: Failed to create results directory: ${RESULTS_DIR}" >&2
+    exit 1
+}
+
 # Log file
 LOG_FILE="${RESULTS_DIR}/job_summary.txt"
 
@@ -75,11 +82,18 @@ LOG_FILE="${RESULTS_DIR}/job_summary.txt"
 # =============================================================================
 
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "${LOG_FILE}"
+    # Robust logging - creates directory if needed and handles errors gracefully
+    if [[ -n "${LOG_FILE}" ]]; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "${LOG_FILE}" 2>/dev/null || echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+    else
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+    fi
 }
 
 error() {
     log "ERROR: $*"
+    # Also output to stderr for PBS log
+    echo "ERROR: $*" >&2
     exit 1
 }
 
@@ -182,8 +196,7 @@ esac
 log "Resources: ${NCPUS} CPUs, ${MEM} memory, ${WALLTIME} walltime"
 log ""
 
-# Create results directory
-mkdir -p "${RESULTS_DIR}"
+# Results directory already created at script start (line 72)
 log "Results directory: ${RESULTS_DIR}"
 log ""
 

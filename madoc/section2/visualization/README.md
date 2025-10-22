@@ -1,10 +1,81 @@
 # Section 2 Visualization Tools
 
-This directory contains visualization scripts for analyzing Section 2 results, which focus on comparing different optimizers (Adam vs. Levenberg-Marquardt) for training KAN models on 2D Poisson PDE problems.
+This directory contains visualization scripts for analyzing Section 2 results:
+- **Section 2.1**: Optimizer comparison (Adam, LBFGS, Levenberg-Marquardt)
+- **Section 2.2**: Adaptive density strategies
+
+All experiments use 2D Poisson PDE test problems.
 
 ## Available Visualizations
 
-### 1. Optimizer Comparison (`plot_optimizer_comparison.py`)
+### 1. 2D Heatmap Visualization (`plot_heatmap_2d.py`) ⭐ NEW
+
+Creates comprehensive 3D surface + contour plot visualizations for 2D function fitting tasks.
+
+**Features:**
+- Side-by-side 3D surface plots and contour plots
+- True function visualization
+- Model predictions for each optimizer/approach
+- MSE values displayed on contour plots
+- Publication-quality figures
+
+**Usage:**
+```bash
+# Plot heatmap for a specific dataset (uses most recent run)
+python plot_heatmap_2d.py --section section2_1 --dataset 0
+
+# Plot all datasets for section2_1
+python plot_heatmap_2d.py --section section2_1
+
+# Plot for section2_2 (adaptive density)
+python plot_heatmap_2d.py --section section2_2 --dataset 0
+
+# Specify timestamp
+python plot_heatmap_2d.py --section section2_1 --dataset 0 --timestamp 20231022_143022
+
+# Use GPU
+python plot_heatmap_2d.py --section section2_1 --dataset 0 --device cuda
+```
+
+**Outputs:**
+- `heatmap_2d_section2_1_dataset_{idx}_{name}_{timestamp}.png` - For section2_1
+- `heatmap_2d_section2_2_dataset_{idx}_{name}_{timestamp}.png` - For section2_2
+
+**Layout:**
+- **Section 2.1** (Optimizer Comparison):
+  - Row 0: True function (3D + contour, centered)
+  - Row 1: LBFGS and LM predictions
+  - Row 2: Adam predictions
+
+- **Section 2.2** (Adaptive Density):
+  - Row 0: True function (3D + contour, centered)
+  - Row 1: Adaptive Only and Adaptive+Regular predictions
+  - Row 2: Baseline predictions
+
+### 2. Best Loss Curves (`plot_best_loss.py`) ⭐ NEW
+
+Plots dense MSE evolution over training epochs for all optimizers/approaches across all datasets.
+
+**Usage:**
+```bash
+# Plot dense MSE curves for section2_1
+python plot_best_loss.py --section section2_1
+
+# Plot for section2_2
+python plot_best_loss.py --section section2_2
+
+# Plot test loss instead of dense MSE
+python plot_best_loss.py --section section2_1 --metric test_loss
+
+# Plot train loss
+python plot_best_loss.py --section section2_1 --metric train_loss
+```
+
+**Outputs:**
+- `best_dense_mse_curves_all_datasets_section2_1_{timestamp}.png`
+- `best_test_loss_curves_all_datasets_section2_1_{timestamp}.png`
+
+### 3. Optimizer Comparison (`plot_optimizer_comparison.py`)
 
 Compares the performance of Adam and LM optimizers by plotting dense MSE evolution over training epochs.
 
@@ -65,10 +136,19 @@ Section 2.1 uses four 2D Poisson PDE test functions:
 
 All functions are defined on the unit square [0,1] × [0,1].
 
-## Optimizer Information
+## Section Information
 
+### Section 2.1: Optimizer Comparison
+Compares three optimizers for training KAN models:
 - **Adam**: Adaptive moment estimation, a popular first-order gradient-based optimizer
+- **LBFGS**: Limited-memory Broyden-Fletcher-Goldfarb-Shanno, a quasi-Newton method
 - **LM (Levenberg-Marquardt)**: Second-order optimizer that interpolates between gradient descent and Gauss-Newton method
+
+### Section 2.2: Adaptive Density
+Compares different grid densification strategies:
+- **Adaptive Only**: Refines grid only for neurons with high attribution scores
+- **Adaptive + Regular**: Combines adaptive densification with regular refinement
+- **Baseline**: Standard uniform grid refinement (for comparison)
 
 ## Common Options
 
@@ -79,7 +159,7 @@ All scripts support these common arguments:
 
 ## Examples
 
-### Quick Start
+### Quick Start - Section 2.1
 ```bash
 # Run the training script first
 cd /Users/main/Desktop/my_pykan/pykan/madoc/section2
@@ -87,9 +167,32 @@ python section2_1.py --epochs 20
 
 # Then generate visualizations
 cd visualization
+
+# Generate heatmaps for all datasets (RECOMMENDED)
+python plot_heatmap_2d.py --section section2_1
+
+# Generate loss curves
+python plot_best_loss.py --section section2_1
+
+# Legacy plots (still useful)
 python plot_optimizer_comparison.py
 python plot_function_fit.py --save-individual
-python plot_function_fit.py --heatmap --dataset 0
+```
+
+### Quick Start - Section 2.2
+```bash
+# Run the training script first
+cd /Users/main/Desktop/my_pykan/pykan/madoc/section2
+python section2_2.py --epochs 20
+
+# Then generate visualizations
+cd visualization
+
+# Generate heatmaps for adaptive density comparison
+python plot_heatmap_2d.py --section section2_2
+
+# Generate loss curves
+python plot_best_loss.py --section section2_2
 ```
 
 ### Analyzing a Specific Run
