@@ -191,7 +191,7 @@ Here are some ideas for additional visualizations:
 7. **Dataset Difficulty**: Compare all models across all datasets
 8. **Convergence Speed**: Epochs to reach 90% of final performance
 9. **Residual Plots**: Plot prediction errors (y_pred - y_true) to see where models fail
-10. **2D Heatmaps**: For 2D problems, show function fits as heatmaps instead of slices
+10. ~~**2D Heatmaps**: For 2D problems, show function fits as heatmaps instead of slices~~ ✓ **Implemented** - See `plot_heatmap_2d.py`
 
 ## Dataset Reference (Section 1.1)
 
