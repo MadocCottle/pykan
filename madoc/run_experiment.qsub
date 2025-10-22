@@ -1,0 +1,385 @@
+#!/bin/bash
+#PBS -N pykan_experiment
+#PBS -q normal
+#PBS -l wd
+#PBS -j oe
+#PBS -M your.email@example.com
+#PBS -m abe
+
+# =============================================================================
+# PyKAN Experiment Job Script for NCI Gadi
+# =============================================================================
+#
+# This PBS script runs PyKAN madoc experiments on NCI Gadi.
+# Results are collected in a timestamped folder for easy retrieval.
+#
+# =============================================================================
+# REQUIRED: Set your NCI project code
+# =============================================================================
+# TODO: Replace 'YOUR_PROJECT' with your actual NCI project code (e.g., ab12, xy34)
+# This is used for:
+#   - PBS project allocation (#PBS -P)
+#   - Storage access (#PBS -l storage)
+#
+# You can either:
+#   1. Edit the line below directly, OR
+#   2. Pass it via qsub: qsub -v PROJECT=ab12,...
+#
+PROJECT=${PROJECT:-YOUR_PROJECT}
+
+#PBS -P ${PROJECT}
+#PBS -l storage=scratch/${PROJECT}+gdata/${PROJECT}
+
+# =============================================================================
+# REQUIRED PARAMETERS (pass via qsub -v)
+# =============================================================================
+# SECTION: Which section to run (e.g., section1_1, section1_2, section1_3, section2_1, section2_2)
+# EPOCHS: Number of training epochs (e.g., 100)
+#
+# Example submission:
+#   qsub -v SECTION=section1_1,EPOCHS=100 run_experiment.qsub
+#
+# =============================================================================
+
+# =============================================================================
+# OPTIONAL PARAMETERS
+# =============================================================================
+# PROFILE: Resource profile to use (test, section1, section2, large)
+#          If not specified, auto-selected based on SECTION
+#
+# Example with profile:
+#   qsub -v SECTION=section1_1,EPOCHS=100,PROFILE=test run_experiment.qsub
+#
+# =============================================================================
+
+# Resource Profiles
+# -----------------
+# test:     1 CPU,  4GB RAM,  0.5 hours  - Quick verification
+# section1: 12 CPUs, 48GB RAM, 4 hours   - 1D function approximation
+# section2: 24 CPUs, 96GB RAM, 8 hours   - 2D PDE problems
+# large:    48 CPUs, 190GB RAM, 24 hours - Extended experiments
+
+# Note: The actual resource allocation is set dynamically below based on PROFILE
+
+# =============================================================================
+# Script Setup
+# =============================================================================
+
+set -e  # Exit on error
+
+# Script directory
+SCRIPT_DIR="${PBS_O_WORKDIR}"
+cd "${SCRIPT_DIR}"
+
+# Timestamp for results folder
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+RESULTS_DIR="${SCRIPT_DIR}/job_results_${TIMESTAMP}"
+
+# Log file
+LOG_FILE="${RESULTS_DIR}/job_summary.txt"
+
+# =============================================================================
+# Functions
+# =============================================================================
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "${LOG_FILE}"
+}
+
+error() {
+    log "ERROR: $*"
+    exit 1
+}
+
+# =============================================================================
+# Parameter Validation
+# =============================================================================
+
+log "=========================================="
+log "PyKAN Experiment Job"
+log "=========================================="
+log ""
+log "PBS Job ID: ${PBS_JOBID}"
+log "PBS Job Name: ${PBS_JOBNAME}"
+log "Working Directory: ${SCRIPT_DIR}"
+log ""
+
+# Check PROJECT is set
+if [[ "${PROJECT}" == "YOUR_PROJECT" ]] || [[ -z "${PROJECT}" ]]; then
+    error "PROJECT not set! Edit the script or pass via: qsub -v PROJECT=your_project,..."
+fi
+log "Project: ${PROJECT}"
+
+# Check SECTION is provided
+if [[ -z "${SECTION}" ]]; then
+    error "SECTION not specified! Usage: qsub -v SECTION=section1_1,EPOCHS=100 run_experiment.qsub"
+fi
+
+# Validate SECTION format and extract section number
+if [[ ! "${SECTION}" =~ ^section[12]_[123]$ ]]; then
+    error "Invalid SECTION format: ${SECTION}. Expected format: section1_1, section1_2, section1_3, section2_1, or section2_2"
+fi
+
+SECTION_NUM=$(echo "${SECTION}" | cut -d'_' -f1 | sed 's/section//')
+SUB_SECTION=$(echo "${SECTION}" | cut -d'_' -f2)
+SECTION_DIR="${SCRIPT_DIR}/section${SECTION_NUM}"
+SECTION_SCRIPT="${SECTION_DIR}/${SECTION}.py"
+
+# Check if section script exists
+if [[ ! -f "${SECTION_SCRIPT}" ]]; then
+    error "Section script not found: ${SECTION_SCRIPT}"
+fi
+log "Section: ${SECTION}"
+log "Section Script: ${SECTION_SCRIPT}"
+
+# Check EPOCHS is provided and valid
+if [[ -z "${EPOCHS}" ]]; then
+    error "EPOCHS not specified! Usage: qsub -v SECTION=section1_1,EPOCHS=100 run_experiment.qsub"
+fi
+
+if ! [[ "${EPOCHS}" =~ ^[0-9]+$ ]] || [[ "${EPOCHS}" -le 0 ]]; then
+    error "Invalid EPOCHS: ${EPOCHS}. Must be a positive integer."
+fi
+log "Epochs: ${EPOCHS}"
+
+# Auto-select or validate PROFILE
+if [[ -z "${PROFILE}" ]]; then
+    # Auto-select based on section
+    if [[ "${SECTION}" =~ ^section1 ]]; then
+        PROFILE="section1"
+    elif [[ "${SECTION}" =~ ^section2 ]]; then
+        PROFILE="section2"
+    else
+        PROFILE="section1"  # Default fallback
+    fi
+    log "Profile: ${PROFILE} (auto-selected)"
+else
+    log "Profile: ${PROFILE} (user-specified)"
+fi
+
+# Validate PROFILE
+case "${PROFILE}" in
+    test|section1|section2|large)
+        ;;
+    *)
+        error "Invalid PROFILE: ${PROFILE}. Valid options: test, section1, section2, large"
+        ;;
+esac
+
+# Set resources based on profile
+case "${PROFILE}" in
+    test)
+        NCPUS=1
+        MEM=4GB
+        WALLTIME=00:30:00
+        ;;
+    section1)
+        NCPUS=12
+        MEM=48GB
+        WALLTIME=04:00:00
+        ;;
+    section2)
+        NCPUS=24
+        MEM=96GB
+        WALLTIME=08:00:00
+        ;;
+    large)
+        NCPUS=48
+        MEM=190GB
+        WALLTIME=24:00:00
+        ;;
+esac
+
+log "Resources: ${NCPUS} CPUs, ${MEM} memory, ${WALLTIME} walltime"
+log ""
+
+# Create results directory
+mkdir -p "${RESULTS_DIR}"
+log "Results directory: ${RESULTS_DIR}"
+log ""
+
+# =============================================================================
+# Environment Setup
+# =============================================================================
+
+log "Setting up environment..."
+
+# Load Python module
+log "Loading Python module..."
+module load python3/3.10.4 || error "Failed to load Python module"
+
+# Check if virtual environment exists
+VENV_DIR="${SCRIPT_DIR}/.venv"
+if [[ ! -d "${VENV_DIR}" ]]; then
+    error "Virtual environment not found at ${VENV_DIR}. Please run setup.sh first."
+fi
+
+# Activate virtual environment
+log "Activating virtual environment..."
+source "${VENV_DIR}/bin/activate" || error "Failed to activate virtual environment"
+
+# Verify Python
+PYTHON_VERSION=$(python3 --version 2>&1)
+log "Python version: ${PYTHON_VERSION}"
+
+# Verify PyKAN can be imported
+log "Verifying PyKAN import..."
+python3 -c "
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('${SCRIPT_DIR}').parent))
+from kan import *
+" || error "Failed to import PyKAN"
+
+log "Environment setup complete"
+log ""
+
+# =============================================================================
+# Run Experiment
+# =============================================================================
+
+log "=========================================="
+log "Running Experiment: ${SECTION}"
+log "=========================================="
+log ""
+
+START_TIME=$(date +%s)
+
+log "Command: python3 ${SECTION_SCRIPT} --epochs ${EPOCHS}"
+log ""
+
+# Run the experiment
+python3 "${SECTION_SCRIPT}" --epochs "${EPOCHS}" 2>&1 | tee -a "${LOG_FILE}"
+EXPERIMENT_EXIT_CODE=${PIPESTATUS[0]}
+
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+DURATION_MIN=$((DURATION / 60))
+DURATION_SEC=$((DURATION % 60))
+
+log ""
+log "=========================================="
+log "Experiment Completed"
+log "=========================================="
+log "Exit code: ${EXPERIMENT_EXIT_CODE}"
+log "Duration: ${DURATION_MIN}m ${DURATION_SEC}s"
+log ""
+
+if [[ ${EXPERIMENT_EXIT_CODE} -ne 0 ]]; then
+    error "Experiment failed with exit code ${EXPERIMENT_EXIT_CODE}"
+fi
+
+# =============================================================================
+# Collect Results
+# =============================================================================
+
+log "=========================================="
+log "Collecting Results"
+log "=========================================="
+log ""
+
+# Find the results directory for this section
+SECTION_RESULTS_DIR="${SECTION_DIR}/results/sec${SUB_SECTION}_results"
+
+if [[ ! -d "${SECTION_RESULTS_DIR}" ]]; then
+    error "Results directory not found: ${SECTION_RESULTS_DIR}"
+fi
+
+log "Source results directory: ${SECTION_RESULTS_DIR}"
+
+# Find the most recent results (by timestamp in filename)
+# Results are saved with format: section{N}_{M}_{TIMESTAMP}_*.pkl
+LATEST_TIMESTAMP=$(ls -1t "${SECTION_RESULTS_DIR}/${SECTION}_"*.pkl 2>/dev/null | head -1 | sed -n "s/.*${SECTION}_\([0-9_]*\)_.*/\1/p")
+
+if [[ -z "${LATEST_TIMESTAMP}" ]]; then
+    error "No results found in ${SECTION_RESULTS_DIR}"
+fi
+
+log "Latest run timestamp: ${LATEST_TIMESTAMP}"
+log ""
+
+# Create section results directory in job results folder
+JOB_SECTION_RESULTS="${RESULTS_DIR}/${SECTION}_results"
+mkdir -p "${JOB_SECTION_RESULTS}"
+
+# Copy all files from the latest run
+log "Copying results files..."
+COPIED_COUNT=0
+for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*; do
+    if [[ -f "${file}" ]]; then
+        cp "${file}" "${JOB_SECTION_RESULTS}/"
+        log "  Copied: $(basename ${file})"
+        COPIED_COUNT=$((COPIED_COUNT + 1))
+    fi
+done
+
+log ""
+log "Copied ${COPIED_COUNT} result files"
+log ""
+
+# =============================================================================
+# Generate Job Summary
+# =============================================================================
+
+log "=========================================="
+log "Job Summary"
+log "=========================================="
+log ""
+log "Job Details:"
+log "  PBS Job ID: ${PBS_JOBID}"
+log "  Section: ${SECTION}"
+log "  Epochs: ${EPOCHS}"
+log "  Profile: ${PROFILE}"
+log "  Resources: ${NCPUS} CPUs, ${MEM} memory"
+log "  Walltime Limit: ${WALLTIME}"
+log ""
+log "Results:"
+log "  Run Timestamp: ${LATEST_TIMESTAMP}"
+log "  Files Collected: ${COPIED_COUNT}"
+log "  Results Location: ${RESULTS_DIR}"
+log ""
+log "To use these results with visualization scripts:"
+log "  cp -r ${JOB_SECTION_RESULTS}/* ${SECTION_RESULTS_DIR}/"
+log ""
+
+# Copy PBS output log if available (will be available after job completes)
+if [[ -n "${PBS_JOBID}" ]]; then
+    PBS_OUTPUT="${SCRIPT_DIR}/${PBS_JOBNAME}.o${PBS_JOBID%%.*}"
+    log "PBS output will be saved to: ${PBS_OUTPUT}"
+    log "(Copy it to results folder after job completion if needed)"
+fi
+
+log ""
+log "=========================================="
+log "Job Completed Successfully!"
+log "=========================================="
+log ""
+log "Results available at: ${RESULTS_DIR}"
+log ""
+
+# Create a simple manifest file
+cat > "${RESULTS_DIR}/MANIFEST.txt" <<EOF
+PyKAN Experiment Results
+========================
+
+Job ID: ${PBS_JOBID}
+Section: ${SECTION}
+Epochs: ${EPOCHS}
+Profile: ${PROFILE}
+Timestamp: ${TIMESTAMP}
+Run Duration: ${DURATION_MIN}m ${DURATION_SEC}s
+
+Results Directory: ${JOB_SECTION_RESULTS}
+Files Collected: ${COPIED_COUNT}
+
+To integrate with existing visualizations:
+  cp -r ${JOB_SECTION_RESULTS}/* ${SECTION_RESULTS_DIR}/
+
+Result Files:
+$(ls -lh ${JOB_SECTION_RESULTS})
+EOF
+
+log "Manifest created: ${RESULTS_DIR}/MANIFEST.txt"
+log ""
+
+exit 0

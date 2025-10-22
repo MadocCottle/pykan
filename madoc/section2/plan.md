@@ -48,6 +48,18 @@ Start with a fairly large number of KANs, then reduce the number at each of seve
 
 Eg you could start with 20 kans, then have 8 after the first merge, then 3 after the second.
 
+Part of the idea behind merge KAN is inspired by the lack of catesrophic forgetting KANS have. I vibesways sus that this mean that different experts will "remember".... different sections/ properties? much more in this l8r I guess haha
+
+I also think this and 2.4 could really benifit from being tested in a very high dimensional space? Like both cause curse of dimensionality and the weird complexity of these kinda spaces maybe that curse of forgetting shit will mega buff KAN probe or just KANS or even MERGE KAN just cause like there would be *so* many relationships and you would want some kind of way to *remember* them.
+
+Is it possible to fold a KAN.... it can't be made into a single basis function?
+
+Maybe try snapping all functions when merging?
+
+Like KAN merge normal and KAN merge snap?
+
+ALso maybe kan merge freeze for when the component KANS are put in, training on *them* is frozen.... results in a deeper models as there would need to be layers above but yeah should make sense right?
+
 <!-- ## Section 2.3.1 -->
 
 
