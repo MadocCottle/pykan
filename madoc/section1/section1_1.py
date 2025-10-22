@@ -6,7 +6,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from kan import *
 from utils import data_funcs as dfs
-from utils import run_mlp_tests, run_siren_tests, run_kan_grid_tests, save_results
+from utils import run_mlp_tests, run_siren_tests, run_kan_grid_tests, save_run
 from utils import track_time, print_timing_summary
 import argparse
 
@@ -77,6 +77,7 @@ print_timing_summary(timers, "Section 1.1", num_datasets=len(datasets))
 all_results = {'mlp': mlp_results, 'siren': siren_results, 'kan': kan_results, 'kan_pruning': kan_pruning_results}
 print(all_results)
 
-save_results(all_results, 'section1_1', output_dir='sec1_results', epochs=epochs, device=device, grids=grids,
-             depths=depths, activations=activations, frequencies=freq,
-             num_datasets=len(datasets), kan_models=kan_models, pruned_models=kan_pruned_models)
+save_run(all_results, 'section1_1',
+         models={'kan': kan_models, 'kan_pruned': kan_pruned_models},
+         epochs=epochs, device=str(device), grids=grids.tolist(), depths=depths,
+         activations=activations, frequencies=freq, num_datasets=len(datasets))

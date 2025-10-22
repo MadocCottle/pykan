@@ -1,4 +1,4 @@
-"""I/O utilities for saving and loading experiment results"""
+"""Concise I/O for Section 1 experiment results"""
 import json
 import pickle
 from pathlib import Path
@@ -7,90 +7,64 @@ import numpy as np
 import math
 
 
-def clean_nan_inf(obj):
-    """Recursively replace NaN and Inf values with None for JSON compatibility"""
+def clean(obj):
+    """Replace NaN/Inf with None for JSON and convert numpy types to Python native types"""
     if isinstance(obj, dict):
-        return {k: clean_nan_inf(v) for k, v in obj.items()}
+        # Convert both keys and values, handling numpy types in keys
+        return {
+            (int(k) if isinstance(k, np.integer) else
+             float(k) if isinstance(k, np.floating) else k): clean(v)
+            for k, v in obj.items()
+        }
     elif isinstance(obj, (list, tuple)):
-        return [clean_nan_inf(item) for item in obj]
+        return [clean(x) for x in obj]
+    elif isinstance(obj, np.integer):
+        return int(obj)
     elif isinstance(obj, (float, np.floating)):
-        if math.isnan(obj) or math.isinf(obj):
-            return None
-        return float(obj)
-    elif isinstance(obj, (np.ndarray,)):
-        if obj.ndim == 0:  # Scalar array
-            return clean_nan_inf(obj.item())
-        return [clean_nan_inf(item) for item in obj.tolist()]
-    else:
-        return obj
+        return None if (math.isnan(obj) or math.isinf(obj)) else float(obj)
+    elif isinstance(obj, np.ndarray):
+        return clean(obj.tolist()) if obj.ndim > 0 else clean(obj.item())
+    return obj
 
 
-def save_results(results, section_name, output_dir='sec1_results',
-                 epochs=None, device=None, grids=None, depths=None,
-                 activations=None, frequencies=None, num_datasets=None,
-                 kan_models=None, pruned_models=None):
-    """Save experiment results to JSON/pickle and optionally save KAN model checkpoints"""
-    output_path = Path(output_dir)
-    output_path.mkdir(exist_ok=True)
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+def save_run(results, section, models=None, **meta):
+    """Save experiment run with timestamp
 
-    # Clean results to make them JSON-serializable
-    json_results = clean_nan_inf(results)
+    Args:
+        results: Results dict from training (mlp/siren/kan/kan_pruning)
+        section: Section name (e.g., 'section1_1')
+        models: Dict of {'kan': {idx: model}, 'kan_pruned': {idx: model}} or None
+        **meta: Metadata (epochs, grids, depths, activations, device, etc.)
 
-    # Convert all keys to strings for JSON compatibility
-    def stringify_keys(obj):
-        if isinstance(obj, dict):
-            return {str(k): stringify_keys(v) for k, v in obj.items()}
-        elif isinstance(obj, (list, tuple)):
-            return [stringify_keys(item) for item in obj]
-        else:
-            return obj
+    Returns:
+        Timestamp string
+    """
+    ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+    sec_num = section.split('_')[-1]
 
-    json_results = stringify_keys(json_results)
+    # Save in section1/results/sec{N}_results/
+    base_dir = Path(__file__).parent.parent  # Go to section1/
+    results_dir = base_dir / 'results' / f'sec{sec_num}_results'
+    results_dir.mkdir(exist_ok=True, parents=True)
+    p = results_dir
 
-    with open(output_path / f'{section_name}_results_{timestamp}.json', 'w') as f:
-        json.dump(json_results, f, indent=2, allow_nan=False)
-    with open(output_path / f'{section_name}_results_{timestamp}.pkl', 'wb') as f:
+    # Save results
+    with open(p / f'{section}_{ts}.pkl', 'wb') as f:
         pickle.dump(results, f)
 
-    if kan_models is not None:
-        models_dir = output_path / f'kan_models_{timestamp}'
-        models_dir.mkdir(exist_ok=True)
-        for dataset_idx, model in kan_models.items():
-            model.saveckpt(str(models_dir / f'kan_dataset_{dataset_idx}'))
-        with open(models_dir / 'models_metadata.json', 'w') as f:
-            json.dump({'timestamp': timestamp, 'num_models': len(kan_models),
-                      'dataset_indices': list(kan_models.keys())}, f, indent=2)
+    # Save JSON with metadata
+    json_data = {'results': clean(results), 'meta': meta}
+    with open(p / f'{section}_{ts}.json', 'w') as f:
+        json.dump(json_data, f, indent=2)
 
-    if pruned_models is not None:
-        pruned_dir = output_path / f'kan_pruned_models_{timestamp}'
-        pruned_dir.mkdir(exist_ok=True)
-        for dataset_idx, model in pruned_models.items():
-            model.saveckpt(str(pruned_dir / f'kan_pruned_dataset_{dataset_idx}'))
-        with open(pruned_dir / 'pruned_models_metadata.json', 'w') as f:
-            json.dump({'timestamp': timestamp, 'num_models': len(pruned_models),
-                      'dataset_indices': list(pruned_models.keys()),
-                      'pruning_params': {'node_th': 1e-2, 'edge_th': 3e-2}}, f, indent=2)
+    # Save models
+    if models:
+        if 'kan' in models:
+            for idx, model in models['kan'].items():
+                model.saveckpt(str(p / f'{section}_{ts}_kan_{idx}'))
+        if 'kan_pruned' in models:
+            for idx, model in models['kan_pruned'].items():
+                model.saveckpt(str(p / f'{section}_{ts}_pruned_{idx}'))
 
-    metadata = {'timestamp': timestamp}
-    if epochs is not None:
-        metadata['epochs'] = epochs
-    if device is not None:
-        metadata['device'] = str(device)
-    if grids is not None:
-        metadata['grids'] = grids.tolist() if hasattr(grids, 'tolist') else grids
-    if depths is not None:
-        metadata['depths'] = depths
-    if activations is not None:
-        metadata['activations'] = activations
-    if frequencies is not None:
-        metadata['frequencies'] = frequencies
-    if num_datasets is not None:
-        metadata['num_datasets'] = num_datasets
-    metadata['kan_models_saved'] = kan_models is not None
-    metadata['pruned_models_saved'] = pruned_models is not None
-
-    with open(output_path / f'{section_name}_metadata_{timestamp}.json', 'w') as f:
-        json.dump(metadata, f, indent=2)
-
-    return timestamp
+    print(f"Saved to {p}/{section}_{ts}.*")
+    return ts

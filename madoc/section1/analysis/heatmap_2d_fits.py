@@ -19,17 +19,18 @@ from typing import Dict, Optional, Callable, Union
 # Add section1 directory to path for utils imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 # Add pykan root to path for KAN imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from kan import KAN
 from utils import data_funcs as dfs
 
-# Import centralized IO module
+# Import IO module
 try:
-    from . import data_io
+    from . import io
 except ImportError:
     # Allow running as script (not as package)
-    import data_io
+    import io as io_module
+    io = io_module
 
 # Set style
 sns.set_style("white")
@@ -48,29 +49,20 @@ class Heatmap2DAnalyzer:
                 - Section ID (e.g., 'section1_3') to auto-load latest results
             models_dir: Optional path to saved models. If None, will auto-discover.
         """
-        # Load results using centralized IO
-        self.results, _ = data_io.load_results(results_path)
-
-        # Handle results path and models directory
+        # Load results
         results_path_str = str(results_path)
-        if results_path_str in data_io.SECTION_DIRS:
-            # Section ID provided - get actual paths
-            info = data_io.find_latest_results(results_path_str)
-            self.results_path = info['results_file']
-            # Auto-discover models dir if not explicitly provided
-            if models_dir is None and info['models_dir']:
-                self.models_dir = info['models_dir']
-            else:
-                self.models_dir = Path(models_dir) if models_dir else None
+        if results_path_str in io.SECTIONS:
+            # Section ID - load latest
+            self.results, _, auto_models_dir = io.load_run(results_path_str)
+            self.results_path = results_path_str
+            self.models_dir = Path(models_dir) if models_dir else (Path(auto_models_dir) if auto_models_dir else None)
         else:
-            # Explicit path provided
+            # Direct path - manual load
+            import pickle
             self.results_path = Path(results_path)
-            if models_dir is None:
-                # Try to auto-discover models dir
-                discovered_dir = data_io.find_models_dir(self.results_path)
-                self.models_dir = discovered_dir
-            else:
-                self.models_dir = Path(models_dir)
+            with open(self.results_path, 'rb') as f:
+                self.results = pickle.load(f)
+            self.models_dir = Path(models_dir) if models_dir else None
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

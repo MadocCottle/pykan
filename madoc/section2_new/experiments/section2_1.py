@@ -1,5 +1,12 @@
 import sys
+import os
 from pathlib import Path
+
+# Fix for macOS OpenMP threading issue with sklearn/numpy
+# Set before importing numpy/sklearn to avoid segfaults
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 # Add pykan to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -12,7 +19,7 @@ import argparse
 from expert_training import KANExpertEnsemble
 from variable_importance import VariableImportanceAnalyzer
 from clustering import ExpertClusterer
-from stacking import StackedEnsemble
+from stacking import StackedEnsemble, ClusterAwareStackedEnsemble
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Section 2.1: Hierarchical Ensemble of KAN Experts')
@@ -60,6 +67,24 @@ print(f"\nTraining complete:")
 print(f"  Individual losses: {train_results['individual_losses']}")
 print(f"  Mean loss: {np.mean(train_results['individual_losses']):.6f}")
 
+# Check expert diversity
+loss_std = np.std(train_results['individual_losses'])
+print(f"  Loss std: {loss_std:.6f}")
+
+if loss_std < 1e-8:
+    print("\nWARNING: All experts have nearly identical losses!")
+    print("This suggests the random seed is not properly differentiating experts.")
+
+# Get predictions and check diversity
+with torch.no_grad():
+    expert_preds = torch.stack([expert(X_test) for expert in ensemble.experts])
+    pred_std = expert_preds.std(dim=0).mean().item()
+    print(f"  Mean prediction std across experts: {pred_std:.6f}")
+
+    if pred_std < 1e-6:
+        print("\nWARNING: All experts produce nearly identical predictions!")
+        print("Clustering results may not be meaningful.")
+
 # ============= Variable Importance =============
 print("\n" + "="*60)
 print("Computing Variable Importance...")
@@ -94,10 +119,10 @@ print("Training Stacked Ensemble...")
 print("="*60)
 
 stacked = StackedEnsemble(
-    base_ensemble=ensemble,
+    ensemble=ensemble,
     meta_hidden_dim=16,
-    use_input_features=False,
-    cluster_labels=labels
+    use_input=False,
+    device=device
 )
 
 meta_results = stacked.train_meta_learner(X_train, y_train, epochs=50, lr=0.01, verbose=True)

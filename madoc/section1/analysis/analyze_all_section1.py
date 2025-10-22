@@ -27,11 +27,12 @@ import json
 sys.path.insert(0, str(Path(__file__).parent))
 
 try:
-    from . import data_io
+    from . import io
     from . import report_utils as ru
     from .run_analysis import run_full_analysis
 except ImportError:
-    import data_io
+    import io as io_module
+    io = io_module
     import report_utils as ru
     from run_analysis import run_full_analysis
 
@@ -61,26 +62,33 @@ def analyze_all_sections(output_base_dir: str = None, specific_timestamp: str = 
     analysis_results = {}
 
     # Analyze each subsection
-    for section_id, config in data_io.SECTION_CONFIG.items():
+    section_names = {
+        'section1_1': 'Section 1.1: Function Approximation',
+        'section1_2': 'Section 1.2: 1D Poisson PDE',
+        'section1_3': 'Section 1.3: 2D Poisson PDE'
+    }
+
+    for section_id in io.SECTIONS:
         ru.print_separator('=', 80)
-        print(f"{config['name']}")
+        print(f"{section_names[section_id]}")
         ru.print_separator('=', 80)
 
-        # Find results using centralized data_io function
+        # Find results
         try:
-            if specific_timestamp:
-                # Use data_io to find specific timestamp
-                info = data_io.find_latest_results(section_id, timestamp=specific_timestamp)
-            else:
-                # Find latest
-                info = data_io.find_latest_results(section_id)
+            results, metadata, models_dir = io.load_run(section_id, timestamp=specific_timestamp)
 
-            print(f"Found results: {info['results_file'].name}")
-            if info['models_dir']:
-                print(f"Found models: {info['models_dir'].name}")
+            # Get results file path for display
+            # This file is in section1/analysis/, so parent is section1/
+            results_dir = Path(__file__).parent.parent / 'results' / io.SECTION_DIRS[section_id]
+            ts = specific_timestamp if specific_timestamp else sorted(results_dir.glob(f'{section_id}_*.pkl'))[-1].stem.split('_')[-1]
+            results_file = results_dir / f'{section_id}_{ts}.pkl'
+
+            print(f"Found results: {results_file.name}")
+            if models_dir:
+                print(f"Found models: {Path(models_dir).name}")
             else:
                 print("No KAN models found (function fitting will be limited)")
-            print(f"Timestamp: {info['timestamp']}")
+            print(f"Timestamp: {ts}")
             print()
 
             # Create subsection output directory
@@ -88,22 +96,22 @@ def analyze_all_sections(output_base_dir: str = None, specific_timestamp: str = 
 
             # Run analysis
             run_full_analysis(
-                str(info['results_file']),
-                str(info['models_dir']) if info['models_dir'] else None,
+                str(results_file),
+                models_dir,
                 str(section_output_dir)
             )
 
             analysis_results[section_id] = {
                 'status': 'success',
-                'results_file': str(info['results_file']),
-                'models_dir': str(info['models_dir']) if info['models_dir'] else None,
+                'results_file': str(results_file),
+                'models_dir': models_dir,
                 'output_dir': str(section_output_dir),
-                'timestamp': info['timestamp']
+                'timestamp': ts
             }
 
             ru.print_status(f"Analysis complete for {section_id}")
 
-        except data_io.ResultsNotFoundError as e:
+        except FileNotFoundError as e:
             print(f"✗ No results found")
             print(f"  {e}")
             analysis_results[section_id] = None
@@ -143,19 +151,42 @@ def analyze_all_sections(output_base_dir: str = None, specific_timestamp: str = 
 
     # Print summary
     print("\nSummary:")
+    section_names = {
+        'section1_1': 'Section 1.1: Function Approximation',
+        'section1_2': 'Section 1.2: 1D Poisson PDE',
+        'section1_3': 'Section 1.3: 2D Poisson PDE'
+    }
     for section_id, result in analysis_results.items():
-        config = data_io.get_section_config(section_id)
         status_symbol = "✓" if result and result.get('status') == 'success' else "✗"
-        print(f"  {status_symbol} {config['name']}")
+        print(f"  {status_symbol} {section_names[section_id]}")
     print()
 
 
 def generate_thesis_report(output_path: Path, analysis_results: dict):
     """Generate combined thesis report using template"""
 
+    section_info = {
+        'section1_1': {
+            'name': 'Section 1.1: Function Approximation',
+            'description': 'Sinusoids, piecewise, sawtooth, polynomial, and high-frequency functions',
+            'is_2d': False
+        },
+        'section1_2': {
+            'name': 'Section 1.2: 1D Poisson PDE',
+            'description': '1D Poisson equation with various forcing functions',
+            'is_2d': False
+        },
+        'section1_3': {
+            'name': 'Section 1.3: 2D Poisson PDE',
+            'description': '2D Poisson equation with sin, polynomial, high-frequency, and special forcings',
+            'is_2d': True
+        }
+    }
+
     # Build experimental sections text
     experimental_sections = []
-    for section_id, config in data_io.SECTION_CONFIG.items():
+    for section_id in io.SECTIONS:
+        config = section_info[section_id]
         result = analysis_results.get(section_id)
 
         section_text = f"""
@@ -193,7 +224,7 @@ See `{section_id}_analysis/ANALYSIS_SUMMARY.md` for detailed analysis.
     file_structure = []
     for section_id, result in analysis_results.items():
         if result and result.get('status') == 'success':
-            config = data_io.get_section_config(section_id)
+            config = section_info[section_id]
             file_structure.append(f"""
 ### {section_id}
 

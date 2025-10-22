@@ -194,32 +194,69 @@ class ExpertClusterer:
         """
         n_experts = features.shape[0]
 
+        # Validate input data
+        if np.any(np.isnan(features)):
+            raise ValueError("Feature matrix contains NaN values")
+        if np.any(np.isinf(features)):
+            raise ValueError("Feature matrix contains Inf values")
+
+        # Check if all features are identical (can cause clustering issues)
+        if features.shape[0] > 1:
+            feature_std = np.std(features, axis=0)
+            if np.all(feature_std < 1e-10):
+                print("Warning: All experts have nearly identical features. Assigning to single cluster.")
+                return np.zeros(n_experts, dtype=int)
+
         # Auto-select number of clusters if not provided
         if n_clusters is None:
             n_clusters = self._select_n_clusters(features, metric=metric)
 
+        # Ensure n_clusters is valid
+        if n_clusters >= n_experts:
+            print(f"Warning: n_clusters ({n_clusters}) >= n_experts ({n_experts}). Using n_clusters={max(1, n_experts-1)}")
+            n_clusters = max(1, n_experts - 1)
+
+        if n_clusters == 1:
+            return np.zeros(n_experts, dtype=int)
+
         # Perform clustering
-        if self.method == 'kmeans':
-            if metric == 'precomputed':
-                raise ValueError("KMeans does not support precomputed distances")
-            clusterer = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-            labels = clusterer.fit_predict(features)
+        try:
+            if self.method == 'kmeans':
+                if metric == 'precomputed':
+                    raise ValueError("KMeans does not support precomputed distances")
 
-        elif self.method == 'hierarchical':
-            clusterer = AgglomerativeClustering(
-                n_clusters=n_clusters,
-                metric=metric if metric != 'correlation' else 'euclidean',
-                linkage='average'
-            )
-            labels = clusterer.fit_predict(features)
+                # Use n_init='auto' for sklearn 1.4+ compatibility, fallback to 10 for older versions
+                try:
+                    clusterer = KMeans(n_clusters=n_clusters, random_state=42, n_init='auto')
+                except TypeError:
+                    # Older sklearn versions don't support n_init='auto'
+                    clusterer = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
 
-        elif self.method == 'dbscan':
-            # DBSCAN doesn't require n_clusters
-            clusterer = DBSCAN(eps=0.5, min_samples=2, metric=metric)
-            labels = clusterer.fit_predict(features)
+                labels = clusterer.fit_predict(features)
 
-        else:
-            raise ValueError(f"Unknown clustering method: {self.method}")
+            elif self.method == 'hierarchical':
+                clusterer = AgglomerativeClustering(
+                    n_clusters=n_clusters,
+                    metric=metric if metric != 'correlation' else 'euclidean',
+                    linkage='average'
+                )
+                labels = clusterer.fit_predict(features)
+
+            elif self.method == 'dbscan':
+                # DBSCAN doesn't require n_clusters
+                clusterer = DBSCAN(eps=0.5, min_samples=2, metric=metric)
+                labels = clusterer.fit_predict(features)
+
+            else:
+                raise ValueError(f"Unknown clustering method: {self.method}")
+
+        except Exception as e:
+            print(f"Error during clustering: {e}")
+            print(f"Feature matrix shape: {features.shape}")
+            print(f"Feature matrix stats: min={np.min(features):.6f}, max={np.max(features):.6f}, mean={np.mean(features):.6f}")
+            # Fallback: assign all to same cluster
+            print("Falling back to single cluster assignment")
+            return np.zeros(n_experts, dtype=int)
 
         return labels
 
@@ -258,7 +295,11 @@ class ExpertClusterer:
                 if self.method == 'kmeans':
                     if metric == 'precomputed':
                         continue  # Skip
-                    clusterer = KMeans(n_clusters=k, random_state=42, n_init=10)
+                    # Use n_init='auto' for sklearn 1.4+ compatibility
+                    try:
+                        clusterer = KMeans(n_clusters=k, random_state=42, n_init='auto')
+                    except TypeError:
+                        clusterer = KMeans(n_clusters=k, random_state=42, n_init=10)
                     labels = clusterer.fit_predict(features)
                 elif self.method == 'hierarchical':
                     clusterer = AgglomerativeClustering(n_clusters=k, metric=metric, linkage='average')
@@ -276,7 +317,8 @@ class ExpertClusterer:
                     if score > best_score:
                         best_score = score
                         best_k = k
-            except:
+            except Exception as e:
+                # Silently continue on errors during cluster selection
                 continue
 
         return best_k

@@ -23,6 +23,7 @@ Reference:
 
 import torch
 import torch.nn as nn
+import numpy as np
 from typing import List, Dict, Any, Optional, Callable
 import sys
 from pathlib import Path
@@ -162,15 +163,35 @@ class KANExpertEnsemble:
         Returns:
             Initialized KAN model
         """
+        # Set all random seeds for reproducibility
         torch.manual_seed(seed)
+        np.random.seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+
         kan_class = self.variant_map[self.kan_variant]
-        expert = kan_class(
-            input_dim=self.input_dim,
-            hidden_dim=self.hidden_dim,
-            output_dim=self.output_dim,
-            depth=self.depth,
-            **self.kan_kwargs
-        ).to(self.device)
+
+        # Try to pass seed if the class accepts it
+        try:
+            expert = kan_class(
+                input_dim=self.input_dim,
+                hidden_dim=self.hidden_dim,
+                output_dim=self.output_dim,
+                depth=self.depth,
+                seed=seed,
+                **self.kan_kwargs
+            ).to(self.device)
+        except TypeError:
+            # If seed parameter not accepted, just create without it
+            expert = kan_class(
+                input_dim=self.input_dim,
+                hidden_dim=self.hidden_dim,
+                output_dim=self.output_dim,
+                depth=self.depth,
+                **self.kan_kwargs
+            ).to(self.device)
+
         return expert
 
     def train_experts(

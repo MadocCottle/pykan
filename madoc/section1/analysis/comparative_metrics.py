@@ -17,14 +17,15 @@ from typing import Dict, Optional, Union
 import seaborn as sns
 
 # Add pykan to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-# Import centralized IO module
+# Import IO module
 try:
-    from . import data_io
+    from . import io
 except ImportError:
     # Allow running as script (not as package)
-    import data_io
+    import io as io_module
+    io = io_module
 
 # Set plotting style
 sns.set_style("whitegrid")
@@ -44,17 +45,25 @@ class MetricsAnalyzer:
                 - Path to the .pkl or .json results file (e.g., '/path/to/results.pkl')
                 - Section ID (e.g., 'section1_1') to auto-load latest results
         """
-        # Load results and metadata using centralized IO
-        self.results, self.metadata = data_io.load_results(results_path)
-
-        # Store the results path for reference
+        # Load results and metadata
         results_path_str = str(results_path)
-        if results_path_str in data_io.SECTION_DIRS:
-            # If section ID was provided, get the actual path
-            info = data_io.find_latest_results(results_path_str)
-            self.results_path = info['results_file']
+        if results_path_str in io.SECTIONS:
+            # Section ID - load latest
+            self.results, self.metadata, _ = io.load_run(results_path_str)
+            self.results_path = results_path_str
         else:
+            # Direct path - need to manually load
+            import pickle, json
             self.results_path = Path(results_path)
+            with open(self.results_path, 'rb') as f:
+                self.results = pickle.load(f)
+            json_file = self.results_path.with_suffix('.json')
+            if json_file.exists():
+                with open(json_file, 'r') as f:
+                    data = json.load(f)
+                    self.metadata = data.get('meta', {})
+            else:
+                self.metadata = {}
 
     def create_comparison_table(self, dataset_idx: int = 0, output_path: Optional[str] = None) -> pd.DataFrame:
         """
