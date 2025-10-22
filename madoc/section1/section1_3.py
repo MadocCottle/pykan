@@ -41,10 +41,10 @@ print("="*60 + "\n")
 timers = {}
 
 print("\nTraining MLPs (with dense MSE metrics)...")
-mlp_results = track_time(timers, "MLP training", run_mlp_tests, datasets, depths, activations, epochs, device, true_functions, dataset_names)
+mlp_results, mlp_models = track_time(timers, "MLP training", run_mlp_tests, datasets, depths, activations, epochs, device, true_functions, dataset_names)
 
 print("Training SIRENs (with dense MSE metrics)...")
-siren_results = track_time(timers, "SIREN training", run_siren_tests, datasets, depths, epochs, device, true_functions, dataset_names)
+siren_results, siren_models = track_time(timers, "SIREN training", run_siren_tests, datasets, depths, epochs, device, true_functions, dataset_names)
 
 print("Training KANs (with dense MSE metrics)...")
 kan_results, kan_models = track_time(timers, "KAN training", run_kan_grid_tests, datasets, grids, epochs, device, False, true_functions, dataset_names)
@@ -61,5 +61,6 @@ for model_type, df in all_results.items():
     print(f"  {model_type}: {df.shape[0]} rows, {df.shape[1]} columns")
 
 save_run(all_results, 'section1_3',
-         models={'kan': kan_models, 'kan_pruned': kan_pruned_models},
+         models={'mlp': mlp_models, 'siren': siren_models,
+                 'kan': kan_models, 'kan_pruned': kan_pruned_models},
          epochs=epochs, device=str(device))

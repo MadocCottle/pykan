@@ -69,11 +69,15 @@ def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions,
         dataset_names: List of descriptive names for each dataset (optional)
 
     Returns:
-        DataFrame with columns: dataset_idx, dataset_name, depth, activation, epoch, train_loss, test_loss,
-                                dense_mse, total_time, time_per_epoch, num_params
+        Tuple of (DataFrame, models_dict) where:
+        - DataFrame has columns: dataset_idx, dataset_name, depth, activation, epoch, train_loss, test_loss,
+                                 dense_mse, total_time, time_per_epoch, num_params
+        - models_dict maps dataset_idx -> trained model (best model per dataset: lowest final dense_mse)
     """
     print("mlp")
     rows = []
+    models = {}
+    best_models_info = {}  # Track best model per dataset
 
     # Generate default names if not provided
     if dataset_names is None:
@@ -111,7 +115,22 @@ def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions,
 
                 print(f"  Dataset {i} ({dataset_name}), depth {d}, {act}: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
 
-    return pd.DataFrame(rows)
+                # Track best model per dataset (lowest final dense_mse)
+                final_dense_mse = dense_mse[-1]
+                if i not in best_models_info or final_dense_mse < best_models_info[i]['dense_mse']:
+                    best_models_info[i] = {
+                        'model': model,
+                        'dense_mse': final_dense_mse,
+                        'depth': d,
+                        'activation': act
+                    }
+
+    # Store best models
+    for i, info in best_models_info.items():
+        models[i] = info['model']
+        print(f"  Best MLP for dataset {i}: depth={info['depth']}, activation={info['activation']}, dense_mse={info['dense_mse']:.6e}")
+
+    return pd.DataFrame(rows), models
 
 def run_siren_tests(datasets, depths, epochs, device, true_functions, dataset_names=None):
     """Train SIREN models with varying depths across multiple datasets
@@ -125,11 +144,15 @@ def run_siren_tests(datasets, depths, epochs, device, true_functions, dataset_na
         dataset_names: List of descriptive names for each dataset (optional)
 
     Returns:
-        DataFrame with columns: dataset_idx, dataset_name, depth, epoch, train_loss, test_loss,
-                                dense_mse, total_time, time_per_epoch, num_params
+        Tuple of (DataFrame, models_dict) where:
+        - DataFrame has columns: dataset_idx, dataset_name, depth, epoch, train_loss, test_loss,
+                                 dense_mse, total_time, time_per_epoch, num_params
+        - models_dict maps dataset_idx -> trained model (best model per dataset: lowest final dense_mse)
     """
     print("siren")
     rows = []
+    models = {}
+    best_models_info = {}  # Track best model per dataset
 
     # Generate default names if not provided
     if dataset_names is None:
@@ -165,7 +188,21 @@ def run_siren_tests(datasets, depths, epochs, device, true_functions, dataset_na
 
             print(f"  Dataset {i} ({dataset_name}), depth {d}: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
 
-    return pd.DataFrame(rows)
+            # Track best model per dataset (lowest final dense_mse)
+            final_dense_mse = dense_mse[-1]
+            if i not in best_models_info or final_dense_mse < best_models_info[i]['dense_mse']:
+                best_models_info[i] = {
+                    'model': model,
+                    'dense_mse': final_dense_mse,
+                    'depth': d
+                }
+
+    # Store best models
+    for i, info in best_models_info.items():
+        models[i] = info['model']
+        print(f"  Best SIREN for dataset {i}: depth={info['depth']}, dense_mse={info['dense_mse']:.6e}")
+
+    return pd.DataFrame(rows), models
 
 def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, dataset_names=None):
     """Train KAN models with grid refinement, optionally with pruning

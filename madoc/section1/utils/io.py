@@ -1,31 +1,9 @@
 """Concise I/O for Section 1 experiment results"""
-import json
 import pickle
 from pathlib import Path
 from datetime import datetime
-import numpy as np
 import pandas as pd
-import math
-
-
-def clean(obj):
-    """Replace NaN/Inf with None for JSON and convert numpy types to Python native types"""
-    if isinstance(obj, dict):
-        # Convert both keys and values, handling numpy types in keys
-        return {
-            (int(k) if isinstance(k, np.integer) else
-             float(k) if isinstance(k, np.floating) else k): clean(v)
-            for k, v in obj.items()
-        }
-    elif isinstance(obj, (list, tuple)):
-        return [clean(x) for x in obj]
-    elif isinstance(obj, np.integer):
-        return int(obj)
-    elif isinstance(obj, (float, np.floating)):
-        return None if (math.isnan(obj) or math.isinf(obj)) else float(obj)
-    elif isinstance(obj, np.ndarray):
-        return clean(obj.tolist()) if obj.ndim > 0 else clean(obj.item())
-    return obj
+import torch
 
 
 def save_run(results, section, models=None, **meta):
@@ -34,7 +12,8 @@ def save_run(results, section, models=None, **meta):
     Args:
         results: Dict of DataFrames from training {'mlp': df, 'siren': df, 'kan': df, 'kan_pruning': df}
         section: Section name (e.g., 'section1_1')
-        models: Dict of {'kan': {idx: model}, 'kan_pruned': {idx: model}} or None
+        models: Dict of {'mlp': {idx: model}, 'siren': {idx: model},
+                        'kan': {idx: model}, 'kan_pruned': {idx: model}} or None
         **meta: Minimal metadata (epochs, device, etc.)
                Note: Derivable metadata (depths, activations, grids) should not be passed
                as they can be computed from the DataFrames themselves.
@@ -78,9 +57,24 @@ def save_run(results, section, models=None, **meta):
 
     # Save models
     if models:
+        # Save MLP models (PyTorch state_dicts)
+        if 'mlp' in models:
+            import torch
+            for idx, model in models['mlp'].items():
+                torch.save(model.state_dict(), p / f'{section}_{ts}_mlp_{idx}.pth')
+
+        # Save SIREN models (PyTorch state_dicts)
+        if 'siren' in models:
+            import torch
+            for idx, model in models['siren'].items():
+                torch.save(model.state_dict(), p / f'{section}_{ts}_siren_{idx}.pth')
+
+        # Save KAN models (using KAN's saveckpt method)
         if 'kan' in models:
             for idx, model in models['kan'].items():
                 model.saveckpt(str(p / f'{section}_{ts}_kan_{idx}'))
+
+        # Save pruned KAN models
         if 'kan_pruned' in models:
             for idx, model in models['kan_pruned'].items():
                 model.saveckpt(str(p / f'{section}_{ts}_pruned_{idx}'))
@@ -90,22 +84,32 @@ def save_run(results, section, models=None, **meta):
     return ts
 
 
-def load_run(section, timestamp):
+def load_run(section, timestamp, load_models=False):
     """Load experiment run by timestamp
 
     Args:
         section: Section name (e.g., 'section1_1')
         timestamp: Timestamp string from save_run
+        load_models: If True, also load saved model state_dicts. Default: False
+                    Note: To use loaded models, you must reconstruct the model architecture
+                    and then load the state_dict.
 
     Returns:
-        Tuple of (results_dict, meta_dict) where:
+        If load_models=False:
+            Tuple of (results_dict, meta_dict)
+        If load_models=True:
+            Tuple of (results_dict, meta_dict, models_dict)
+
+        Where:
         - results_dict: Dict of DataFrames {'mlp': df, 'siren': df, ...}
         - meta_dict: Combined metadata from all DataFrames. Access individual
                      DataFrame metadata via df.attrs (e.g., mlp_df.attrs['epochs'])
+        - models_dict: Dict of {'mlp': {idx: state_dict}, 'siren': {idx: state_dict},
+                                'kan': {idx: checkpoint_path}, 'kan_pruned': {idx: checkpoint_path}}
 
     Note:
-        Metadata is now stored in DataFrame.attrs. The returned meta_dict is
-        consolidated from the first available DataFrame for backward compatibility.
+        Metadata is stored in DataFrame.attrs. The returned meta_dict is
+        consolidated from the first available DataFrame for convenience.
         Derivable metadata (depths, activations, grids) can be obtained from the
         DataFrames themselves:
         - depths: mlp_df['depth'].unique()
@@ -130,7 +134,7 @@ def load_run(section, timestamp):
             df = pd.read_pickle(pkl_file)
             results[model_type] = df
 
-            # Extract metadata from first available DataFrame (for backward compatibility)
+            # Extract metadata from first available DataFrame
             if not meta and hasattr(df, 'attrs') and df.attrs:
                 meta = dict(df.attrs)
 
@@ -139,11 +143,45 @@ def load_run(section, timestamp):
             df = pd.read_parquet(parquet_file)
             results[model_type] = df
 
-    # Try to load legacy JSON metadata if no attrs found and JSON exists
-    json_file = p / f'{section}_{timestamp}_meta.json'
-    if not meta and json_file.exists():
-        with open(json_file, 'r') as f:
-            json_data = json.load(f)
-            meta = json_data.get('meta', {})
+    # Load models if requested
+    if load_models:
+        import torch
+        models = {}
+
+        # Load MLP models
+        mlp_models = {}
+        for model_file in p.glob(f'{section}_{timestamp}_mlp_*.pth'):
+            idx = int(model_file.stem.split('_')[-1])
+            mlp_models[idx] = torch.load(model_file, map_location='cpu')
+        if mlp_models:
+            models['mlp'] = mlp_models
+
+        # Load SIREN models
+        siren_models = {}
+        for model_file in p.glob(f'{section}_{timestamp}_siren_*.pth'):
+            idx = int(model_file.stem.split('_')[-1])
+            siren_models[idx] = torch.load(model_file, map_location='cpu')
+        if siren_models:
+            models['siren'] = siren_models
+
+        # Load KAN models (store checkpoint paths)
+        kan_models = {}
+        for ckpt_dir in p.glob(f'{section}_{timestamp}_kan_*'):
+            if ckpt_dir.is_dir():
+                idx = int(ckpt_dir.name.split('_')[-1])
+                kan_models[idx] = str(ckpt_dir)
+        if kan_models:
+            models['kan'] = kan_models
+
+        # Load pruned KAN models (store checkpoint paths)
+        kan_pruned_models = {}
+        for ckpt_dir in p.glob(f'{section}_{timestamp}_pruned_*'):
+            if ckpt_dir.is_dir():
+                idx = int(ckpt_dir.name.split('_')[-1])
+                kan_pruned_models[idx] = str(ckpt_dir)
+        if kan_pruned_models:
+            models['kan_pruned'] = kan_pruned_models
+
+        return results, meta, models
 
     return results, meta
