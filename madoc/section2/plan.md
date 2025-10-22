@@ -18,7 +18,10 @@ Follow the instructions in heuristic.md to use the build in features of pykan, r
 
 # 2.2.2 - Adaptive density (reduction)
 
-In the interests of remaining below the interpolation threshold, reduce the density of nodes that would have been pruned down to a minimum.
+In the interests of remaining below the interpolation threshold, reduce the density of nodes that would have been pruned down to a minimum. There are limitations here so far as.... hmmm.... ok.
+
+# Idea lol:
+Would using a more dense MSE loss function actually prevent overfitting past the interpolation threshold.
 
 ## Section 2.3 - Merge_KAN
 

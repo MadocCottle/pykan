@@ -117,6 +117,9 @@ def train_model(model, dataset, epochs, device, true_function):
             train_losses.append(train_loss)
             test_losses.append(test_loss)
 
+            # Print loss after each epoch
+            print(f"    Epoch {epoch+1}/{epochs}: Train Loss = {train_loss:.6e}, Test Loss = {test_loss:.6e}")
+
     total_time = time.time() - start_time
     time_per_epoch = total_time / epochs if epochs > 0 else 0
 
@@ -336,6 +339,13 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
             train_results = model.fit(dataset, opt="LBFGS", steps=epochs, log=1)
             train_losses += train_results['train_loss']
             test_losses += train_results['test_loss']
+
+            # Print losses for each epoch in this grid
+            for epoch_in_grid in range(epochs):
+                global_epoch = j * epochs + epoch_in_grid + 1
+                train_loss_val = train_results['train_loss'][epoch_in_grid]
+                test_loss_val = train_results['test_loss'][epoch_in_grid]
+                print(f"    Epoch {global_epoch}/{len(grids)*epochs}: Train Loss = {train_loss_val:.6e}, Test Loss = {test_loss_val:.6e}")
 
             grid_time = time.time() - grid_start_time
             grid_times.append(grid_time)
