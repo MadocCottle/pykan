@@ -14,6 +14,8 @@ This folder contains tools and guides for visualizing the results from Section 1
 
 - **[plot_function_fit.py](plot_function_fit.py)**: Plots the learned functions vs ground truth for the best model from each class across all datasets. Shows actual function fits to visualize what each model learned.
 
+- **[plot_heatmap_2d.py](plot_heatmap_2d.py)**: Creates beautiful 2D heatmap visualizations for Section 1.3 (2D Poisson PDE) combining 3D surface plots and contour plots. Shows both the true function and model predictions with MSE metrics.
+
 ## Quick Start
 
 ### Plot Best Loss Curves
@@ -74,6 +76,47 @@ python plot_function_fit.py --device cuda
 - PNG file: `function_fits_all_datasets_{timestamp}.png` - Combined grid of all datasets
 - PNG files (if `--save-individual`): `function_fit_dataset_{idx}_{name}_{timestamp}.png` - Individual plots
 - Shows learned functions vs ground truth for MLP, SIREN, KAN, and KAN+Pruning
+
+### Plot 2D Heatmaps (Section 1.3)
+
+```bash
+# Plot all 2D datasets as heatmaps (most recent run)
+python plot_heatmap_2d.py
+
+# Plot specific dataset (0-3)
+python plot_heatmap_2d.py --dataset 0
+
+# Plot for specific timestamp
+python plot_heatmap_2d.py --dataset 1 --timestamp 20251023_031942
+
+# Use GPU for faster inference
+python plot_heatmap_2d.py --device cuda
+
+# Specify custom output path
+python plot_heatmap_2d.py --dataset 2 --output my_custom_heatmap.png
+```
+
+**Options:**
+- `--dataset`: Dataset index to plot (0-3 for section1_3), or None to plot all datasets
+- `--timestamp`: Specific timestamp to load (default: most recent)
+- `--device`: Device to use for model inference (default: `cpu`)
+- `--output`: Custom output path for the figure (default: auto-generated)
+
+**Output:**
+- PNG files: `heatmap_2d_dataset_{idx}_{name}_{timestamp}.png` - High-resolution 2D visualizations
+- Each figure contains:
+  - Row 0: True function (3D surface + contour plot)
+  - Row 1: MLP and SIREN predictions (3D + contour for each)
+  - Row 2: KAN and KAN+Pruning predictions (3D + contour for each)
+  - MSE values displayed on all contour plots for quantitative comparison
+
+**Features:**
+- 3D surface plots using `viridis` colormap for true function
+- 3D surface plots using `plasma` colormap for model predictions
+- Contour plots with 20 levels for detailed value representation
+- MSE metrics displayed directly on plots
+- 300 DPI output suitable for publications
+- Layout based on specifications in `reference/cool_spec.md`
 
 ## Creating New Visualizations
 

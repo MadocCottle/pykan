@@ -509,9 +509,9 @@ python3 section1/section1_1.py --epochs 100
 Before submitting your first job:
 
 - [ ] Run `setup.sh` to create virtual environment
-- [ ] Set `PROJECT` code in `run_experiment.qsub` (or pass via `-v`)
-- [ ] Optionally set email in `run_experiment.qsub` for notifications
-- [ ] Test with `PROFILE=test` first
+- [ ] Edit `run_experiment.qsub` lines 14-15 to set your project code
+- [ ] Optionally set email in `run_experiment.qsub` line 6 for notifications
+- [ ] Test with `PROFILE=test` first (1 CPU, 30 min)
 - [ ] Verify you have sufficient compute credits
 
 ---
