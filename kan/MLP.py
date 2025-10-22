@@ -217,7 +217,10 @@ class MLP(nn.Module):
         if opt == "Adam":
             optimizer = torch.optim.Adam(self.parameters(), lr=lr)
         elif opt == "LBFGS":
-            optimizer = LBFGS(self.parameters(), lr=lr, history_size=10, line_search_fn="strong_wolfe", tolerance_grad=1e-32, tolerance_change=1e-32, tolerance_ys=1e-32)
+            # Use reasonable tolerances to match KAN paper and prevent numerical instability
+            optimizer = LBFGS(self.parameters(), lr=lr, history_size=100,
+                            line_search_fn="strong_wolfe",
+                            tolerance_grad=1e-7, tolerance_change=1e-9, tolerance_ys=1e-7)
 
         results = {}
         results['train_loss'] = []
@@ -249,6 +252,8 @@ class MLP(nn.Module):
                 reg_ = torch.tensor(0.)
             objective = train_loss + lamb * reg_
             objective.backward()
+            # Add gradient clipping to prevent explosions
+            torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
             return objective
 
         for _ in pbar:
