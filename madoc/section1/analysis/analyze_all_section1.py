@@ -31,7 +31,7 @@ try:
     from . import report_utils as ru
     from .run_analysis import run_full_analysis
 except ImportError:
-    import io as io_module
+    from . import io as io_module
     io = io_module
     import report_utils as ru
     from run_analysis import run_full_analysis

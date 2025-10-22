@@ -29,7 +29,7 @@ try:
     from . import io
 except ImportError:
     # Allow running as script (not as package)
-    import io as io_module
+    from . import io as io_module
     io = io_module
 
 

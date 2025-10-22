@@ -22,7 +22,7 @@ try:
     from .heatmap_2d_fits import Heatmap2DAnalyzer
 except ImportError:
     # Allow running as script
-    import io as io_module
+    from . import io as io_module
     io = io_module
     import report_utils as ru
     from comparative_metrics import MetricsAnalyzer
