@@ -165,20 +165,27 @@ def load_run(section, timestamp, load_models=False):
             models['siren'] = siren_models
 
         # Load KAN models (store checkpoint paths)
+        # KAN checkpoints are saved as files with prefix: {section}_{timestamp}_kan_{idx}_state, _config.yml, _cache_data
+        # We need to find the base path (prefix) by looking for _state files
         kan_models = {}
-        for ckpt_dir in p.glob(f'{section}_{timestamp}_kan_*'):
-            if ckpt_dir.is_dir():
-                idx = int(ckpt_dir.name.split('_')[-1])
-                kan_models[idx] = str(ckpt_dir)
+        for state_file in p.glob(f'{section}_{timestamp}_kan_*_state'):
+            # Extract the base path by removing '_state' suffix
+            base_path = str(state_file)[:-6]  # Remove '_state' suffix
+            # Extract index from the base path (e.g., 'section1_1_20251022_211326_kan_0' -> 0)
+            idx = int(base_path.split('_kan_')[-1])
+            kan_models[idx] = base_path
         if kan_models:
             models['kan'] = kan_models
 
         # Load pruned KAN models (store checkpoint paths)
+        # Similar to KAN models, look for _state files
         kan_pruned_models = {}
-        for ckpt_dir in p.glob(f'{section}_{timestamp}_pruned_*'):
-            if ckpt_dir.is_dir():
-                idx = int(ckpt_dir.name.split('_')[-1])
-                kan_pruned_models[idx] = str(ckpt_dir)
+        for state_file in p.glob(f'{section}_{timestamp}_pruned_*_state'):
+            # Extract the base path by removing '_state' suffix
+            base_path = str(state_file)[:-6]  # Remove '_state' suffix
+            # Extract index from the base path (e.g., 'section1_1_20251022_211326_pruned_0' -> 0)
+            idx = int(base_path.split('_pruned_')[-1])
+            kan_pruned_models[idx] = base_path
         if kan_pruned_models:
             models['kan_pruned'] = kan_pruned_models
 

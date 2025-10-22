@@ -5,6 +5,59 @@ from .metrics import dense_mse_error_from_dataset, count_parameters
 import time
 import pandas as pd
 
+def print_best_dense_mse_summary(all_results, dataset_names):
+    """Print a summary table showing best dense MSE per model type per dataset
+
+    Args:
+        all_results: Dict mapping model_type -> DataFrame with results
+        dataset_names: List of dataset names
+    """
+    print("\n" + "="*80)
+    print("BEST DENSE MSE SUMMARY (across all hyperparameters)")
+    print("="*80)
+
+    # Create header
+    model_types = list(all_results.keys())
+    header = f"{'Dataset':<25}"
+    for model_type in model_types:
+        header += f"{model_type.upper():<20}"
+    print(header)
+    print("-" * 80)
+
+    # For each dataset, find best dense MSE for each model type
+    for i, dataset_name in enumerate(dataset_names):
+        row = f"{dataset_name:<25}"
+        for model_type in model_types:
+            df = all_results[model_type]
+            # Filter for this dataset and non-pruned results
+            dataset_df = df[df['dataset_idx'] == i]
+            if 'is_pruned' in dataset_df.columns:
+                dataset_df = dataset_df[dataset_df['is_pruned'] == False]
+
+            if len(dataset_df) > 0:
+                # Get minimum dense MSE across all configurations
+                best_dense_mse = dataset_df['dense_mse'].min()
+                row += f"{best_dense_mse:<20.6e}"
+            else:
+                row += f"{'N/A':<20}"
+        print(row)
+
+    # Also print pruned KAN results if available
+    if 'kan_pruning' in all_results:
+        df = all_results['kan_pruning']
+        pruned_df = df[df['is_pruned'] == True] if 'is_pruned' in df.columns else pd.DataFrame()
+        if len(pruned_df) > 0:
+            print("\n" + "-" * 80)
+            print("KAN PRUNED RESULTS:")
+            print("-" * 80)
+            for i, dataset_name in enumerate(dataset_names):
+                dataset_pruned = pruned_df[pruned_df['dataset_idx'] == i]
+                if len(dataset_pruned) > 0:
+                    pruned_mse = dataset_pruned['dense_mse'].values[0]
+                    print(f"{dataset_name:<25}{pruned_mse:.6e}")
+
+    print("="*80 + "\n")
+
 def train_model(model, dataset, epochs, device, true_function):
     """Train any model using LBFGS optimizer and return loss history with timing
 
@@ -50,6 +103,7 @@ def train_model(model, dataset, epochs, device, true_function):
             dense_mse = dense_mse_error_from_dataset(model, dataset, true_function,
                                                      num_samples=10000, device=device)
             dense_mse_errors.append(dense_mse)
+            print(f"    Epoch {epoch+1}/{epochs}: Dense MSE = {dense_mse:.6e}")
 
     total_time = time.time() - start_time
     time_per_epoch = total_time / epochs if epochs > 0 else 0
@@ -93,6 +147,7 @@ def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions,
                 # Create MLP with fixed width=5 and varying depth/activation
                 model = tnn.MLP(in_features=n_var, width=5, depth=d, activation=act).to(device)
                 num_params = count_parameters(model)
+                print(f"  Training MLP: Dataset {i} ({dataset_name}), depth={d}, activation={act}")
                 train_loss, test_loss, total_time, time_per_epoch, dense_mse = train_model(
                     model, dataset, epochs, device, true_func
                 )
@@ -113,17 +168,20 @@ def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions,
                         'num_params': num_params
                     })
 
-                print(f"  Dataset {i} ({dataset_name}), depth {d}, {act}: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
+                print(f"  Completed: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params, Final dense MSE = {dense_mse[-1]:.6e}")
 
                 # Track best model per dataset (lowest final dense_mse)
+                # Filter out NaN/Inf values to avoid saving diverged models
                 final_dense_mse = dense_mse[-1]
-                if i not in best_models_info or final_dense_mse < best_models_info[i]['dense_mse']:
-                    best_models_info[i] = {
-                        'model': model,
-                        'dense_mse': final_dense_mse,
-                        'depth': d,
-                        'activation': act
-                    }
+                import math
+                if not math.isnan(final_dense_mse) and not math.isinf(final_dense_mse):
+                    if i not in best_models_info or final_dense_mse < best_models_info[i]['dense_mse']:
+                        best_models_info[i] = {
+                            'model': model,
+                            'dense_mse': final_dense_mse,
+                            'depth': d,
+                            'activation': act
+                        }
 
     # Store best models
     for i, info in best_models_info.items():
@@ -167,6 +225,7 @@ def run_siren_tests(datasets, depths, epochs, device, true_functions, dataset_na
             # SIREN with hidden_layers=d-2 (accounting for input and output layers)
             model = tnn.SIREN(in_features=n_var, hidden_features=5, hidden_layers=d-2, out_features=1).to(device)
             num_params = count_parameters(model)
+            print(f"  Training SIREN: Dataset {i} ({dataset_name}), depth={d}")
             train_loss, test_loss, total_time, time_per_epoch, dense_mse = train_model(
                 model, dataset, epochs, device, true_func
             )
@@ -186,16 +245,19 @@ def run_siren_tests(datasets, depths, epochs, device, true_functions, dataset_na
                     'num_params': num_params
                 })
 
-            print(f"  Dataset {i} ({dataset_name}), depth {d}: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
+            print(f"  Completed: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params, Final dense MSE = {dense_mse[-1]:.6e}")
 
             # Track best model per dataset (lowest final dense_mse)
+            # Filter out NaN/Inf values to avoid saving diverged models
             final_dense_mse = dense_mse[-1]
-            if i not in best_models_info or final_dense_mse < best_models_info[i]['dense_mse']:
-                best_models_info[i] = {
-                    'model': model,
-                    'dense_mse': final_dense_mse,
-                    'depth': d
-                }
+            import math
+            if not math.isnan(final_dense_mse) and not math.isinf(final_dense_mse):
+                if i not in best_models_info or final_dense_mse < best_models_info[i]['dense_mse']:
+                    best_models_info[i] = {
+                        'model': model,
+                        'dense_mse': final_dense_mse,
+                        'depth': d
+                    }
 
     # Store best models
     for i, info in best_models_info.items():
@@ -249,9 +311,11 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
             if j == 0:
                 # Initialize KAN on first grid
                 model = KAN(width=[n_var, 5, 1], grid=grid_size, k=3, seed=1, device=device)
+                print(f"  Training KAN: Dataset {i} ({dataset_name}), grid={grid_size}")
             else:
                 # Refine to next grid size (preserves learned splines)
                 model = model.refine(grid_size)
+                print(f"  Refining KAN: Dataset {i} ({dataset_name}), grid={grid_size}")
             num_params = count_parameters(model)
             grid_param_counts.append(num_params)
             train_results = model.fit(dataset, opt="LBFGS", steps=epochs, log=1)
@@ -264,10 +328,12 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
                     dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
                                                             num_samples=10000, device=device)
                     dense_mse_errors.append(dense_mse)
+                    global_epoch = j * epochs + epoch_in_grid + 1
+                    print(f"    Epoch {global_epoch}/{len(grids)*epochs}: Dense MSE = {dense_mse:.6e}")
 
             grid_time = time.time() - grid_start_time
             grid_times.append(grid_time)
-            print(f"  Dataset {i} ({dataset_name}), grid {grid_size}: {grid_time:.2f}s total, {grid_time/epochs:.3f}s/epoch, {num_params} params")
+            print(f"  Grid {grid_size} completed: {grid_time:.2f}s total, {grid_time/epochs:.3f}s/epoch, {num_params} params")
 
         total_dataset_time = time.time() - dataset_start_time
         models[i] = model
@@ -292,6 +358,7 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
 
         if prune:
             # Apply pruning to remove insignificant edges and nodes
+            print(f"  Pruning KAN: Dataset {i} ({dataset_name})")
             prune_start_time = time.time()
             model_pruned = model.prune(node_th=1e-2, edge_th=3e-2)
             pruned_models[i] = model_pruned
@@ -302,7 +369,7 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
                 test_loss_pruned = nn.MSELoss()(model_pruned(dataset['test_input']), dataset['test_label']).item()
                 dense_mse_pruned = dense_mse_error_from_dataset(model_pruned, dataset, true_func,
                                                                num_samples=10000, device=device)
-            print(f"  Dataset {i} ({dataset_name}), pruning: {prune_time:.2f}s, {num_params_pruned} params")
+            print(f"  Pruning completed: {prune_time:.2f}s, {num_params_pruned} params, Dense MSE = {dense_mse_pruned:.6e}")
 
             # Add pruned result row (single row, no epoch tracking for pruned)
             rows.append({

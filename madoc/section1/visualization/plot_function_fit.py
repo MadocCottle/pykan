@@ -14,6 +14,24 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import torch
+import yaml
+
+# Fix YAML loading for numpy scalars in KAN checkpoints
+# The KAN library uses yaml.safe_load() but numpy scalars aren't safe_load compatible
+# We'll monkey-patch yaml to use unsafe_load in the KAN context
+_original_safe_load = yaml.safe_load
+
+def _patched_safe_load(stream):
+    """Use unsafe_load for KAN checkpoints which contain numpy objects"""
+    try:
+        return _original_safe_load(stream)
+    except yaml.constructor.ConstructorError:
+        # If safe_load fails, fall back to unsafe_load for numpy objects
+        stream.seek(0)  # Reset stream position
+        return yaml.unsafe_load(stream)
+
+# Apply the patch
+yaml.safe_load = _patched_safe_load
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -106,25 +124,51 @@ def load_and_reconstruct_mlp(models, results, dataset_idx, n_var=1, device='cpu'
     # Get state dict
     state_dict = models['mlp'][dataset_idx]
 
-    # Find the best configuration from results
+    # Infer architecture from state_dict (robust approach)
+    # Count linear layers: network.0.weight, network.2.weight, network.4.weight, etc.
+    linear_layers = [k for k in state_dict.keys() if 'weight' in k and 'network.' in k]
+    actual_depth = len(linear_layers)
+
+    # Infer activation from the first activation layer in state_dict keys
+    # MLP uses network.1 for first activation (Tanh/ReLU/SiLU have no parameters)
+    # We need to get this from DataFrame
     mlp_df = results['mlp']
     mlp_dataset = mlp_df[mlp_df['dataset_idx'] == dataset_idx]
 
-    # Get final epoch for each config
+    # Get final epoch for each config, filtering out NaN
     final_epoch_rows = mlp_dataset.loc[
         mlp_dataset.groupby(['depth', 'activation'])['epoch'].idxmax()
     ]
+    final_epoch_rows = final_epoch_rows[final_epoch_rows['dense_mse'].notna()]
 
-    # Find best config
+    if len(final_epoch_rows) == 0:
+        print(f"  Warning: No valid models found for MLP dataset {dataset_idx} (all diverged)")
+        return None, None
+
+    # Find best config from DataFrame
     best_row = final_epoch_rows.loc[final_epoch_rows['dense_mse'].idxmin()]
-
-    depth = int(best_row['depth'])
+    df_depth = int(best_row['depth'])
     activation = best_row['activation']
     dense_mse = best_row['dense_mse']
 
-    # Reconstruct model
+    # Validate: check if actual_depth matches df_depth
+    if actual_depth != df_depth:
+        print(f"  Warning: MLP depth mismatch for dataset {dataset_idx}!")
+        print(f"    DataFrame says depth={df_depth}, but saved model has depth={actual_depth}")
+        print(f"    Using actual saved model depth={actual_depth}")
+        depth = actual_depth
+    else:
+        depth = df_depth
+
+    # Reconstruct model with ACTUAL architecture from saved model
     model = tnn.MLP(in_features=n_var, width=5, depth=depth, activation=activation)
-    model.load_state_dict(state_dict)
+
+    try:
+        model.load_state_dict(state_dict)
+    except RuntimeError as e:
+        print(f"  Error loading MLP for dataset {dataset_idx}: {e}")
+        return None, None
+
     model.to(device)
     model.eval()
 
@@ -158,24 +202,50 @@ def load_and_reconstruct_siren(models, results, dataset_idx, n_var=1, device='cp
     # Get state dict
     state_dict = models['siren'][dataset_idx]
 
-    # Find the best configuration from results
+    # Infer architecture from state_dict (robust approach)
+    # SIREN has: net.0 (input), net.2 (hidden1), net.4 (hidden2), ..., net.N (output)
+    # Count linear layers
+    linear_layers = [k for k in state_dict.keys() if 'weight' in k and 'net.' in k]
+    actual_depth = len(linear_layers)
+
+    # Find the best configuration from results (filtering NaN)
     siren_df = results['siren']
     siren_dataset = siren_df[siren_df['dataset_idx'] == dataset_idx]
 
-    # Get final epoch for each config
+    # Get final epoch for each config, filtering out NaN
     final_epoch_rows = siren_dataset.loc[
         siren_dataset.groupby('depth')['epoch'].idxmax()
     ]
+    final_epoch_rows = final_epoch_rows[final_epoch_rows['dense_mse'].notna()]
 
-    # Find best config
+    if len(final_epoch_rows) == 0:
+        print(f"  Warning: No valid models found for SIREN dataset {dataset_idx} (all diverged)")
+        return None, None
+
+    # Find best config from DataFrame
     best_row = final_epoch_rows.loc[final_epoch_rows['dense_mse'].idxmin()]
-
-    depth = int(best_row['depth'])
+    df_depth = int(best_row['depth'])
     dense_mse = best_row['dense_mse']
 
-    # Reconstruct model
+    # Validate: check if actual_depth matches df_depth
+    if actual_depth != df_depth:
+        print(f"  Warning: SIREN depth mismatch for dataset {dataset_idx}!")
+        print(f"    DataFrame says depth={df_depth}, but saved model has depth={actual_depth}")
+        print(f"    Using actual saved model depth={actual_depth}")
+        depth = actual_depth
+    else:
+        depth = df_depth
+
+    # Reconstruct model with ACTUAL architecture from saved model
+    # SIREN: depth = total layers, hidden_layers = depth - 2 (input and output)
     model = tnn.SIREN(in_features=n_var, hidden_features=5, hidden_layers=depth-2, out_features=1)
-    model.load_state_dict(state_dict)
+
+    try:
+        model.load_state_dict(state_dict)
+    except RuntimeError as e:
+        print(f"  Error loading SIREN for dataset {dataset_idx}: {e}")
+        return None, None
+
     model.to(device)
     model.eval()
 

@@ -14,10 +14,11 @@ Using the same heurisitc as is used in the pykan packages model.prune() function
 
 Do two tests. One with this as an alternative to the normal grid densification practice, and another also incorporating the regular grid densification, but with additional densification on imporant nodes.
 
+Follow the instructions in heuristic.md to use the build in features of pykan, rather than making your own system
 
 ## Section 2.3 - Merge_KAN
 
-Similar to mixture of experts but very distinct. Train a variety of different KANs using different depths, basis functions and optomisers. Train each of these configurations from a variety of starting seeds. Then prune them until smaller KANs each reach the distinct sets of functional dependences mentioned in section 4 of the KANs paper in.
+Similar to mixture of experts but very distinct. Train a variety of different KANs using different depths, basis functions (and maybe optomisers). Train each of these configurations from a variety of starting seeds. Then prune them until smaller KANs each reach the distinct sets of functional dependences mentioned in section 4 of the KANs paper in.
 
 To merge kan, create a new KAN with one more layers. Then use the pykan api to make the output layer of each expert the top hidden layer of the merge KAN. That is if we had a 8 variable input {x_1....x_8} and say we found 3 different pruned KANs, with different dependencies. 
 

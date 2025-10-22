@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from kan import *
 from utils import data_funcs as dfs
 from utils import run_mlp_tests, run_siren_tests, run_kan_grid_tests, save_run
-from utils import track_time, print_timing_summary
+from utils import track_time, print_timing_summary, print_best_dense_mse_summary
 import argparse
 
 # Parse command-line arguments
@@ -84,6 +84,9 @@ all_results = {'mlp': mlp_results, 'siren': siren_results, 'kan': kan_results, '
 print(f"\nResults summary:")
 for model_type, df in all_results.items():
     print(f"  {model_type}: {df.shape[0]} rows, {df.shape[1]} columns")
+
+# Print best dense MSE summary table
+print_best_dense_mse_summary(all_results, dataset_names)
 
 save_run(all_results, 'section1_1',
          models={'mlp': mlp_models, 'siren': siren_models,
