@@ -240,10 +240,10 @@ def run_kan_lm_tests(datasets, grids, epochs, device, true_functions=None, datas
     return pd.DataFrame(rows), models
 
 
-print("Training KANs with ADAM optimizer (with dense MSE metrics)...")
-adam_results, adam_models = track_time(timers, "KAN ADAM training",
+print("Training KANs with LBFGS optimizer (with dense MSE metrics)...")
+lbfgs_results, lbfgs_models = track_time(timers, "KAN LBFGS training",
                                         run_kan_optimizer_tests,
-                                        datasets, grids, epochs, device, "Adam", true_functions, dataset_names)
+                                        datasets, grids, epochs, device, "LBFGS", true_functions, dataset_names)
 
 print("\nTraining KANs with LM optimizer (with dense MSE metrics)...")
 lm_results, lm_models = track_time(timers, "KAN LM training",
@@ -253,15 +253,15 @@ lm_results, lm_models = track_time(timers, "KAN LM training",
 # Print timing summary
 print_timing_summary(timers, "Section 2.1", num_datasets=len(datasets))
 
-all_results = {'adam': adam_results, 'lm': lm_results}
+all_results = {'lbfgs': lbfgs_results, 'lm': lm_results}
 print(f"\nResults summary:")
 for model_type, df in all_results.items():
     print(f"  {model_type}: {df.shape[0]} rows, {df.shape[1]} columns")
 
 save_run(all_results, 'section2_1',
-         models={'adam': adam_models, 'lm': lm_models},
+         models={'lbfgs': lbfgs_models, 'lm': lm_models},
          epochs=epochs, device=str(device))
 # Note: Derivable metadata (grids, num_datasets, dataset_names) can be obtained from DataFrames:
-# - grids: adam_results['grid_size'].unique()
-# - num_datasets: adam_results['dataset_idx'].nunique()
-# - dataset_names: adam_results['dataset_name'].unique()
+# - grids: lbfgs_results['grid_size'].unique()
+# - num_datasets: lbfgs_results['dataset_idx'].nunique()
+# - dataset_names: lbfgs_results['dataset_name'].unique()
