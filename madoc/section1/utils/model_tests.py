@@ -3,18 +3,26 @@ from kan import *
 from . import trad_nn as tnn
 from .metrics import dense_mse_error_from_dataset, count_parameters
 import time
+import pandas as pd
 
-def train_model(model, dataset, epochs, device, true_function=None, compute_dense_mse=False):
+def train_model(model, dataset, epochs, device, true_function):
     """Train any model using LBFGS optimizer and return loss history with timing
 
-    Returns: train_losses, test_losses, total_time, time_per_epoch, dense_mse_errors (if enabled)
+    Args:
+        model: Model to train
+        dataset: Dataset dict with train/test inputs and labels
+        epochs: Number of training epochs
+        device: Device to run on
+        true_function: True function for computing dense MSE (required)
+
+    Returns: train_losses, test_losses, total_time, time_per_epoch, dense_mse_errors
     """
     optimizer = torch.optim.LBFGS(model.parameters())
     criterion = nn.MSELoss()
 
     train_losses = []
     test_losses = []
-    dense_mse_errors = [] if compute_dense_mse else None
+    dense_mse_errors = []
 
     start_time = time.time()
 
@@ -38,106 +46,162 @@ def train_model(model, dataset, epochs, device, true_function=None, compute_dens
             train_losses.append(train_loss)
             test_losses.append(test_loss)
 
-            # Optionally compute dense MSE on broader domain
-            if compute_dense_mse and true_function is not None:
-                dense_mse = dense_mse_error_from_dataset(model, dataset, true_function,
-                                                         num_samples=10000, device=device)
-                dense_mse_errors.append(dense_mse)
+            # Always compute dense MSE on broader domain
+            dense_mse = dense_mse_error_from_dataset(model, dataset, true_function,
+                                                     num_samples=10000, device=device)
+            dense_mse_errors.append(dense_mse)
 
     total_time = time.time() - start_time
     time_per_epoch = total_time / epochs if epochs > 0 else 0
 
-    if compute_dense_mse:
-        return train_losses, test_losses, total_time, time_per_epoch, dense_mse_errors
-    else:
-        return train_losses, test_losses, total_time, time_per_epoch
+    return train_losses, test_losses, total_time, time_per_epoch, dense_mse_errors
 
-def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions=None, compute_dense_mse=False):
-    """Train MLPs with varying depths and activations across multiple datasets"""
+def run_mlp_tests(datasets, depths, activations, epochs, device, true_functions, dataset_names=None):
+    """Train MLPs with varying depths and activations across multiple datasets
+
+    Args:
+        datasets: List of datasets
+        depths: List of network depths to test
+        activations: List of activation functions to test
+        epochs: Number of training epochs
+        device: Device to run on
+        true_functions: List of true functions for each dataset (required)
+        dataset_names: List of descriptive names for each dataset (optional)
+
+    Returns:
+        DataFrame with columns: dataset_idx, dataset_name, depth, activation, epoch, train_loss, test_loss,
+                                dense_mse, total_time, time_per_epoch, num_params
+    """
     print("mlp")
-    results = {}
+    rows = []
+
+    # Generate default names if not provided
+    if dataset_names is None:
+        dataset_names = [f"dataset_{i}" for i in range(len(datasets))]
+
     for i, dataset in enumerate(datasets):
-        results[i] = {}
         n_var = dataset['train_input'].shape[1]
-        true_func = true_functions[i] if true_functions else None
+        true_func = true_functions[i]
+        dataset_name = dataset_names[i]
+
         for d in depths:
-            results[i][d] = {}
             for act in activations:
                 # Create MLP with fixed width=5 and varying depth/activation
                 model = tnn.MLP(in_features=n_var, width=5, depth=d, activation=act).to(device)
                 num_params = count_parameters(model)
-                train_result = train_model(model, dataset, epochs, device, true_func, compute_dense_mse)
+                train_loss, test_loss, total_time, time_per_epoch, dense_mse = train_model(
+                    model, dataset, epochs, device, true_func
+                )
 
-                if compute_dense_mse and true_func:
-                    train_loss, test_loss, total_time, time_per_epoch, dense_mse = train_result
-                    results[i][d][act] = {
-                        'train': train_loss,
-                        'test': test_loss,
-                        'dense_mse': dense_mse,
+                # Create row for each epoch
+                for epoch in range(epochs):
+                    rows.append({
+                        'dataset_idx': i,
+                        'dataset_name': dataset_name,
+                        'depth': d,
+                        'activation': act,
+                        'epoch': epoch,
+                        'train_loss': train_loss[epoch],
+                        'test_loss': test_loss[epoch],
+                        'dense_mse': dense_mse[epoch],
                         'total_time': total_time,
                         'time_per_epoch': time_per_epoch,
                         'num_params': num_params
-                    }
-                else:
-                    train_loss, test_loss, total_time, time_per_epoch = train_result
-                    results[i][d][act] = {
-                        'train': train_loss,
-                        'test': test_loss,
-                        'total_time': total_time,
-                        'time_per_epoch': time_per_epoch,
-                        'num_params': num_params
-                    }
-                print(f"  Dataset {i}, depth {d}, {act}: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
-    return results
+                    })
 
-def run_siren_tests(datasets, depths, epochs, device, true_functions=None, compute_dense_mse=False):
-    """Train SIREN models with varying depths across multiple datasets"""
+                print(f"  Dataset {i} ({dataset_name}), depth {d}, {act}: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
+
+    return pd.DataFrame(rows)
+
+def run_siren_tests(datasets, depths, epochs, device, true_functions, dataset_names=None):
+    """Train SIREN models with varying depths across multiple datasets
+
+    Args:
+        datasets: List of datasets
+        depths: List of network depths to test
+        epochs: Number of training epochs
+        device: Device to run on
+        true_functions: List of true functions for each dataset (required)
+        dataset_names: List of descriptive names for each dataset (optional)
+
+    Returns:
+        DataFrame with columns: dataset_idx, dataset_name, depth, epoch, train_loss, test_loss,
+                                dense_mse, total_time, time_per_epoch, num_params
+    """
     print("siren")
-    results = {}
+    rows = []
+
+    # Generate default names if not provided
+    if dataset_names is None:
+        dataset_names = [f"dataset_{i}" for i in range(len(datasets))]
+
     for i, dataset in enumerate(datasets):
-        results[i] = {}
         n_var = dataset['train_input'].shape[1]
-        true_func = true_functions[i] if true_functions else None
+        true_func = true_functions[i]
+        dataset_name = dataset_names[i]
+
         for d in depths:
             # SIREN with hidden_layers=d-2 (accounting for input and output layers)
             model = tnn.SIREN(in_features=n_var, hidden_features=5, hidden_layers=d-2, out_features=1).to(device)
             num_params = count_parameters(model)
-            train_result = train_model(model, dataset, epochs, device, true_func, compute_dense_mse)
+            train_loss, test_loss, total_time, time_per_epoch, dense_mse = train_model(
+                model, dataset, epochs, device, true_func
+            )
 
-            if compute_dense_mse and true_func:
-                train_loss, test_loss, total_time, time_per_epoch, dense_mse = train_result
-                results[i][d] = {
-                    'train': train_loss,
-                    'test': test_loss,
-                    'dense_mse': dense_mse,
+            # Create row for each epoch
+            for epoch in range(epochs):
+                rows.append({
+                    'dataset_idx': i,
+                    'dataset_name': dataset_name,
+                    'depth': d,
+                    'epoch': epoch,
+                    'train_loss': train_loss[epoch],
+                    'test_loss': test_loss[epoch],
+                    'dense_mse': dense_mse[epoch],
                     'total_time': total_time,
                     'time_per_epoch': time_per_epoch,
                     'num_params': num_params
-                }
-            else:
-                train_loss, test_loss, total_time, time_per_epoch = train_result
-                results[i][d] = {
-                    'train': train_loss,
-                    'test': test_loss,
-                    'total_time': total_time,
-                    'time_per_epoch': time_per_epoch,
-                    'num_params': num_params
-                }
-            print(f"  Dataset {i}, depth {d}: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
-    return results
+                })
 
-def run_kan_grid_tests(datasets, grids, epochs, device, prune=False, true_functions=None, compute_dense_mse=False):
-    """Train KAN models with grid refinement, optionally with pruning"""
+            print(f"  Dataset {i} ({dataset_name}), depth {d}: {total_time:.2f}s total, {time_per_epoch:.3f}s/epoch, {num_params} params")
+
+    return pd.DataFrame(rows)
+
+def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, dataset_names=None):
+    """Train KAN models with grid refinement, optionally with pruning
+
+    Args:
+        datasets: List of datasets
+        grids: List of grid sizes to test
+        epochs: Number of training epochs per grid
+        device: Device to run on
+        prune: Whether to apply pruning after training
+        true_functions: List of true functions for each dataset (required)
+        dataset_names: List of descriptive names for each dataset (optional)
+
+    Returns:
+        Tuple of (results_df, models, pruned_models) if prune=True
+        Tuple of (results_df, models) if prune=False
+        where results_df has columns: dataset_idx, dataset_name, grid_size, epoch, train_loss, test_loss,
+                                      dense_mse, total_time, time_per_epoch, num_params
+                                      (and pruned rows if prune=True)
+    """
     print("kan_pruning" if prune else "kan")
-    results = {}
+    rows = []
     models = {}
     pruned_models = {} if prune else None
+
+    # Generate default names if not provided
+    if dataset_names is None:
+        dataset_names = [f"dataset_{i}" for i in range(len(datasets))]
 
     for i, dataset in enumerate(datasets):
         train_losses = []
         test_losses = []
+        dense_mse_errors = []
         n_var = dataset['train_input'].shape[1]
-        true_func = true_functions[i] if true_functions else None
+        true_func = true_functions[i]
+        dataset_name = dataset_names[i]
 
         dataset_start_time = time.time()
         grid_times = []
@@ -157,12 +221,37 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune=False, true_functi
             train_losses += train_results['train_loss']
             test_losses += train_results['test_loss']
 
+            # Compute dense MSE for each epoch in this grid
+            for epoch_in_grid in range(epochs):
+                with torch.no_grad():
+                    dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
+                                                            num_samples=10000, device=device)
+                    dense_mse_errors.append(dense_mse)
+
             grid_time = time.time() - grid_start_time
             grid_times.append(grid_time)
-            print(f"  Dataset {i}, grid {grid_size}: {grid_time:.2f}s total, {grid_time/epochs:.3f}s/epoch, {num_params} params")
+            print(f"  Dataset {i} ({dataset_name}), grid {grid_size}: {grid_time:.2f}s total, {grid_time/epochs:.3f}s/epoch, {num_params} params")
 
         total_dataset_time = time.time() - dataset_start_time
         models[i] = model
+
+        # Create rows for regular training
+        for j, grid_size in enumerate(grids):
+            for epoch_in_grid in range(epochs):
+                global_epoch = j * epochs + epoch_in_grid
+                rows.append({
+                    'dataset_idx': i,
+                    'dataset_name': dataset_name,
+                    'grid_size': grid_size,
+                    'epoch': global_epoch,
+                    'train_loss': train_losses[global_epoch],
+                    'test_loss': test_losses[global_epoch],
+                    'dense_mse': dense_mse_errors[global_epoch],
+                    'total_time': grid_times[j],
+                    'time_per_epoch': grid_times[j] / epochs,
+                    'num_params': grid_param_counts[j],
+                    'is_pruned': False
+                })
 
         if prune:
             # Apply pruning to remove insignificant edges and nodes
@@ -174,41 +263,26 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune=False, true_functi
             with torch.no_grad():
                 train_loss_pruned = nn.MSELoss()(model_pruned(dataset['train_input']), dataset['train_label']).item()
                 test_loss_pruned = nn.MSELoss()(model_pruned(dataset['test_input']), dataset['test_label']).item()
-            print(f"  Dataset {i}, pruning: {prune_time:.2f}s, {num_params_pruned} params")
-
-        results[i] = {}
-        for j, grid_size in enumerate(grids):
-            # Extract losses at end of training for this grid
-            idx = (j + 1) * epochs - 1
-            result_dict = {
-                'train': train_losses[idx],
-                'test': test_losses[idx],
-                'total_time': grid_times[j],
-                'time_per_epoch': grid_times[j] / epochs,
-                'num_params': grid_param_counts[j]
-            }
-            # Optionally compute final dense MSE for this grid
-            if compute_dense_mse and true_func:
-                # Note: computed after all training (not per-epoch like MLP/SIREN)
-                dense_mse_final = dense_mse_error_from_dataset(model, dataset, true_func,
-                                                              num_samples=10000, device=device)
-                result_dict['dense_mse_final'] = dense_mse_final
-            results[i][grid_size] = result_dict
-
-        if prune:
-            prune_result = {
-                'train': train_loss_pruned,
-                'test': test_loss_pruned,
-                'prune_time': prune_time,
-                'num_params': num_params_pruned
-            }
-            if compute_dense_mse and true_func:
                 dense_mse_pruned = dense_mse_error_from_dataset(model_pruned, dataset, true_func,
-                                                                num_samples=10000, device=device)
-                prune_result['dense_mse'] = dense_mse_pruned
-            results[i]['pruned'] = prune_result
+                                                               num_samples=10000, device=device)
+            print(f"  Dataset {i} ({dataset_name}), pruning: {prune_time:.2f}s, {num_params_pruned} params")
 
-        results[i]['total_dataset_time'] = total_dataset_time
-        print(f"  Dataset {i} complete: {total_dataset_time:.2f}s total")
+            # Add pruned result row (single row, no epoch tracking for pruned)
+            rows.append({
+                'dataset_idx': i,
+                'dataset_name': dataset_name,
+                'grid_size': grids[-1],  # Associate with final grid
+                'epoch': len(grids) * epochs,  # Epoch after all training
+                'train_loss': train_loss_pruned,
+                'test_loss': test_loss_pruned,
+                'dense_mse': dense_mse_pruned,
+                'total_time': prune_time,
+                'time_per_epoch': 0,  # Pruning doesn't have epochs
+                'num_params': num_params_pruned,
+                'is_pruned': True
+            })
 
-    return (results, models, pruned_models) if prune else (results, models)
+        print(f"  Dataset {i} ({dataset_name}) complete: {total_dataset_time:.2f}s total")
+
+    results_df = pd.DataFrame(rows)
+    return (results_df, models, pruned_models) if prune else (results_df, models)

@@ -24,8 +24,9 @@ print(f"Running with {epochs} epochs")
 # ============= Create Datasets =============
 datasets = []
 true_functions = []
+dataset_names = ['poisson_1d_sin', 'poisson_1d_poly', 'poisson_1d_highfreq']
 
-for f in dfs.sec1_2:
+for i, f in enumerate(dfs.sec1_2):
     datasets.append(create_dataset(f, n_var=1, train_num=1000, test_num=1000))
     true_functions.append(f)
 
@@ -41,24 +42,25 @@ print("="*60 + "\n")
 timers = {}
 
 print("\nTraining MLPs (with dense MSE metrics)...")
-mlp_results = track_time(timers, "MLP training", run_mlp_tests, datasets, depths, activations, epochs, device, true_functions, True)
+mlp_results = track_time(timers, "MLP training", run_mlp_tests, datasets, depths, activations, epochs, device, true_functions, dataset_names)
 
 print("Training SIRENs (with dense MSE metrics)...")
-siren_results = track_time(timers, "SIREN training", run_siren_tests, datasets, depths, epochs, device, true_functions, True)
+siren_results = track_time(timers, "SIREN training", run_siren_tests, datasets, depths, epochs, device, true_functions, dataset_names)
 
 print("Training KANs (with dense MSE metrics)...")
-kan_results, kan_models = track_time(timers, "KAN training", run_kan_grid_tests, datasets, grids, epochs, device, False, true_functions, True)
+kan_results, kan_models = track_time(timers, "KAN training", run_kan_grid_tests, datasets, grids, epochs, device, False, true_functions, dataset_names)
 
 print("Training KANs with pruning (with dense MSE metrics)...")
-kan_pruning_results, _, kan_pruned_models = track_time(timers, "KAN pruning training", run_kan_grid_tests, datasets, grids, epochs, device, True, true_functions, True)
+kan_pruning_results, _, kan_pruned_models = track_time(timers, "KAN pruning training", run_kan_grid_tests, datasets, grids, epochs, device, True, true_functions, dataset_names)
 
 # Print timing summary
 print_timing_summary(timers, "Section 1.2", num_datasets=len(datasets))
 
 all_results = {'mlp': mlp_results, 'siren': siren_results, 'kan': kan_results, 'kan_pruning': kan_pruning_results}
-print(all_results)
+print(f"\nResults summary:")
+for model_type, df in all_results.items():
+    print(f"  {model_type}: {df.shape[0]} rows, {df.shape[1]} columns")
 
 save_run(all_results, 'section1_2',
          models={'kan': kan_models, 'kan_pruned': kan_pruned_models},
-         epochs=epochs, device=str(device), grids=grids.tolist(),
-         depths=depths, activations=activations, num_datasets=len(datasets))
+         epochs=epochs, device=str(device))
