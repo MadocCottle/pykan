@@ -48,13 +48,16 @@ siren_results = track_time(timers, "SIREN training", run_siren_tests, datasets, 
 print("Training KANs (with dense MSE metrics)...")
 kan_results, kan_models = track_time(timers, "KAN training", run_kan_grid_tests, datasets, grids, epochs, device, False, true_functions, True)
 
+print("Training KANs with pruning (with dense MSE metrics)...")
+kan_pruning_results, _, kan_pruned_models = track_time(timers, "KAN pruning training", run_kan_grid_tests, datasets, grids, epochs, device, True, true_functions, True)
+
 # Print timing summary
 print_timing_summary(timers, "Section 1.3", num_datasets=len(datasets))
 
-all_results = {'mlp': mlp_results, 'siren': siren_results, 'kan': kan_results}
+all_results = {'mlp': mlp_results, 'siren': siren_results, 'kan': kan_results, 'kan_pruning': kan_pruning_results}
 print(all_results)
 
 save_run(all_results, 'section1_3',
-         models={'kan': kan_models},
+         models={'kan': kan_models, 'kan_pruned': kan_pruned_models},
          epochs=epochs, device=str(device), grids=grids.tolist(),
          depths=depths, activations=activations, num_datasets=len(datasets))

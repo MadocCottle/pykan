@@ -4,15 +4,17 @@ import numpy as np
 
 # ============= SIREN =============
 class Sine(nn.Module):
+    """Sine activation with frequency parameter w0"""
     def __init__(self, w0=1.0):
         super().__init__()
         self.w0 = w0
-    
+
     def forward(self, x):
         return torch.sin(self.w0 * x)
 
 class SIREN(nn.Module):
-    def __init__(self, in_features, hidden_features, hidden_layers, out_features, 
+    """Sinusoidal Representation Network with specialized weight initialization"""
+    def __init__(self, in_features, hidden_features, hidden_layers, out_features,
                  outermost_linear=True, first_omega_0=30.0, hidden_omega_0=30.0):
         super().__init__()
         
@@ -48,6 +50,7 @@ class SIREN(nn.Module):
 
 # ============= Standard MLP =============
 class MLP(nn.Module):
+    """Standard multi-layer perceptron with configurable activation function"""
     def __init__(self, in_features=1, width=5, depth=2, activation='tanh'):
         super().__init__()
         self.activation = activation
@@ -81,7 +84,7 @@ class MLP(nn.Module):
         self._init_weights()
 
     def _init_weights(self):
-        """Initialize weights based on activation function"""
+        """Initialize weights: He for ReLU/SiLU, Xavier for tanh"""
         for module in self.network.modules():
             if isinstance(module, nn.Linear):
                 if self.activation == 'relu' or self.activation == 'silu':

@@ -9,6 +9,7 @@ from kan import *
 # ============= Section 1.1: Function Approximation =============
 
 def sinusoid_1d(freq):
+    """Create 1D sinusoid function with specified frequency"""
     return lambda x: torch.sin(2 * torch.pi * freq * x)
 
 # Piecewise function
@@ -27,6 +28,7 @@ f_2d_sin_2x2 = lambda x: torch.sin(2*torch.pi*2*x[:,[0]]) * torch.sin(2*torch.pi
 f_2d_sin_3x3 = lambda x: torch.sin(2*torch.pi*3*x[:,[0]]) * torch.sin(2*torch.pi*3*x[:,[1]])
 
 def sinusoid_2d(freq_x, freq_y):
+    """Create 2D sinusoid function with specified frequencies for x and y axes"""
     return lambda x: torch.sin(2*torch.pi*freq_x*x[:,[0]]) * torch.sin(2*torch.pi*freq_y*x[:,[1]])
 
 # Gaussian bumps (example with 3 bumps)

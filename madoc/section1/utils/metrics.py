@@ -4,6 +4,15 @@ import torch.nn as nn
 import numpy as np
 
 
+def count_parameters(model):
+    """
+    Count the total number of trainable parameters in a model.
+    Works with both standard PyTorch models (MLP, SIREN) and KAN models.
+
+    """
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
 def dense_mse_error(model, true_function, n_var=1, ranges=[-1, 1],
                     num_samples=10000, device='cpu'):
     """
