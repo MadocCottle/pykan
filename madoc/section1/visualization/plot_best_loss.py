@@ -51,7 +51,24 @@ def find_best_model_config(df_final, config_cols):
         Dictionary with the best configuration
     """
     # Filter out NaN values
-    df_clean = df_final[df_final['test_loss'].notna()]
+    df_clean = df_final[df_final['test_loss'].notna()].copy()
+
+    if len(df_clean) == 0:
+        return None
+
+    # Convert numpy arrays to scalar values (test_loss may be stored as 0-d arrays)
+    def extract_scalar(x):
+        if isinstance(x, np.ndarray):
+            return x.item()
+        return x
+
+    df_clean['test_loss'] = df_clean['test_loss'].apply(extract_scalar)
+
+    # Ensure test_loss is numeric (convert from object dtype if needed)
+    df_clean['test_loss'] = pd.to_numeric(df_clean['test_loss'], errors='coerce')
+
+    # Filter out any NaN values that resulted from conversion
+    df_clean = df_clean[df_clean['test_loss'].notna()]
 
     if len(df_clean) == 0:
         return None
@@ -90,6 +107,16 @@ def extract_training_curve(df, config):
 
     # Filter out NaN values in loss columns
     curve = curve[curve['test_loss'].notna() & curve['train_loss'].notna()]
+
+    # Convert numpy arrays to scalar values for loss columns
+    def extract_scalar(x):
+        if isinstance(x, np.ndarray):
+            return x.item()
+        return x
+
+    if len(curve) > 0:
+        curve['test_loss'] = curve['test_loss'].apply(extract_scalar)
+        curve['train_loss'] = curve['train_loss'].apply(extract_scalar)
 
     return curve
 

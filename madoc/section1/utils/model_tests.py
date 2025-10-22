@@ -368,7 +368,7 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
                     'dataset_idx': i,
                     'dataset_name': dataset_name,
                     'grid_size': grid_size,
-                    'epoch': global_epoch,
+                    'epoch': epoch_in_grid,  # Use epoch within grid, not global epoch
                     'train_loss': train_losses[global_epoch],
                     'test_loss': test_losses[global_epoch],
                     'dense_mse': final_dense_mse,  # Same value for all epochs
