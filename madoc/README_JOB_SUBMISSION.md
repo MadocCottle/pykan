@@ -53,17 +53,19 @@ The setup script will:
 
 **IMPORTANT**: Before submitting jobs, you must set your NCI project code.
 
-Edit `run_experiment.qsub` and replace `YOUR_PROJECT` with your actual project code:
+Edit `run_experiment.qsub` and replace `p00` with your actual project code on **lines 14 and 15**:
 
 ```bash
-# Line 24 in run_experiment.qsub
-PROJECT=${PROJECT:-YOUR_PROJECT}
+# Lines 14-15 in run_experiment.qsub
+#PBS -P p00
+#PBS -l storage=scratch/p00+gdata/p00
 
 # Change to (example):
-PROJECT=${PROJECT:-ab12}
+#PBS -P ab12
+#PBS -l storage=scratch/ab12+gdata/ab12
 ```
 
-Alternatively, pass it via command line (see Usage Examples below).
+**Note**: PBS directives (#PBS) must have literal values and cannot use shell variables.
 
 ### 3. Submit Your First Job
 
@@ -135,18 +137,19 @@ bash setup.sh
 
 #### 1. Project Code
 
-**Method A: Edit the script** (recommended)
+**You must edit the script** - PBS directives cannot use variables!
 
-Edit `run_experiment.qsub` line 24:
+Edit `run_experiment.qsub` lines 14-15:
 ```bash
-PROJECT=${PROJECT:-ab12}  # Replace 'ab12' with your project
+#PBS -P p00
+#PBS -l storage=scratch/p00+gdata/p00
+
+# Change to your project (example):
+#PBS -P ab12
+#PBS -l storage=scratch/ab12+gdata/ab12
 ```
 
-**Method B: Pass via command line**
-
-```bash
-qsub -v PROJECT=ab12,SECTION=section1_1,EPOCHS=100 run_experiment.qsub
-```
+**Important**: The `#PBS` directives are parsed by PBS before the script runs, so they must contain literal values, not variables.
 
 #### 2. Email Notifications (Optional)
 
@@ -191,11 +194,14 @@ qsub -v SECTION=section1_1,EPOCHS=1000,PROFILE=large run_experiment.qsub
 qsub -v SECTION=section2_1,EPOCHS=5,PROFILE=test run_experiment.qsub
 ```
 
-### Pass Project Code
+### Verify Project Code is Set
 
 ```bash
-# If not set in script
-qsub -v PROJECT=xy34,SECTION=section1_1,EPOCHS=100 run_experiment.qsub
+# Check the PBS directives in the script
+head -20 run_experiment.qsub | grep "PBS -P"
+
+# Should show:
+# #PBS -P your_project_code
 ```
 
 ### All Sections

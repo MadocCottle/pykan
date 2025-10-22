@@ -7,21 +7,20 @@
 #PBS -m abe
 
 # =============================================================================
+# REQUIRED: Set your NCI project code below
+# =============================================================================
+# TODO: Replace 'p00' with your actual NCI project code
+# PBS directives MUST have literal values - they cannot use variables!
+#PBS -P p00
+#PBS -l storage=scratch/p00+gdata/p00
+
+# =============================================================================
 # PyKAN Experiment Job Script for NCI Gadi
 # =============================================================================
 #
 # This PBS script runs PyKAN madoc experiments on NCI Gadi.
 # Results are collected in a timestamped folder for easy retrieval.
 #
-#
-# You can either:
-#   1. Edit the line below directly, OR
-#   2. Pass it via qsub: qsub -v PROJECT=ab12,...
-#
-PROJECT=${PROJECT:-p00}
-
-#PBS -P ${PROJECT}
-#PBS -l storage=scratch/${PROJECT}+gdata/${PROJECT}
 
 # =============================================================================
 # REQUIRED PARAMETERS (pass via qsub -v)
@@ -97,11 +96,8 @@ log "PBS Job Name: ${PBS_JOBNAME}"
 log "Working Directory: ${SCRIPT_DIR}"
 log ""
 
-# Check PROJECT is set
-if [[ "${PROJECT}" == "YOUR_PROJECT" ]] || [[ -z "${PROJECT}" ]]; then
-    error "PROJECT not set! Edit the script or pass via: qsub -v PROJECT=your_project,..."
-fi
-log "Project: ${PROJECT}"
+# Log project (from PBS directive)
+log "Project: ${PBS_PROJECT:-p00}"
 
 # Check SECTION is provided
 if [[ -z "${SECTION}" ]]; then
