@@ -1,0 +1,2 @@
+architecture,config,test_rmse_fmt,params,pareto_optimal
+MLP,6_silu,6.88e-04,5000,True

@@ -1,0 +1,3 @@
+Architecture,A (constant),α (exponent),Interpretation,Num configs
+MLP,9.8581e+01,0.0000,Higher α = faster scaling with parameters,15
+SIREN,9.3970e+01,0.0000,Higher α = faster scaling with parameters,5

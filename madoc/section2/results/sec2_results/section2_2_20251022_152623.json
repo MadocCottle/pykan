@@ -1,0 +1,16 @@
+{
+  "results": {
+    "grid_3": {
+      "mse": 0.5467004179954529
+    },
+    "grid_5": {
+      "mse": 0.044308457523584366
+    }
+  },
+  "meta": {
+    "epochs": 3,
+    "device": "cpu",
+    "initial_grid": 3,
+    "max_grid": 5
+  }
+}

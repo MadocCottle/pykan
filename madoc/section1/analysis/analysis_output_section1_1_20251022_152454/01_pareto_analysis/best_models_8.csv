@@ -1,0 +1,4 @@
+architecture,config,test_rmse_fmt,params,pareto_optimal
+SIREN,2,5.74e+01,5000,True
+MLP,5_relu,nan,5000,True
+MLP,6_silu,nan,5000,True

@@ -1,0 +1,2 @@
+architecture,config,test_rmse_fmt,params,pareto_optimal
+SIREN,2,1.09e-05,5000,True

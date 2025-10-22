@@ -1,10 +1,17 @@
 """
-Batch Analysis Runner for Complete Section 1
+Batch Analysis Runner for Complete Section 1 (v2.0 - New System)
 
 This script automatically discovers and analyzes all Section 1 experiment results:
 - Section 1.1: Function Approximation (sec1_results/)
 - Section 1.2: 1D Poisson PDE (sec2_results/)
 - Section 1.3: 2D Poisson PDE (sec3_results/)
+
+New Analysis System Features:
+- Pareto frontier analysis (inspired by Liu et al. 2024 KAN paper)
+- Scaling law analysis with α exponents
+- Parameter-aware model comparison
+- Enhanced function fitting with parameter counts
+- Section 1.3 heatmap analysis (kept as-is)
 
 Usage:
     # Analyze latest results from all subsections
