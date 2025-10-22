@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 import argparse
 from datetime import datetime
+import importlib.util
 
 # Add analysis directory to path for local imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -21,9 +22,11 @@ try:
     from .function_fitting import FunctionFittingVisualizer
     from .heatmap_2d_fits import Heatmap2DAnalyzer
 except ImportError:
-    # Allow running as script
-    from . import io as io_module
-    io = io_module
+    # Allow running as script - import local modules directly using importlib
+    # (regular import io conflicts with built-in io module)
+    spec = importlib.util.spec_from_file_location('io', Path(__file__).parent / 'io.py')
+    io = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(io)
     import report_utils as ru
     from comparative_metrics import MetricsAnalyzer
     from function_fitting import FunctionFittingVisualizer

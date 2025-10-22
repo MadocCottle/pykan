@@ -63,7 +63,8 @@ def load_run(section: str, timestamp: Optional[str] = None, base_dir: Optional[P
         if not pkl_files:
             raise FileNotFoundError(f"No results found in {results_dir}")
         pkl_file = pkl_files[-1]  # Latest
-        timestamp = pkl_file.stem.split('_')[-1]
+        # Extract timestamp: section1_1_20251022_144828.pkl -> 20251022_144828
+        timestamp = '_'.join(pkl_file.stem.split('_')[2:])
 
     # Load results
     with open(pkl_file, 'rb') as f:

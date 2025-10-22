@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from typing import Dict, Optional, Union
 import seaborn as sns
+import importlib.util
 
 # Add pykan to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -23,9 +24,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 try:
     from . import io
 except ImportError:
-    # Allow running as script (not as package)
-    from . import io as io_module
-    io = io_module
+    # Allow running as script - import local module directly using importlib
+    # (regular import io conflicts with built-in io module)
+    spec = importlib.util.spec_from_file_location('io', Path(__file__).parent / 'io.py')
+    io = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(io)
 
 # Set plotting style
 sns.set_style("whitegrid")

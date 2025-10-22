@@ -15,6 +15,7 @@ from matplotlib import cm
 import seaborn as sns
 import torch
 from typing import Dict, Optional, Callable, Union
+import importlib.util
 
 # Add section1 directory to path for utils imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -28,9 +29,11 @@ from utils import data_funcs as dfs
 try:
     from . import io
 except ImportError:
-    # Allow running as script (not as package)
-    import io as io_module
-    io = io_module
+    # Allow running as script - import local module directly using importlib
+    # (regular import io conflicts with built-in io module)
+    spec = importlib.util.spec_from_file_location('io', Path(__file__).parent / 'io.py')
+    io = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(io)
 
 # Set style
 sns.set_style("white")

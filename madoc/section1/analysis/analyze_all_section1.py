@@ -22,6 +22,7 @@ from pathlib import Path
 import argparse
 from datetime import datetime
 import json
+import importlib.util
 
 # Add analysis directory to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -31,8 +32,11 @@ try:
     from . import report_utils as ru
     from .run_analysis import run_full_analysis
 except ImportError:
-    from . import io as io_module
-    io = io_module
+    # Allow running as script - import local modules directly using importlib
+    # (regular import io conflicts with built-in io module)
+    spec = importlib.util.spec_from_file_location('io', Path(__file__).parent / 'io.py')
+    io = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(io)
     import report_utils as ru
     from run_analysis import run_full_analysis
 
@@ -80,7 +84,11 @@ def analyze_all_sections(output_base_dir: str = None, specific_timestamp: str = 
             # Get results file path for display
             # This file is in section1/analysis/, so parent is section1/
             results_dir = Path(__file__).parent.parent / 'results' / io.SECTION_DIRS[section_id]
-            ts = specific_timestamp if specific_timestamp else sorted(results_dir.glob(f'{section_id}_*.pkl'))[-1].stem.split('_')[-1]
+            if specific_timestamp:
+                ts = specific_timestamp
+            else:
+                # Extract timestamp: section1_1_20251022_144828.pkl -> 20251022_144828
+                ts = '_'.join(sorted(results_dir.glob(f'{section_id}_*.pkl'))[-1].stem.split('_')[2:])
             results_file = results_dir / f'{section_id}_{ts}.pkl'
 
             print(f"Found results: {results_file.name}")
