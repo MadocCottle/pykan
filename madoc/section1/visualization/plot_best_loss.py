@@ -16,27 +16,7 @@ import numpy as np
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils import load_run, data_funcs as dfs
-
-
-def find_latest_timestamp(section='section1_1'):
-    """Find the most recent timestamp for a section"""
-    sec_num = section.split('_')[-1]
-    results_dir = Path(__file__).parent.parent / 'results' / f'sec{sec_num}_results'
-
-    if not results_dir.exists():
-        raise FileNotFoundError(f"Results directory not found: {results_dir}")
-
-    # Find all timestamps
-    timestamps = set()
-    for f in results_dir.glob(f'{section}_*_mlp.pkl'):
-        # Extract timestamp from filename: section1_1_TIMESTAMP_mlp.pkl
-        timestamp = f.stem.replace(f'{section}_', '').replace('_mlp', '')
-        timestamps.add(timestamp)
-
-    if not timestamps:
-        raise FileNotFoundError(f"No results found for {section}")
-
-    return sorted(timestamps)[-1]  # Return most recent
+from utils.result_finder import select_run
 
 
 def get_dataset_names(section='section1_1'):
@@ -148,21 +128,29 @@ def extract_training_curve(df, config):
     return curve
 
 
-def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test', show=False, output_dir=None):
+def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test', show=False, output_dir=None,
+                          strategy='latest', epochs=None, verbose=False):
     """
     Plot loss curves over epochs for the best model from each class for all datasets.
 
     Args:
         section: Section name (e.g., 'section1_1')
-        timestamp: Specific timestamp to load, or None for most recent
+        timestamp: Specific timestamp to load, or None for auto-selection
         loss_type: Which loss to plot - 'train', 'test', or 'both' (default: 'test')
         show: If True, display plot in window; otherwise only save to file (default: False)
         output_dir: Directory to save plots (default: same directory as script)
+        strategy: Run selection strategy ('latest', 'max_epochs', 'min_epochs', 'exact_epochs')
+        epochs: Epoch count for 'exact_epochs' strategy
+        verbose: Print run selection details
     """
     # Load results
     if timestamp is None:
-        timestamp = find_latest_timestamp(section)
-        print(f"Using most recent timestamp: {timestamp}")
+        results_base = Path(__file__).parent.parent / 'results'
+        timestamp = select_run(section, results_base,
+                             strategy=strategy,
+                             epochs=epochs,
+                             verbose=verbose)
+        print(f"Using selected timestamp: {timestamp}")
 
     print(f"Loading results from {section}_{timestamp}...")
     results, meta = load_run(section, timestamp)
@@ -303,7 +291,12 @@ if __name__ == '__main__':
     parser.add_argument('--section', type=str, default='section1_1',
                        help='Section to load (e.g., section1_1)')
     parser.add_argument('--timestamp', type=str, default=None,
-                       help='Specific timestamp to load (default: most recent)')
+                       help='Specific timestamp to load (overrides strategy)')
+    parser.add_argument('--strategy', type=str, default='latest',
+                       choices=['latest', 'max_epochs', 'min_epochs', 'exact_epochs'],
+                       help='Run selection strategy (default: latest)')
+    parser.add_argument('--epochs', type=int, default=None,
+                       help='Epoch count for exact_epochs strategy')
     parser.add_argument('--loss-type', type=str, default='test',
                        choices=['train', 'test'],
                        help='Which loss to plot: train or test (default: test)')
@@ -311,6 +304,8 @@ if __name__ == '__main__':
                        help='Directory to save plots (default: same directory as script)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
+    parser.add_argument('--verbose', action='store_true',
+                       help='Print run selection details')
 
     args = parser.parse_args()
 
@@ -320,7 +315,10 @@ if __name__ == '__main__':
             timestamp=args.timestamp,
             loss_type=args.loss_type,
             show=args.show,
-            output_dir=args.output_dir
+            output_dir=args.output_dir,
+            strategy=args.strategy,
+            epochs=args.epochs,
+            verbose=args.verbose
         )
     except FileNotFoundError as e:
         print(f"Error: {e}")
