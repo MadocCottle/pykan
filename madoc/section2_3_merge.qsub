@@ -1,0 +1,229 @@
+#!/bin/bash
+#PBS -N section2_3_merge
+#PBS -q normal
+#PBS -l wd
+#PBS -j oe
+#PBS -M u7138718@anu.edu.au
+#PBS -m abe
+
+# =============================================================================
+# REQUIRED: Set your NCI project code below
+# =============================================================================
+#PBS -P p00
+#PBS -l storage=scratch/p00+gdata/p00
+
+# =============================================================================
+# Phase 2: Merge and Train Combined KAN for Section 2.3 (Merge_KAN)
+# =============================================================================
+#
+# This PBS job loads pre-trained expert models from Phase 1, selects the best
+# experts per dependency pattern, merges them into a single KAN, and trains
+# the merged model through grid refinement.
+#
+# REQUIRED PARAMETERS (pass via qsub -v):
+#   DIM:          Problem dimension (2, 4, or 10)
+#   EXPERT_DIR:   Directory containing trained expert models from Phase 1
+#
+# OPTIONAL PARAMETERS:
+#   MERGED_EPOCHS: Training steps per grid for merged model (default: 200)
+#   OUTPUT_DIR:    Output directory for results (default: section2/results)
+#   GRIDS:         Grid schedule as comma-separated values (default: "3,5,10,20")
+#
+# Example submission:
+#   qsub -v DIM=4,EXPERT_DIR=./experts_4d,MERGED_EPOCHS=200 section2_3_merge.qsub
+#
+# This job should be submitted with a dependency on Phase 1 completion:
+#   qsub -W depend=afterok:ARRAY_JOB_ID section2_3_merge.qsub
+#
+# =============================================================================
+
+set -e  # Exit on error
+
+# Script directory
+SCRIPT_DIR="${PBS_O_WORKDIR}"
+cd "${SCRIPT_DIR}"
+
+# Timestamp for logging
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+# =============================================================================
+# Parameter Validation
+# =============================================================================
+
+echo "=========================================="
+echo "Section 2.3 Merge and Train (Phase 2)"
+echo "=========================================="
+echo ""
+echo "PBS Job ID: ${PBS_JOBID}"
+echo "PBS Job Name: ${PBS_JOBNAME}"
+echo "Working Directory: ${SCRIPT_DIR}"
+echo ""
+
+# Check required parameters
+if [[ -z "${DIM}" ]]; then
+    echo "ERROR: DIM not specified!"
+    echo "Usage: qsub -v DIM=4,EXPERT_DIR=./experts_4d section2_3_merge.qsub"
+    exit 1
+fi
+
+if [[ ! "${DIM}" =~ ^(2|4|10)$ ]]; then
+    echo "ERROR: Invalid DIM: ${DIM}. Must be 2, 4, or 10"
+    exit 1
+fi
+
+if [[ -z "${EXPERT_DIR}" ]]; then
+    echo "ERROR: EXPERT_DIR not specified!"
+    echo "Usage: qsub -v DIM=4,EXPERT_DIR=./experts_4d section2_3_merge.qsub"
+    exit 1
+fi
+
+# Check expert directory exists
+if [[ ! -d "${EXPERT_DIR}" ]]; then
+    echo "ERROR: Expert directory not found: ${EXPERT_DIR}"
+    exit 1
+fi
+
+# Set defaults
+MERGED_EPOCHS="${MERGED_EPOCHS:-200}"
+OUTPUT_DIR="${OUTPUT_DIR:-${SCRIPT_DIR}/section2/results}"
+GRIDS="${GRIDS:-3,5,10,20}"
+
+# Convert comma-separated grids to space-separated for python arg
+GRIDS_ARRAY=$(echo ${GRIDS} | tr ',' ' ')
+
+echo "Configuration:"
+echo "  Dimension: ${DIM}D"
+echo "  Expert Dir: ${EXPERT_DIR}"
+echo "  Output Dir: ${OUTPUT_DIR}"
+echo "  Merged Epochs/Grid: ${MERGED_EPOCHS}"
+echo "  Grid Schedule: ${GRIDS}"
+echo ""
+
+# Create output directory
+mkdir -p "${OUTPUT_DIR}"
+
+# Log file
+LOG_FILE="${OUTPUT_DIR}/section2_3_merge_${DIM}d_${TIMESTAMP}.log"
+
+# =============================================================================
+# Environment Setup
+# =============================================================================
+
+echo "Setting up environment..."
+
+# Load Python module
+module load python3/3.10.4 || {
+    echo "ERROR: Failed to load Python module"
+    exit 1
+}
+
+# Check if virtual environment exists
+VENV_DIR="${SCRIPT_DIR}/.venv"
+if [[ ! -d "${VENV_DIR}" ]]; then
+    echo "ERROR: Virtual environment not found at ${VENV_DIR}"
+    echo "Please run setup.sh first."
+    exit 1
+fi
+
+# Activate virtual environment
+source "${VENV_DIR}/bin/activate" || {
+    echo "ERROR: Failed to activate virtual environment"
+    exit 1
+}
+
+echo "Python version: $(python3 --version)"
+echo "Environment setup complete"
+echo ""
+
+# =============================================================================
+# Verify All Experts Trained Successfully
+# =============================================================================
+
+echo "Verifying expert training completion..."
+
+# Count expected expert files based on dimension
+# For N_SEEDS=5: 15 experts (0-14)
+EXPECTED_EXPERTS=15
+
+# Count actual expert .pkl files
+ACTUAL_EXPERTS=$(find "${EXPERT_DIR}" -name "expert_${DIM}d_*.pkl" | wc -l)
+
+echo "  Expected experts: ${EXPECTED_EXPERTS}"
+echo "  Found experts: ${ACTUAL_EXPERTS}"
+
+if [[ ${ACTUAL_EXPERTS} -lt ${EXPECTED_EXPERTS} ]]; then
+    echo "WARNING: Found fewer experts than expected!"
+    echo "  Some expert training jobs may have failed."
+    echo "  Continuing with available experts..."
+fi
+
+if [[ ${ACTUAL_EXPERTS} -eq 0 ]]; then
+    echo "ERROR: No expert models found in ${EXPERT_DIR}"
+    echo "  Make sure Phase 1 completed successfully."
+    exit 1
+fi
+
+echo "Expert verification complete"
+echo ""
+
+# =============================================================================
+# Run Merge and Train
+# =============================================================================
+
+echo "=========================================="
+echo "Merging and Training Merged Model"
+echo "=========================================="
+echo ""
+
+START_TIME=$(date +%s)
+
+# Run the merge and train script
+python3 "${SCRIPT_DIR}/section2/section2_3_merge.py" \
+    --dim ${DIM} \
+    --expert-dir "${EXPERT_DIR}" \
+    --output-dir "${OUTPUT_DIR}" \
+    --merged-epochs ${MERGED_EPOCHS} \
+    --grids ${GRIDS_ARRAY} \
+    2>&1 | tee "${LOG_FILE}"
+
+EXIT_CODE=${PIPESTATUS[0]}
+
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+DURATION_MIN=$((DURATION / 60))
+DURATION_SEC=$((DURATION % 60))
+
+echo ""
+echo "=========================================="
+echo "Merge and Train Complete"
+echo "=========================================="
+echo "Exit Code: ${EXIT_CODE}"
+echo "Duration: ${DURATION_MIN}m ${DURATION_SEC}s"
+echo "Log File: ${LOG_FILE}"
+echo ""
+
+if [[ ${EXIT_CODE} -ne 0 ]]; then
+    echo "ERROR: Merge and train failed with exit code ${EXIT_CODE}"
+    exit ${EXIT_CODE}
+fi
+
+# =============================================================================
+# Summary
+# =============================================================================
+
+echo "=========================================="
+echo "Phase 2 Job Complete!"
+echo "=========================================="
+echo ""
+echo "Job Details:"
+echo "  PBS Job ID: ${PBS_JOBID}"
+echo "  Dimension: ${DIM}D"
+echo "  Experts Used: ${ACTUAL_EXPERTS}"
+echo "  Duration: ${DURATION_MIN}m ${DURATION_SEC}s"
+echo ""
+echo "Results:"
+echo "  Output Directory: ${OUTPUT_DIR}"
+echo "  Log File: ${LOG_FILE}"
+echo ""
+
+exit 0

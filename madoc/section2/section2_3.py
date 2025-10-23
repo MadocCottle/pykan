@@ -28,11 +28,13 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"Device: {device}")
 print(f"Number of seeds per config: {n_seeds}")
 
-# Section 2.3: Merge_KAN on 2D Poisson PDE
+# Section 2.3: Merge_KAN on 2D Poisson PDE (Sin forcing only)
 # ============= Create Datasets =============
+# NOTE: Using only sin forcing function to reduce computational cost by 75%
+# For other forcing functions (poly, highfreq, spec), use the parallelized workflow
 datasets = []
-true_functions = [dfs.f_poisson_2d_sin, dfs.f_poisson_2d_poly, dfs.f_poisson_2d_highfreq, dfs.f_poisson_2d_spec]
-dataset_names = ['poisson_2d_sin', 'poisson_2d_poly', 'poisson_2d_highfreq', 'poisson_2d_spec']
+true_functions = [dfs.f_poisson_2d_sin]  # Only sin for cost reduction
+dataset_names = ['poisson_2d_sin']
 
 for f in true_functions:
     datasets.append(create_dataset(f, n_var=2, train_num=1000, test_num=1000))

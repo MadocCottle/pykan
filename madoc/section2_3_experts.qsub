@@ -1,0 +1,175 @@
+#!/bin/bash
+#PBS -N section2_3_experts
+#PBS -q normal
+#PBS -l wd
+#PBS -j oe
+#PBS -M u7138718@anu.edu.au
+#PBS -m abe
+
+# =============================================================================
+# REQUIRED: Set your NCI project code below
+# =============================================================================
+#PBS -P p00
+#PBS -l storage=scratch/p00+gdata/p00
+
+# =============================================================================
+# Phase 1: Parallel Expert Training for Section 2.3 (Merge_KAN)
+# =============================================================================
+#
+# This PBS job array trains multiple expert KANs in parallel.
+# Each job in the array trains one expert with a unique configuration.
+#
+# REQUIRED PARAMETERS (pass via qsub -v):
+#   DIM:        Problem dimension (2, 4, or 10)
+#   N_SEEDS:    Number of random seeds per config (default: 5)
+#   EPOCHS:     Training epochs per expert (default: 1000)
+#   OUTPUT_DIR: Directory to save trained experts
+#
+# Example submission:
+#   qsub -J 0-14 -v DIM=4,N_SEEDS=5,EPOCHS=1000,OUTPUT_DIR=./experts_4d section2_3_experts.qsub
+#
+# The -J flag specifies the job array range (0 to N_EXPERTS-1)
+# For N_SEEDS=5: N_EXPERTS = 15 (2 depths × 5 seeds + 1 depth × 5 seeds)
+#
+# =============================================================================
+
+set -e  # Exit on error
+
+# Script directory
+SCRIPT_DIR="${PBS_O_WORKDIR}"
+cd "${SCRIPT_DIR}"
+
+# Timestamp for this job array run
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+# =============================================================================
+# Parameter Validation
+# =============================================================================
+
+echo "=========================================="
+echo "Section 2.3 Expert Training (Phase 1)"
+echo "=========================================="
+echo ""
+echo "PBS Job ID: ${PBS_JOBID}"
+echo "PBS Array Index: ${PBS_ARRAY_INDEX}"
+echo "Working Directory: ${SCRIPT_DIR}"
+echo ""
+
+# Check required parameters
+if [[ -z "${DIM}" ]]; then
+    echo "ERROR: DIM not specified!"
+    echo "Usage: qsub -J 0-14 -v DIM=4,N_SEEDS=5,EPOCHS=1000,OUTPUT_DIR=./experts section2_3_experts.qsub"
+    exit 1
+fi
+
+if [[ ! "${DIM}" =~ ^(2|4|10)$ ]]; then
+    echo "ERROR: Invalid DIM: ${DIM}. Must be 2, 4, or 10"
+    exit 1
+fi
+
+# Set defaults
+N_SEEDS="${N_SEEDS:-5}"
+EPOCHS="${EPOCHS:-1000}"
+OUTPUT_DIR="${OUTPUT_DIR:-${SCRIPT_DIR}/section2/experts_${DIM}d_${TIMESTAMP}}"
+
+echo "Configuration:"
+echo "  Dimension: ${DIM}D"
+echo "  N_SEEDS: ${N_SEEDS}"
+echo "  Epochs: ${EPOCHS}"
+echo "  Expert Index: ${PBS_ARRAY_INDEX}"
+echo "  Output Dir: ${OUTPUT_DIR}"
+echo ""
+
+# Validate expert index range
+# For N_SEEDS=5: max_index = 14 (15 experts: 0-14)
+MAX_INDEX=$((3 * N_SEEDS - 1))
+if [[ ${PBS_ARRAY_INDEX} -gt ${MAX_INDEX} ]]; then
+    echo "ERROR: PBS_ARRAY_INDEX ${PBS_ARRAY_INDEX} exceeds maximum ${MAX_INDEX} for N_SEEDS=${N_SEEDS}"
+    exit 1
+fi
+
+# Create output directory
+mkdir -p "${OUTPUT_DIR}"
+
+# Log file for this specific expert
+LOG_FILE="${OUTPUT_DIR}/expert_${PBS_ARRAY_INDEX}.log"
+
+# =============================================================================
+# Environment Setup
+# =============================================================================
+
+echo "Setting up environment..."
+
+# Load Python module
+module load python3/3.10.4 || {
+    echo "ERROR: Failed to load Python module"
+    exit 1
+}
+
+# Check if virtual environment exists
+VENV_DIR="${SCRIPT_DIR}/.venv"
+if [[ ! -d "${VENV_DIR}" ]]; then
+    echo "ERROR: Virtual environment not found at ${VENV_DIR}"
+    echo "Please run setup.sh first."
+    exit 1
+fi
+
+# Activate virtual environment
+source "${VENV_DIR}/bin/activate" || {
+    echo "ERROR: Failed to activate virtual environment"
+    exit 1
+}
+
+echo "Python version: $(python3 --version)"
+echo "Environment setup complete"
+echo ""
+
+# =============================================================================
+# Train Expert
+# =============================================================================
+
+echo "=========================================="
+echo "Training Expert ${PBS_ARRAY_INDEX}"
+echo "=========================================="
+echo ""
+
+START_TIME=$(date +%s)
+
+# Run the expert training script
+python3 "${SCRIPT_DIR}/section2/section2_3_train_expert.py" \
+    --index ${PBS_ARRAY_INDEX} \
+    --dim ${DIM} \
+    --n-seeds ${N_SEEDS} \
+    --epochs ${EPOCHS} \
+    --output-dir "${OUTPUT_DIR}" \
+    2>&1 | tee "${LOG_FILE}"
+
+EXIT_CODE=${PIPESTATUS[0]}
+
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+DURATION_MIN=$((DURATION / 60))
+DURATION_SEC=$((DURATION % 60))
+
+echo ""
+echo "=========================================="
+echo "Expert Training Complete"
+echo "=========================================="
+echo "Expert Index: ${PBS_ARRAY_INDEX}"
+echo "Exit Code: ${EXIT_CODE}"
+echo "Duration: ${DURATION_MIN}m ${DURATION_SEC}s"
+echo "Log File: ${LOG_FILE}"
+echo ""
+
+if [[ ${EXIT_CODE} -ne 0 ]]; then
+    echo "ERROR: Expert training failed with exit code ${EXIT_CODE}"
+    exit ${EXIT_CODE}
+fi
+
+# Create a success marker file
+touch "${OUTPUT_DIR}/expert_${PBS_ARRAY_INDEX}.success"
+
+echo "Expert ${PBS_ARRAY_INDEX} trained successfully!"
+echo ""
+
+exit 0
