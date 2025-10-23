@@ -29,6 +29,10 @@ def print_best_dense_mse_summary(all_results, dataset_names):
         row = f"{dataset_name:<25}"
         for model_type in model_types:
             df = all_results[model_type]
+            # Skip if dataframe is empty
+            if len(df) == 0:
+                row += f"{'N/A':<20}"
+                continue
             # Filter for this dataset and non-pruned results
             dataset_df = df[df['dataset_idx'] == i]
             if 'is_pruned' in dataset_df.columns:
@@ -329,53 +333,62 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
         grids_completed = []
 
         for j, grid_size in enumerate(grids):
-            # Check if we have budget for this grid
-            if cumulative_epochs + steps_per_grid > epochs:
-                print(f"  Skipping grid {grid_size}: Would exceed epoch budget ({cumulative_epochs + steps_per_grid} > {epochs})")
+            # Calculate how many epochs we can afford for this grid
+            remaining_budget = epochs - cumulative_epochs
+            if remaining_budget <= 0:
+                print(f"  Epoch budget exhausted ({cumulative_epochs}/{epochs} epochs used)")
                 print(f"  Completed {len(grids_completed)}/{len(grids)} grids within budget")
                 break
+
+            steps_for_this_grid = min(steps_per_grid, remaining_budget)
 
             grid_start_time = time.time()
             if j == 0:
                 # Initialize KAN on first grid
                 model = KAN(width=[n_var, 5, 1], grid=grid_size, k=3, seed=1, device=device)
-                print(f"  Training KAN: Dataset {i} ({dataset_name}), grid={grid_size} (budget: {cumulative_epochs}/{epochs} epochs used)")
+                print(f"  Training KAN: Dataset {i} ({dataset_name}), grid={grid_size} (budget: {cumulative_epochs}/{epochs} epochs used, training {steps_for_this_grid} epochs)")
             else:
                 # Refine to next grid size (preserves learned splines)
                 model = model.refine(grid_size)
-                print(f"  Refining KAN: Dataset {i} ({dataset_name}), grid={grid_size} (budget: {cumulative_epochs}/{epochs} epochs used)")
+                print(f"  Refining KAN: Dataset {i} ({dataset_name}), grid={grid_size} (budget: {cumulative_epochs}/{epochs} epochs used, training {steps_for_this_grid} epochs)")
             num_params = count_parameters(model)
             grid_param_counts.append(num_params)
-            train_results = model.fit(dataset, opt="LBFGS", steps=steps_per_grid, log=1)
+            train_results = model.fit(dataset, opt="LBFGS", steps=steps_for_this_grid, log=1)
             train_losses += train_results['train_loss']
             test_losses += train_results['test_loss']
 
             # Print losses for each epoch in this grid
-            for epoch_in_grid in range(steps_per_grid):
+            for epoch_in_grid in range(steps_for_this_grid):
                 global_epoch = cumulative_epochs + epoch_in_grid + 1
                 train_loss_val = train_results['train_loss'][epoch_in_grid]
                 test_loss_val = train_results['test_loss'][epoch_in_grid]
                 print(f"    Epoch {global_epoch}/{epochs}: Train Loss = {train_loss_val:.6e}, Test Loss = {test_loss_val:.6e}")
 
-            cumulative_epochs += steps_per_grid
-            grids_completed.append(grid_size)
+            cumulative_epochs += steps_for_this_grid
+            grids_completed.append((grid_size, steps_for_this_grid))
             grid_time = time.time() - grid_start_time
             grid_times.append(grid_time)
-            print(f"  Grid {grid_size} completed: {grid_time:.2f}s total, {grid_time/steps_per_grid:.3f}s/epoch, {num_params} params")
+            print(f"  Grid {grid_size} completed: {grid_time:.2f}s total, {grid_time/steps_for_this_grid:.3f}s/epoch, {num_params} params")
 
-        # Compute dense MSE only once at the end
-        with torch.no_grad():
-            final_dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
-                                                           num_samples=10000, device=device)
-        print(f"    Final Dense MSE = {final_dense_mse:.6e}")
+        # Compute dense MSE only once at the end (only if at least one grid completed)
+        if grids_completed:
+            with torch.no_grad():
+                final_dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
+                                                               num_samples=10000, device=device)
+            print(f"    Final Dense MSE = {final_dense_mse:.6e}")
 
-        total_dataset_time = time.time() - dataset_start_time
-        models[i] = model
+            total_dataset_time = time.time() - dataset_start_time
+            models[i] = model
+        else:
+            # No grids completed - skip this dataset
+            print(f"  Warning: No grids completed for dataset {i} ({dataset_name}) - skipping")
+            continue
 
         # Create rows for regular training (only for completed grids)
-        for j, grid_size in enumerate(grids_completed):
-            for epoch_in_grid in range(steps_per_grid):
-                global_epoch = j * steps_per_grid + epoch_in_grid
+        cumulative_global_epoch = 0
+        for j, (grid_size, steps_trained) in enumerate(grids_completed):
+            for epoch_in_grid in range(steps_trained):
+                global_epoch = cumulative_global_epoch + epoch_in_grid
                 rows.append({
                     'dataset_idx': i,
                     'dataset_name': dataset_name,
@@ -385,10 +398,11 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
                     'test_loss': test_losses[global_epoch],
                     'dense_mse': final_dense_mse,  # Same value for all epochs
                     'total_time': grid_times[j],
-                    'time_per_epoch': grid_times[j] / steps_per_grid,
+                    'time_per_epoch': grid_times[j] / steps_trained,
                     'num_params': grid_param_counts[j],
                     'is_pruned': False
                 })
+            cumulative_global_epoch += steps_trained
 
         if prune:
             # Apply pruning to remove insignificant edges and nodes
@@ -409,7 +423,7 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
             rows.append({
                 'dataset_idx': i,
                 'dataset_name': dataset_name,
-                'grid_size': grids_completed[-1] if grids_completed else grids[0],  # Associate with final completed grid
+                'grid_size': grids_completed[-1][0] if grids_completed else grids[0],  # Associate with final completed grid
                 'epoch': cumulative_epochs,  # Epoch after all training
                 'train_loss': train_loss_pruned,
                 'test_loss': test_loss_pruned,
