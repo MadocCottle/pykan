@@ -8,4 +8,13 @@ from .optimizer_tests import (
     run_kan_baseline_test,
     print_optimizer_summary
 )
+from .merge_kan import (
+    detect_dependencies,
+    train_expert_kan,
+    generate_expert_pool,
+    select_best_experts,
+    merge_kans,
+    train_merged_kan_with_refinement,
+    run_merge_kan_experiment
+)
 from . import data_funcs
