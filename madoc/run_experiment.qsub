@@ -361,31 +361,48 @@ log "Copying results files..."
 COPIED_COUNT=0
 
 # Copy pickle and parquet files
-for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.pkl "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.parquet; do
+# Support both new format (with epochs: *_e100_*.pkl) and old format (*_*.pkl)
+for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_e"*"_"*.pkl \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_e"*"_"*.parquet \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.pkl \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.parquet; do
     if [[ -f "${file}" ]]; then
-        cp "${file}" "${JOB_SECTION_RESULTS}/"
-        log "  Copied: $(basename ${file})"
-        COPIED_COUNT=$((COPIED_COUNT + 1))
+        # Avoid duplicates if both patterns match
+        if [[ ! -f "${JOB_SECTION_RESULTS}/$(basename ${file})" ]]; then
+            cp "${file}" "${JOB_SECTION_RESULTS}/"
+            log "  Copied: $(basename ${file})"
+            COPIED_COUNT=$((COPIED_COUNT + 1))
+        fi
     fi
 done
 
 # Copy MLP and SIREN model files (.pth)
-for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.pth; do
+# Support both new format (with epochs) and old format
+for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_e"*"_"*.pth \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.pth; do
     if [[ -f "${file}" ]]; then
-        cp "${file}" "${JOB_SECTION_RESULTS}/"
-        log "  Copied: $(basename ${file})"
-        COPIED_COUNT=$((COPIED_COUNT + 1))
+        if [[ ! -f "${JOB_SECTION_RESULTS}/$(basename ${file})" ]]; then
+            cp "${file}" "${JOB_SECTION_RESULTS}/"
+            log "  Copied: $(basename ${file})"
+            COPIED_COUNT=$((COPIED_COUNT + 1))
+        fi
     fi
 done
 
 # Copy KAN model checkpoint files (config, state, cache_data)
-for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*_config.yml \
+# Support both new format (with epochs) and old format
+for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_e"*"_"*_config.yml \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_e"*"_"*_state \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_e"*"_"*_cache_data \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*_config.yml \
             "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*_state \
             "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*_cache_data; do
     if [[ -f "${file}" ]]; then
-        cp "${file}" "${JOB_SECTION_RESULTS}/"
-        log "  Copied: $(basename ${file})"
-        COPIED_COUNT=$((COPIED_COUNT + 1))
+        if [[ ! -f "${JOB_SECTION_RESULTS}/$(basename ${file})" ]]; then
+            cp "${file}" "${JOB_SECTION_RESULTS}/"
+            log "  Copied: $(basename ${file})"
+            COPIED_COUNT=$((COPIED_COUNT + 1))
+        fi
     fi
 done
 
