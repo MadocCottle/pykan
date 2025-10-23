@@ -46,6 +46,63 @@ def load_latest_results(section_name: str, results_dir: str = '../results') -> D
 
     return results
 
+
+def load_checkpoint_metadata(section_name: str, timestamp: Optional[str] = None,
+                            results_dir: str = '../results') -> Optional[Dict]:
+    """
+    Load checkpoint metadata for a given section.
+
+    Checkpoint metadata contains the two-checkpoint evaluation strategy data:
+    - 'at_kan_threshold_time' / 'at_threshold': Model state when KAN reaches interpolation threshold
+    - 'final': Model state after full training budget
+
+    Each checkpoint contains: model, epoch, time, train_loss, test_loss, dense_mse, num_params
+
+    Args:
+        section_name: Name of section (e.g., 'section1_1', 'section1_2')
+        timestamp: Specific timestamp to load, or None for latest
+        results_dir: Path to results directory
+
+    Returns:
+        Dictionary with structure:
+        {
+            'mlp': {dataset_idx: {'at_kan_threshold_time': {...}, 'final': {...}}},
+            'siren': {dataset_idx: {'at_kan_threshold_time': {...}, 'final': {...}}},
+            'kan': {dataset_idx: {'at_threshold': {...}, 'final': {...}}},
+            'kan_pruning': {dataset_idx: {'at_threshold': {...}, 'final': {...}}}
+        }
+        Returns None if checkpoint metadata not found
+    """
+    results_path = Path(__file__).parent / results_dir / 'sec1_results'
+
+    if timestamp is None:
+        # Find latest checkpoint metadata file
+        pattern = f"{section_name}_*_checkpoint_metadata.pkl"
+        files = sorted(results_path.glob(pattern))
+        if not files:
+            print(f"Warning: No checkpoint metadata files found for {section_name}")
+            return None
+        metadata_file = files[-1]
+    else:
+        # Try with epochs: section1_1_TIMESTAMP_e100_checkpoint_metadata.pkl
+        metadata_file = results_path / f"{section_name}_{timestamp}_e*_checkpoint_metadata.pkl"
+        files = list(results_path.glob(str(metadata_file)))
+
+        # Fallback without epochs
+        if not files:
+            metadata_file = results_path / f"{section_name}_{timestamp}_checkpoint_metadata.pkl"
+            if not metadata_file.exists():
+                print(f"Warning: Checkpoint metadata not found for {section_name}_{timestamp}")
+                return None
+        else:
+            metadata_file = files[0]
+
+    with open(metadata_file, 'rb') as f:
+        checkpoint_metadata = pickle.load(f)
+
+    print(f"Loaded checkpoint metadata: {metadata_file.name}")
+    return checkpoint_metadata
+
 def get_best_result_per_dataset(df: pd.DataFrame, metric: str = 'test_mse') -> pd.DataFrame:
     """
     Get the best result for each dataset based on a metric.
@@ -157,7 +214,11 @@ def compare_models(results: Dict[str, pd.DataFrame],
                    dataset_names: List[str],
                    metric: str = 'test_mse') -> pd.DataFrame:
     """
-    Create comparison table across all model types.
+    DEPRECATED: Use compare_models_from_checkpoints() for thesis-grade comparisons.
+
+    Create comparison table across all model types using DataFrame data.
+    This function compares "best overall" configurations across all training,
+    which is NOT a fair iso-compute comparison.
 
     Args:
         results: Dictionary of results DataFrames
@@ -199,3 +260,131 @@ def compare_models(results: Dict[str, pd.DataFrame],
         comparison_data.append(row_data)
 
     return pd.DataFrame(comparison_data)
+
+
+def compare_models_from_checkpoints(checkpoint_metadata: Dict,
+                                    dataset_names: List[str],
+                                    checkpoint_type: str = 'final',
+                                    include_pruned: bool = False) -> pd.DataFrame:
+    """
+    Create model comparison table using checkpoint metadata (RECOMMENDED FOR THESIS).
+
+    This function provides scientifically rigorous comparisons:
+    - 'iso_compute': Compare models at KAN interpolation threshold time (fair time-matched comparison)
+    - 'final': Compare models after full training budget (best achievable performance)
+
+    All metrics use dense_mse (evaluation on 10,000 samples), not sparse test set.
+
+    Args:
+        checkpoint_metadata: Dictionary from load_checkpoint_metadata()
+        dataset_names: List of dataset names to compare
+        checkpoint_type: 'iso_compute' (at threshold) or 'final' (after full training)
+        include_pruned: Whether to include pruned KAN results
+
+    Returns:
+        DataFrame with columns: Dataset, MLP Dense MSE, MLP Arch, MLP Params, etc.
+    """
+    comparison_data = []
+
+    # Map checkpoint type to actual checkpoint keys
+    if checkpoint_type == 'iso_compute':
+        mlp_siren_key = 'at_kan_threshold_time'
+        kan_key = 'at_threshold'
+    elif checkpoint_type == 'final':
+        mlp_siren_key = 'final'
+        kan_key = 'final'
+    else:
+        raise ValueError(f"Invalid checkpoint_type: {checkpoint_type}. Use 'iso_compute' or 'final'")
+
+    for dataset_idx, dataset_name in enumerate(dataset_names):
+        row_data = {'Dataset': dataset_name}
+
+        # MLP
+        if 'mlp' in checkpoint_metadata and dataset_idx in checkpoint_metadata['mlp']:
+            if mlp_siren_key in checkpoint_metadata['mlp'][dataset_idx]:
+                checkpoint = checkpoint_metadata['mlp'][dataset_idx][mlp_siren_key]
+                row_data['MLP Dense MSE'] = format_scientific(checkpoint['dense_mse'])
+                row_data['MLP Arch'] = f"depth={checkpoint['depth']}, {checkpoint['activation']}"
+                row_data['MLP Params'] = int(checkpoint['num_params'])
+            else:
+                row_data['MLP Dense MSE'] = 'N/A'
+                row_data['MLP Arch'] = 'N/A'
+                row_data['MLP Params'] = 'N/A'
+        else:
+            row_data['MLP Dense MSE'] = 'N/A'
+            row_data['MLP Arch'] = 'N/A'
+            row_data['MLP Params'] = 'N/A'
+
+        # SIREN
+        if 'siren' in checkpoint_metadata and dataset_idx in checkpoint_metadata['siren']:
+            if mlp_siren_key in checkpoint_metadata['siren'][dataset_idx]:
+                checkpoint = checkpoint_metadata['siren'][dataset_idx][mlp_siren_key]
+                row_data['SIREN Dense MSE'] = format_scientific(checkpoint['dense_mse'])
+                row_data['SIREN Arch'] = f"depth={checkpoint['depth']}"
+                row_data['SIREN Params'] = int(checkpoint['num_params'])
+            else:
+                row_data['SIREN Dense MSE'] = 'N/A'
+                row_data['SIREN Arch'] = 'N/A'
+                row_data['SIREN Params'] = 'N/A'
+        else:
+            row_data['SIREN Dense MSE'] = 'N/A'
+            row_data['SIREN Arch'] = 'N/A'
+            row_data['SIREN Params'] = 'N/A'
+
+        # KAN (unpruned)
+        if 'kan' in checkpoint_metadata and dataset_idx in checkpoint_metadata['kan']:
+            if kan_key in checkpoint_metadata['kan'][dataset_idx]:
+                checkpoint = checkpoint_metadata['kan'][dataset_idx][kan_key]
+                row_data['KAN Dense MSE'] = format_scientific(checkpoint['dense_mse'])
+                row_data['KAN Arch'] = f"grid={checkpoint['grid_size']}"
+                row_data['KAN Params'] = int(checkpoint['num_params'])
+            else:
+                row_data['KAN Dense MSE'] = 'N/A'
+                row_data['KAN Arch'] = 'N/A'
+                row_data['KAN Params'] = 'N/A'
+        else:
+            row_data['KAN Dense MSE'] = 'N/A'
+            row_data['KAN Arch'] = 'N/A'
+            row_data['KAN Params'] = 'N/A'
+
+        # KAN Pruning (optional)
+        if include_pruned:
+            if 'kan_pruning' in checkpoint_metadata and dataset_idx in checkpoint_metadata['kan_pruning']:
+                if kan_key in checkpoint_metadata['kan_pruning'][dataset_idx]:
+                    checkpoint = checkpoint_metadata['kan_pruning'][dataset_idx][kan_key]
+                    row_data['KAN+Pruning Dense MSE'] = format_scientific(checkpoint['dense_mse'])
+                    row_data['KAN+Pruning Arch'] = f"grid={checkpoint['grid_size']}"
+                    row_data['KAN+Pruning Params'] = int(checkpoint['num_params'])
+                else:
+                    row_data['KAN+Pruning Dense MSE'] = 'N/A'
+                    row_data['KAN+Pruning Arch'] = 'N/A'
+                    row_data['KAN+Pruning Params'] = 'N/A'
+            else:
+                row_data['KAN+Pruning Dense MSE'] = 'N/A'
+                row_data['KAN+Pruning Arch'] = 'N/A'
+                row_data['KAN+Pruning Params'] = 'N/A'
+
+        comparison_data.append(row_data)
+
+    return pd.DataFrame(comparison_data)
+
+
+def get_dataset_names(section_name: str) -> List[str]:
+    """
+    Get list of dataset names for a section.
+
+    Args:
+        section_name: Section name (e.g., 'section1_1', 'section1_2', 'section1_3')
+
+    Returns:
+        List of dataset names
+    """
+    if section_name == 'section1_1':
+        return ['sin_freq1', 'sin_freq2', 'sin_freq3', 'sin_freq4', 'sin_freq5',
+                'piecewise', 'sawtooth', 'polynomial', 'poisson_1d_highfreq']
+    elif section_name == 'section1_2':
+        return ['poisson_1d_sin', 'poisson_1d_poly', 'poisson_1d_highfreq']
+    elif section_name == 'section1_3':
+        return ['poisson_2d_sin', 'poisson_2d_poly', 'poisson_2d_highfreq', 'poisson_2d_spec']
+    else:
+        raise ValueError(f"Unknown section: {section_name}")

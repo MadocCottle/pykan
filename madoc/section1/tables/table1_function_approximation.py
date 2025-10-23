@@ -5,6 +5,13 @@ This table compares MLP, SIREN, KAN, and KAN with pruning on various 1D function
 approximation tasks including sinusoids, piecewise functions, sawtooth, polynomial,
 and high-frequency Poisson solutions.
 
+METHODOLOGY:
+- Uses checkpoint-based evaluation for fair comparisons
+- Reports dense_mse (10,000 samples) not sparse test_mse
+- Provides TWO comparisons:
+  * Table 1a: Iso-compute comparison (at KAN interpolation threshold time)
+  * Table 1b: Final performance comparison (after full training budget)
+
 Similar to KAN paper Table 1 (Special Functions) but adapted for Section 1.1 data.
 """
 
@@ -14,117 +21,240 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import pandas as pd
 import numpy as np
-from utils import (load_latest_results, print_table, create_latex_table,
-                   save_table, format_scientific, compare_models)
+from utils import (load_checkpoint_metadata, print_table, create_latex_table,
+                   save_table, format_scientific, compare_models_from_checkpoints,
+                   get_dataset_names)
 
-def create_function_approximation_table():
-    """Generate comprehensive function approximation comparison table."""
 
-    # Load results
-    results = load_latest_results('section1_1')
+def create_function_approximation_tables():
+    """
+    Generate function approximation comparison tables.
 
-    # Dataset names from section1_1
-    dataset_names = [
-        'sin_freq1', 'sin_freq2', 'sin_freq3', 'sin_freq4', 'sin_freq5',
-        'piecewise', 'sawtooth', 'polynomial', 'poisson_1d_highfreq'
-    ]
+    Creates two tables:
+    - Table 1a: Iso-compute comparison (fair time-matched)
+    - Table 1b: Final performance comparison (best achievable)
 
-    # Create main comparison table
-    comparison_df = compare_models(results, dataset_names, metric='test_mse')
+    Returns:
+        Tuple of (iso_compute_df, final_df)
+    """
 
-    # Print to console
-    print_table(comparison_df, "Table 1: Function Approximation Comparison (Section 1.1)")
+    section_name = 'section1_1'
 
-    # Create a simplified version for LaTeX
-    latex_data = []
-    for _, row in comparison_df.iterrows():
-        dataset = row['Dataset']
+    # Load checkpoint metadata (contains dense_mse at two key checkpoints)
+    print(f"\nLoading checkpoint metadata for {section_name}...")
+    checkpoint_metadata = load_checkpoint_metadata(section_name)
 
-        # Extract best MSE values
-        mlp_mse = row.get('MLP test_mse', 'N/A')
-        siren_mse = row.get('SIREN test_mse', 'N/A')
-        kan_mse = row.get('KAN test_mse', 'N/A')
-        kan_pruning_mse = row.get('KAN_PRUNING test_mse', 'N/A')
+    if checkpoint_metadata is None:
+        print("ERROR: Checkpoint metadata not found. Cannot generate tables.")
+        print("Make sure you've run section1_1.py training script to generate checkpoint data.")
+        return None, None
 
-        # Extract architectures
-        mlp_arch = row.get('MLP arch', 'N/A')
-        siren_arch = row.get('SIREN arch', 'N/A')
-        kan_arch = row.get('KAN arch', 'N/A')
-        kan_pruning_arch = row.get('KAN_PRUNING arch', 'N/A')
+    # Get dataset names
+    dataset_names = get_dataset_names(section_name)
 
-        # Extract parameters
-        mlp_params = row.get('MLP params', 0)
-        siren_params = row.get('SIREN params', 0)
-        kan_params = row.get('KAN params', 0)
-        kan_pruning_params = row.get('KAN_PRUNING params', 0)
+    print(f"\nGenerating tables for {len(dataset_names)} datasets: {dataset_names}\n")
 
-        latex_data.append({
-            'Function': dataset,
-            'MLP Config': mlp_arch,
-            'MLP Test MSE': mlp_mse,
-            'MLP Params': mlp_params,
-            'SIREN Config': siren_arch,
-            'SIREN Test MSE': siren_mse,
-            'SIREN Params': siren_params,
-            'KAN Config': kan_arch,
-            'KAN Test MSE': kan_mse,
-            'KAN Params': kan_params,
-            'KAN Pruned Config': kan_pruning_arch,
-            'KAN Pruned MSE': kan_pruning_mse,
-            'KAN Pruned Params': kan_pruning_params,
-        })
+    # ===== TABLE 1a: ISO-COMPUTE COMPARISON =====
+    print("="*80)
+    print("TABLE 1a: ISO-COMPUTE COMPARISON")
+    print("Comparing models at KAN interpolation threshold time (fair time-matched)")
+    print("="*80 + "\n")
 
-    latex_df = pd.DataFrame(latex_data)
-
-    # Print LaTeX version
-    print_table(latex_df, "LaTeX Format Table", tablefmt='latex_raw')
-
-    # Save LaTeX table
-    latex_str = create_latex_table(
-        latex_df,
-        caption="Function approximation comparison across MLP, SIREN, KAN, and KAN with pruning. "
-                "Lower test MSE is better. KAN models typically achieve comparable or better accuracy "
-                "with fewer parameters.",
-        label="tab:function_approximation",
-        column_format="|l|c|c|c|c|c|c|c|c|c|c|c|c|"
+    iso_compute_df = compare_models_from_checkpoints(
+        checkpoint_metadata,
+        dataset_names,
+        checkpoint_type='iso_compute',
+        include_pruned=False
     )
-    save_table(latex_str, 'table1_function_approximation.tex')
 
-    # Create summary statistics
-    summary_stats = create_summary_statistics(results)
-    print_table(summary_stats, "Summary Statistics")
+    print_table(iso_compute_df,
+                "Table 1a: Function Approximation - Iso-Compute Comparison")
+
+    # Save LaTeX table for Table 1a
+    latex_1a = create_latex_table(
+        iso_compute_df,
+        caption="Function approximation iso-compute comparison. All models evaluated at the same "
+                "wall-clock time (when KAN reaches interpolation threshold). Dense MSE computed on "
+                "10,000 samples. Lower is better. This represents a fair time-matched comparison.",
+        label="tab:function_approx_iso_compute",
+        column_format="|l|c|c|c|c|c|c|c|c|c|"
+    )
+    save_table(latex_1a, 'table1a_function_approximation_iso_compute.tex')
 
     # Save CSV
-    comparison_df.to_csv(Path(__file__).parent / 'table1_function_approximation.csv', index=False)
-    print("Saved CSV to table1_function_approximation.csv")
+    iso_compute_df.to_csv(
+        Path(__file__).parent / 'table1a_function_approximation_iso_compute.csv',
+        index=False
+    )
 
-    return comparison_df, latex_df
+    # ===== TABLE 1b: FINAL PERFORMANCE COMPARISON =====
+    print("\n" + "="*80)
+    print("TABLE 1b: FINAL PERFORMANCE COMPARISON")
+    print("Comparing models after full training budget (best achievable)")
+    print("="*80 + "\n")
 
-def create_summary_statistics(results: dict) -> pd.DataFrame:
-    """Create summary statistics across all datasets."""
+    final_df = compare_models_from_checkpoints(
+        checkpoint_metadata,
+        dataset_names,
+        checkpoint_type='final',
+        include_pruned=False
+    )
+
+    print_table(final_df,
+                "Table 1b: Function Approximation - Final Performance")
+
+    # Save LaTeX table for Table 1b
+    latex_1b = create_latex_table(
+        final_df,
+        caption="Function approximation final performance comparison. All models evaluated after "
+                "completing full training budget. Dense MSE computed on 10,000 samples. Lower is better. "
+                "This represents best achievable accuracy given unlimited training time.",
+        label="tab:function_approx_final",
+        column_format="|l|c|c|c|c|c|c|c|c|c|"
+    )
+    save_table(latex_1b, 'table1b_function_approximation_final.tex')
+
+    # Save CSV
+    final_df.to_csv(
+        Path(__file__).parent / 'table1b_function_approximation_final.csv',
+        index=False
+    )
+
+    # ===== SUMMARY STATISTICS =====
+    print("\n" + "="*80)
+    print("SUMMARY STATISTICS")
+    print("="*80 + "\n")
+
+    summary_df = create_summary_statistics(iso_compute_df, final_df)
+    print_table(summary_df, "Summary: Iso-Compute vs Final Performance")
+
+    # Save summary CSV
+    summary_df.to_csv(
+        Path(__file__).parent / 'table1_summary_statistics.csv',
+        index=False
+    )
+
+    # ===== IMPROVEMENT ANALYSIS =====
+    improvement_df = calculate_improvement_ratios(iso_compute_df, final_df)
+    if improvement_df is not None:
+        print_table(improvement_df, "Performance Improvement: Iso-Compute → Final")
+        improvement_df.to_csv(
+            Path(__file__).parent / 'table1_improvement_analysis.csv',
+            index=False
+        )
+
+    print("\n✓ All Table 1 outputs saved successfully\n")
+
+    return iso_compute_df, final_df
+
+
+def create_summary_statistics(iso_compute_df: pd.DataFrame,
+                              final_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Create summary statistics comparing iso-compute vs final performance.
+
+    Args:
+        iso_compute_df: Iso-compute comparison DataFrame
+        final_df: Final performance comparison DataFrame
+
+    Returns:
+        DataFrame with summary statistics per model
+    """
     summary_data = []
 
-    for model_type in ['mlp', 'siren', 'kan', 'kan_pruning']:
-        df = results.get(model_type, pd.DataFrame())
+    for model_name in ['MLP', 'SIREN', 'KAN']:
+        dense_mse_col = f'{model_name} Dense MSE'
 
-        if df.empty:
-            continue
+        # Extract numeric values (filter out 'N/A')
+        iso_values = []
+        final_values = []
 
-        # Get best result per dataset
-        best_per_dataset = df.groupby('dataset_name')['test_mse'].min()
+        for val in iso_compute_df[dense_mse_col]:
+            if val != 'N/A':
+                # Parse scientific notation string back to float
+                try:
+                    iso_values.append(float(val.replace('e', 'E')))
+                except:
+                    pass
 
-        summary_data.append({
-            'Model': model_type.upper(),
-            'Mean Best MSE': format_scientific(best_per_dataset.mean()),
-            'Std Best MSE': format_scientific(best_per_dataset.std()),
-            'Min Best MSE': format_scientific(best_per_dataset.min()),
-            'Max Best MSE': format_scientific(best_per_dataset.max()),
-            'Avg Params': f"{df['num_params'].mean():.0f}",
-            'Min Params': f"{df['num_params'].min():.0f}",
-            'Max Params': f"{df['num_params'].max():.0f}",
-        })
+        for val in final_df[dense_mse_col]:
+            if val != 'N/A':
+                try:
+                    final_values.append(float(val.replace('e', 'E')))
+                except:
+                    pass
+
+        if iso_values and final_values:
+            summary_data.append({
+                'Model': model_name,
+                'Iso-Compute Mean': format_scientific(np.mean(iso_values)),
+                'Iso-Compute Std': format_scientific(np.std(iso_values)),
+                'Final Mean': format_scientific(np.mean(final_values)),
+                'Final Std': format_scientific(np.std(final_values)),
+                'Mean Improvement': f"{np.mean(iso_values) / np.mean(final_values):.2f}x"
+            })
 
     return pd.DataFrame(summary_data)
 
+
+def calculate_improvement_ratios(iso_compute_df: pd.DataFrame,
+                                 final_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculate how much each model improves from iso-compute to final.
+
+    Args:
+        iso_compute_df: Iso-compute comparison DataFrame
+        final_df: Final performance comparison DataFrame
+
+    Returns:
+        DataFrame showing improvement ratios
+    """
+    improvement_data = []
+
+    for idx, dataset in enumerate(iso_compute_df['Dataset']):
+        row_data = {'Dataset': dataset}
+
+        for model_name in ['MLP', 'SIREN', 'KAN']:
+            dense_mse_col = f'{model_name} Dense MSE'
+
+            iso_val = iso_compute_df.iloc[idx][dense_mse_col]
+            final_val = final_df.iloc[idx][dense_mse_col]
+
+            if iso_val != 'N/A' and final_val != 'N/A':
+                try:
+                    iso_num = float(iso_val.replace('e', 'E'))
+                    final_num = float(final_val.replace('e', 'E'))
+                    improvement = iso_num / final_num
+                    row_data[f'{model_name} Improvement'] = f"{improvement:.2f}x"
+                except:
+                    row_data[f'{model_name} Improvement'] = 'N/A'
+            else:
+                row_data[f'{model_name} Improvement'] = 'N/A'
+
+        improvement_data.append(row_data)
+
+    return pd.DataFrame(improvement_data) if improvement_data else None
+
+
 if __name__ == '__main__':
-    comparison_df, latex_df = create_function_approximation_table()
+    iso_compute_df, final_df = create_function_approximation_tables()
+
+    if iso_compute_df is None or final_df is None:
+        print("\nFailed to generate tables. Check error messages above.")
+        sys.exit(1)
+
+    print("\n" + "="*80)
+    print("TABLE GENERATION COMPLETE")
+    print("="*80)
+    print("\nGenerated files:")
+    print("  - table1a_function_approximation_iso_compute.tex")
+    print("  - table1a_function_approximation_iso_compute.csv")
+    print("  - table1b_function_approximation_final.tex")
+    print("  - table1b_function_approximation_final.csv")
+    print("  - table1_summary_statistics.csv")
+    print("  - table1_improvement_analysis.csv")
+    print("\nKEY INSIGHT:")
+    print("  Table 1a shows fair time-matched comparison (iso-compute)")
+    print("  Table 1b shows best achievable accuracy (unlimited time)")
+    print("  Both use dense_mse (10k samples) for rigorous evaluation")
+    print("="*80 + "\n")

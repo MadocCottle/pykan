@@ -139,16 +139,45 @@ ls madoc/section1/results/sec1_results/*_e1000_*.pkl
 
 ## Gadi Workflow
 
+### 0. Initial Setup (One-Time)
+
+**IMPORTANT:** Always use `setup.sh` for environment setup. Do NOT manually create virtualenv.
+
+```bash
+# On Gadi (after git clone)
+cd /scratch/$PROJECT/$USER/pykan/pykan/madoc
+bash setup.sh
+```
+
+**What setup.sh does:**
+1. Detects Gadi environment automatically
+2. Loads Python 3.10.4 module (required for PyTorch 2.2.2 and torch-levenberg-marquardt)
+3. Creates virtual environment in `.venv/`
+4. Installs all dependencies from requirements.txt
+5. Verifies PyKAN can be imported
+
+**Why Python 3.10+ is required:**
+- PyTorch 2.2.2 requires Python 3.8+ (3.10+ recommended)
+- torch-levenberg-marquardt (used in section2) requires newer Python
+- KAN's symbolic features work best with Python 3.10+
+
+**For subsequent sessions** (after initial setup):
+```bash
+# Activate the existing environment
+source /scratch/$PROJECT/$USER/pykan/pykan/madoc/.venv/bin/activate
+```
+
 ### 1. Submitting Jobs
 
 ```bash
 # Submit job with epoch specification
-qsub -v SECTION=section1_1,EPOCHS=100 run_experiment.qsub
-qsub -v SECTION=section1_2,EPOCHS=1000 run_experiment.qsub
-qsub -v SECTION=section2_1,EPOCHS=50 run_experiment.qsub
+qsub -v SECTION=section1_1,MAX_EPOCHS=100 run_experiment.qsub
+qsub -v SECTION=section1_2,MAX_EPOCHS=1000 run_experiment.qsub
+qsub -v SECTION=section2_1,MAX_EPOCHS=50 run_experiment.qsub
 ```
 
 **The qsub script:**
+- Automatically activates the virtual environment
 - Records epochs in the MANIFEST.txt
 - Saves results with epoch count in filenames
 - Creates timestamped `job_results_YYYYMMDD_HHMMSS/` directory

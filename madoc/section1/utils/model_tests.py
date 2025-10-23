@@ -1,7 +1,8 @@
 """Model training and testing utilities for Section 1 experiments"""
 from kan import *
 from . import trad_nn as tnn
-from .metrics import dense_mse_error_from_dataset, count_parameters
+from .metrics import (dense_mse_error_from_dataset, count_parameters,
+                      linf_error_from_dataset, h1_seminorm_error_from_dataset)
 import time
 import pandas as pd
 from copy import deepcopy
@@ -39,6 +40,54 @@ def detect_kan_threshold(test_losses, patience=2, threshold=0.05):
 
     # If never degraded significantly, return the epoch with best loss
     return best_epoch
+
+
+def compute_all_metrics(model, dataset, true_function, device='cpu',
+                        compute_h1=False, num_samples=10000):
+    """
+    Compute all evaluation metrics for a model.
+
+    Args:
+        model: Trained model
+        dataset: Dataset dict with 'train_input' key
+        true_function: Ground truth function
+        device: Device to compute on
+        compute_h1: Whether to compute H¹ seminorm (expensive, mainly for 2D PDEs)
+        num_samples: Number of samples for evaluation
+
+    Returns:
+        Dict with keys: 'dense_mse', 'linf_error', and optionally 'h1_seminorm'
+    """
+    metrics = {}
+
+    with torch.no_grad():
+        # L² norm (dense MSE) - always computed
+        metrics['dense_mse'] = dense_mse_error_from_dataset(
+            model, dataset, true_function,
+            num_samples=num_samples, device=device
+        )
+
+        # L∞ norm (max error) - cheap to add
+        metrics['linf_error'] = linf_error_from_dataset(
+            model, dataset, true_function,
+            num_samples=num_samples, device=device
+        )
+
+        # H¹ seminorm (gradient error) - only for PDEs (expensive)
+        if compute_h1:
+            n_var = dataset['train_input'].shape[1]
+            if n_var >= 2:  # Only makes sense for multi-dimensional problems
+                metrics['h1_seminorm'] = h1_seminorm_error_from_dataset(
+                    model, dataset, true_function,
+                    num_samples=num_samples, device=device
+                )
+            else:
+                metrics['h1_seminorm'] = None
+        else:
+            metrics['h1_seminorm'] = None
+
+    return metrics
+
 
 def print_best_dense_mse_summary(all_results, dataset_names):
     """Print a summary table showing best dense MSE per model type per dataset

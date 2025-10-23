@@ -3,6 +3,13 @@ Table 2: 1D Poisson PDE Comparison (Section 1.2)
 
 This table compares MLP, SIREN, KAN, and KAN with pruning on 1D Poisson PDE
 solutions with different source terms (sinusoidal, polynomial, high-frequency).
+
+METHODOLOGY:
+- Uses checkpoint-based evaluation for fair comparisons
+- Reports dense_mse (10,000 samples) not sparse test_mse
+- Provides TWO comparisons:
+  * Table 2a: Iso-compute comparison (at KAN interpolation threshold time)
+  * Table 2b: Final performance comparison (after full training budget)
 """
 
 import sys
@@ -10,97 +17,119 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import pandas as pd
-from utils import (load_latest_results, print_table, create_latex_table,
-                   save_table, compare_models, format_scientific)
+import numpy as np
+from utils import (load_checkpoint_metadata, print_table, create_latex_table,
+                   save_table, format_scientific, compare_models_from_checkpoints,
+                   get_dataset_names)
 
-def create_pde_1d_comparison_table():
-    """Generate 1D PDE comparison table."""
 
-    # Load results
-    results = load_latest_results('section1_2')
+def create_pde_1d_comparison_tables():
+    """
+    Generate 1D PDE comparison tables.
 
-    # Dataset names from section1_2
-    dataset_names = ['poisson_1d_sin', 'poisson_1d_poly', 'poisson_1d_highfreq']
+    Creates two tables:
+    - Table 2a: Iso-compute comparison (fair time-matched)
+    - Table 2b: Final performance comparison (best achievable)
 
-    # Create main comparison table
-    comparison_df = compare_models(results, dataset_names, metric='test_mse')
+    Returns:
+        Tuple of (iso_compute_df, final_df)
+    """
 
-    # Print to console
-    print_table(comparison_df, "Table 2: 1D Poisson PDE Comparison (Section 1.2)")
+    section_name = 'section1_2'
 
-    # Create simplified LaTeX version
-    latex_data = []
-    for _, row in comparison_df.iterrows():
-        dataset = row['Dataset'].replace('poisson_1d_', '')
+    # Load checkpoint metadata
+    print(f"\nLoading checkpoint metadata for {section_name}...")
+    checkpoint_metadata = load_checkpoint_metadata(section_name)
 
-        latex_data.append({
-            'PDE Type': dataset,
-            'MLP MSE': row.get('MLP test_mse', 'N/A'),
-            'MLP Config': row.get('MLP arch', 'N/A'),
-            'SIREN MSE': row.get('SIREN test_mse', 'N/A'),
-            'SIREN Config': row.get('SIREN arch', 'N/A'),
-            'KAN MSE': row.get('KAN test_mse', 'N/A'),
-            'KAN Config': row.get('KAN arch', 'N/A'),
-            'KAN Pruned MSE': row.get('KAN_PRUNING test_mse', 'N/A'),
-            'KAN Pruned Config': row.get('KAN_PRUNING arch', 'N/A'),
-        })
+    if checkpoint_metadata is None:
+        print("ERROR: Checkpoint metadata not found. Cannot generate tables.")
+        print("Make sure you've run section1_2.py training script to generate checkpoint data.")
+        return None, None
 
-    latex_df = pd.DataFrame(latex_data)
+    # Get dataset names
+    dataset_names = get_dataset_names(section_name)
 
-    # Print LaTeX format
-    print_table(latex_df, "LaTeX Format Table", tablefmt='latex_raw')
+    print(f"\nGenerating tables for {len(dataset_names)} datasets: {dataset_names}\n")
 
-    # Save LaTeX table
-    latex_str = create_latex_table(
-        latex_df,
-        caption="1D Poisson PDE solution comparison. Results show test MSE for different "
-                "source terms: sinusoidal, polynomial, and high-frequency. KAN models "
-                "demonstrate strong performance on PDE solving tasks.",
-        label="tab:pde_1d_comparison",
-        column_format="|l|c|c|c|c|c|c|c|c|"
+    # ===== TABLE 2a: ISO-COMPUTE COMPARISON =====
+    print("="*80)
+    print("TABLE 2a: ISO-COMPUTE COMPARISON (1D PDEs)")
+    print("Comparing models at KAN interpolation threshold time (fair time-matched)")
+    print("="*80 + "\n")
+
+    iso_compute_df = compare_models_from_checkpoints(
+        checkpoint_metadata,
+        dataset_names,
+        checkpoint_type='iso_compute',
+        include_pruned=False
     )
-    save_table(latex_str, 'table2_pde_1d_comparison.tex')
 
-    # Create parameter efficiency comparison
-    param_comparison = create_parameter_comparison(results, dataset_names)
-    print_table(param_comparison, "Parameter Efficiency for 1D PDEs")
+    print_table(iso_compute_df,
+                "Table 2a: 1D PDE - Iso-Compute Comparison")
 
-    # Save CSV
-    comparison_df.to_csv(Path(__file__).parent / 'table2_pde_1d_comparison.csv', index=False)
-    print("Saved CSV to table2_pde_1d_comparison.csv")
+    # Save LaTeX table for Table 2a
+    latex_2a = create_latex_table(
+        iso_compute_df,
+        caption="1D Poisson PDE iso-compute comparison. All models evaluated at the same "
+                "wall-clock time (when KAN reaches interpolation threshold). Dense MSE computed on "
+                "10,000 samples. Lower is better.",
+        label="tab:pde_1d_iso_compute",
+        column_format="|l|c|c|c|c|c|c|c|c|c|"
+    )
+    save_table(latex_2a, 'table2a_pde_1d_comparison_iso_compute.tex')
 
-    return comparison_df, latex_df
+    iso_compute_df.to_csv(
+        Path(__file__).parent / 'table2a_pde_1d_comparison_iso_compute.csv',
+        index=False
+    )
 
-def create_parameter_comparison(results: dict, dataset_names: list) -> pd.DataFrame:
-    """Compare parameter counts across models for best-performing configurations."""
-    param_data = []
+    # ===== TABLE 2b: FINAL PERFORMANCE COMPARISON =====
+    print("\n" + "="*80)
+    print("TABLE 2b: FINAL PERFORMANCE COMPARISON (1D PDEs)")
+    print("Comparing models after full training budget (best achievable)")
+    print("="*80 + "\n")
 
-    for dataset_name in dataset_names:
-        row_data = {'Dataset': dataset_name.replace('poisson_1d_', '')}
+    final_df = compare_models_from_checkpoints(
+        checkpoint_metadata,
+        dataset_names,
+        checkpoint_type='final',
+        include_pruned=False
+    )
 
-        for model_type in ['mlp', 'siren', 'kan', 'kan_pruning']:
-            df = results.get(model_type, pd.DataFrame())
+    print_table(final_df,
+                "Table 2b: 1D PDE - Final Performance")
 
-            if df.empty:
-                row_data[f'{model_type.upper()} Params'] = 'N/A'
-                continue
+    # Save LaTeX table for Table 2b
+    latex_2b = create_latex_table(
+        final_df,
+        caption="1D Poisson PDE final performance comparison. All models evaluated after "
+                "completing full training budget. Dense MSE computed on 10,000 samples. Lower is better.",
+        label="tab:pde_1d_final",
+        column_format="|l|c|c|c|c|c|c|c|c|c|"
+    )
+    save_table(latex_2b, 'table2b_pde_1d_comparison_final.tex')
 
-            # Filter for this dataset
-            dataset_df = df[df['dataset_name'] == dataset_name]
+    final_df.to_csv(
+        Path(__file__).parent / 'table2b_pde_1d_comparison_final.csv',
+        index=False
+    )
 
-            if dataset_df.empty:
-                row_data[f'{model_type.upper()} Params'] = 'N/A'
-                continue
+    print("\n✓ All Table 2 outputs saved successfully\n")
 
-            # Get best result
-            best_idx = dataset_df['test_mse'].idxmin()
-            best_row = dataset_df.loc[best_idx]
+    return iso_compute_df, final_df
 
-            row_data[f'{model_type.upper()} Params'] = int(best_row.get('num_params', 0))
-
-        param_data.append(row_data)
-
-    return pd.DataFrame(param_data)
 
 if __name__ == '__main__':
-    comparison_df, latex_df = create_pde_1d_comparison_table()
+    iso_compute_df, final_df = create_pde_1d_comparison_tables()
+
+    if iso_compute_df is None or final_df is None:
+        print("\nFailed to generate tables. Check error messages above.")
+        sys.exit(1)
+
+    print("\n" + "="*80)
+    print("TABLE GENERATION COMPLETE")
+    print("="*80)
+    print("\nGenerated files:")
+    print("  - table2a_pde_1d_comparison_iso_compute.tex/csv")
+    print("  - table2b_pde_1d_comparison_final.tex/csv")
+    print("="*80 + "\n")

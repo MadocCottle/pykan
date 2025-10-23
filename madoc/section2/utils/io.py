@@ -6,15 +6,17 @@ import pandas as pd
 import torch
 
 
-def save_run(results, section, models=None, **meta):
+def save_run(results, section, models=None, checkpoints=None, **meta):
     """Save experiment run with timestamp
 
     Args:
         results: Dict of DataFrames from training {'mlp': df, 'siren': df, 'kan': df, 'kan_pruning': df}
         section: Section name (e.g., 'section1_1' or 'section2_1_highd_3d_shallow')
-        models: Dict of {'mlp': {idx: model}, 'siren': {idx: model},
-                        'kan': {idx: model}, 'kan_pruned': {idx: model}} or None
-        **meta: Minimal metadata (epochs, device, etc.)
+        models: DEPRECATED - use checkpoints instead. Dict of {'mlp': {idx: model}, ...} or None
+        checkpoints: Dict of checkpoints from training. Structure:
+                    {'optimizer_name': {dataset_idx: {'at_threshold': {...}, 'final': {...}}}, ...}
+                    Each checkpoint dict contains: 'model', 'epoch', 'time', 'dense_mse', etc.
+        **meta: Minimal metadata (epochs, device, lbfgs_threshold_time, etc.)
                Note: Derivable metadata (depths, activations, grids) should not be passed
                as they can be computed from the DataFrames themselves.
 
@@ -48,6 +50,7 @@ def save_run(results, section, models=None, **meta):
         'timestamp': ts,
         'epochs': meta.get('epochs'),
         'device': meta.get('device'),
+        'lbfgs_threshold_time': meta.get('lbfgs_threshold_time'),  # Section2 uses LBFGS as reference
     }
 
     # Format filename with epochs if provided
@@ -74,8 +77,40 @@ def save_run(results, section, models=None, **meta):
             except ImportError:
                 pass
 
-    # Save models
+    # Save checkpoints (NEW two-checkpoint strategy)
+    if checkpoints:
+        import pickle
+        for optimizer_name, dataset_checkpoints in checkpoints.items():
+            for dataset_idx, checkpoint_dict in dataset_checkpoints.items():
+                for checkpoint_name, checkpoint_data in checkpoint_dict.items():
+                    model = checkpoint_data['model']
+
+                    # KAN models: use saveckpt method
+                    if hasattr(model, 'saveckpt'):
+                        save_path_base = str(p / f'{filename_base}_{optimizer_name}_{dataset_idx}_{checkpoint_name}')
+                        model.saveckpt(save_path_base)
+                    else:
+                        # PyTorch models: save state_dict
+                        save_path = p / f'{filename_base}_{optimizer_name}_{dataset_idx}_{checkpoint_name}.pth'
+                        torch.save(model.state_dict(), save_path)
+
+        # Also save checkpoint metadata as pickle for easy loading
+        checkpoint_metadata = {}
+        for optimizer_name, dataset_checkpoints in checkpoints.items():
+            checkpoint_metadata[optimizer_name] = {}
+            for dataset_idx, checkpoint_dict in dataset_checkpoints.items():
+                checkpoint_metadata[optimizer_name][dataset_idx] = {}
+                for checkpoint_name, checkpoint_data in checkpoint_dict.items():
+                    # Save everything except the model itself
+                    metadata = {k: v for k, v in checkpoint_data.items() if k != 'model'}
+                    checkpoint_metadata[optimizer_name][dataset_idx][checkpoint_name] = metadata
+
+        with open(p / f'{filename_base}_checkpoint_metadata.pkl', 'wb') as f:
+            pickle.dump(checkpoint_metadata, f)
+
+    # Backward compatibility: save models if provided (DEPRECATED)
     if models:
+        print("Warning: 'models' parameter is deprecated. Use 'checkpoints' instead.")
         for model_type, model_dict in models.items():
             # Check if model_dict contains PyTorch models or KAN models
             if not model_dict:
@@ -95,8 +130,12 @@ def save_run(results, section, models=None, **meta):
                 for idx, model in model_dict.items():
                     torch.save(model.state_dict(), p / f'{filename_base}_{model_type}_{idx}.pth')
 
-    print(f"Saved to {p}/{filename_base}.*")
+    print(f"\nSaved to {p}/{filename_base}.*")
     print(f"Metadata stored in DataFrame attributes (access via df.attrs)")
+    if checkpoints:
+        print(f"Checkpoints saved:")
+        for optimizer_name in checkpoints.keys():
+            print(f"  - {optimizer_name}: {len(checkpoints[optimizer_name])} datasets x 2 checkpoints (at_threshold + final)")
     return ts
 
 

@@ -38,18 +38,21 @@ print("="*60 + "\n")
 timers = {}
 
 # Training with different optimizers
-print("Training KANs with Adam optimizer (with dense MSE metrics)...")
-adam_results, adam_models = track_time(timers, "KAN Adam training",
-                                       run_kan_optimizer_tests,
-                                       datasets, grids, epochs, device, "Adam", true_functions, dataset_names)
-
-print("\nTraining KANs with LBFGS optimizer (with dense MSE metrics)...")
-lbfgs_results, lbfgs_models = track_time(timers, "KAN LBFGS training",
+# Train LBFGS FIRST to get the interpolation threshold time as a reference
+print("Training KANs with LBFGS optimizer (with dense MSE metrics)...")
+lbfgs_results, lbfgs_checkpoints, lbfgs_threshold_time = track_time(timers, "KAN LBFGS training",
                                         run_kan_optimizer_tests,
                                         datasets, grids, epochs, device, "LBFGS", true_functions, dataset_names)
 
+print(f"\nUsing LBFGS threshold time for reference: {lbfgs_threshold_time:.2f}s")
+
+print("\nTraining KANs with Adam optimizer (with dense MSE metrics)...")
+adam_results, adam_checkpoints, adam_threshold_time = track_time(timers, "KAN Adam training",
+                                       run_kan_optimizer_tests,
+                                       datasets, grids, epochs, device, "Adam", true_functions, dataset_names)
+
 print("\nTraining KANs with LM optimizer (with dense MSE metrics)...")
-lm_results, lm_models = track_time(timers, "KAN LM training",
+lm_results, lm_checkpoints, lm_threshold_time = track_time(timers, "KAN LM training",
                                     run_kan_lm_tests,
                                     datasets, grids, epochs, device, true_functions, dataset_names)
 
@@ -64,9 +67,10 @@ for model_type, df in all_results.items():
 # Print optimizer summary table
 print_optimizer_summary(all_results, dataset_names)
 
+# Save with checkpoints instead of simple models
 save_run(all_results, 'section2_1',
-         models={'adam': adam_models, 'lbfgs': lbfgs_models, 'lm': lm_models},
-         epochs=epochs, device=str(device))
+         checkpoints={'adam': adam_checkpoints, 'lbfgs': lbfgs_checkpoints, 'lm': lm_checkpoints},
+         epochs=epochs, device=str(device), lbfgs_threshold_time=lbfgs_threshold_time)
 # Note: Derivable metadata (grids, num_datasets, dataset_names) can be obtained from DataFrames:
 # - grids: adam_results['grid_size'].unique()
 # - num_datasets: adam_results['dataset_idx'].nunique()
