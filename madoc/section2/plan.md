@@ -77,6 +77,7 @@ KAN_probe is best explained by allegory. Imagine a black hole is discovered to a
 
 This should comprise a two part genome of sub-experts and general traits.
 
+(lemme git commit lol)
 
 
 ## General Section 2 rules
