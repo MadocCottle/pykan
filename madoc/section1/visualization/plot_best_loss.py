@@ -148,7 +148,7 @@ def extract_training_curve(df, config):
     return curve
 
 
-def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test'):
+def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test', show=False):
     """
     Plot loss curves over epochs for the best model from each class for all datasets.
 
@@ -156,6 +156,7 @@ def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test'
         section: Section name (e.g., 'section1_1')
         timestamp: Specific timestamp to load, or None for most recent
         loss_type: Which loss to plot - 'train', 'test', or 'both' (default: 'test')
+        show: If True, display plot in window; otherwise only save to file (default: False)
     """
     # Load results
     if timestamp is None:
@@ -279,8 +280,11 @@ def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test'
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"\nSaved combined plot to: {output_file}")
 
-    # Show plot
-    plt.show()
+    # Show plot only if requested
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
 
     return fig, axes
 
@@ -298,6 +302,8 @@ if __name__ == '__main__':
     parser.add_argument('--loss-type', type=str, default='test',
                        choices=['train', 'test'],
                        help='Which loss to plot: train or test (default: test)')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
 
     args = parser.parse_args()
 
@@ -305,7 +311,8 @@ if __name__ == '__main__':
         plot_best_loss_curves(
             section=args.section,
             timestamp=args.timestamp,
-            loss_type=args.loss_type
+            loss_type=args.loss_type,
+            show=args.show
         )
     except FileNotFoundError as e:
         print(f"Error: {e}")

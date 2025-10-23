@@ -66,7 +66,7 @@ def get_dataset_names(section='section2_1'):
     return dataset_names
 
 
-def plot_best_loss_curves(section='section2_1', timestamp=None, metric='dense_mse'):
+def plot_best_loss_curves(section='section2_1', timestamp=None, metric='dense_mse', show=False):
     """
     Plot loss curves over epochs for all optimizers/approaches for all datasets.
 
@@ -170,8 +170,10 @@ def plot_best_loss_curves(section='section2_1', timestamp=None, metric='dense_ms
     print(f"\nSaved combined plot to: {output_file}")
 
     # Show plot
-    plt.show()
-
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
     return fig, axes
 
 
@@ -189,6 +191,8 @@ if __name__ == '__main__':
     parser.add_argument('--metric', type=str, default='dense_mse',
                        choices=['dense_mse', 'test_loss', 'train_loss'],
                        help='Which metric to plot (default: dense_mse)')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
 
     args = parser.parse_args()
 
@@ -196,7 +200,8 @@ if __name__ == '__main__':
         plot_best_loss_curves(
             section=args.section,
             timestamp=args.timestamp,
-            metric=args.metric
+            metric=args.metric,
+            show=args.show
         )
     except FileNotFoundError as e:
         print(f"Error: {e}")

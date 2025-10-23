@@ -39,8 +39,16 @@
 # PROFILE: Resource profile to use (test, section1, section2, large)
 #          If not specified, auto-selected based on SECTION
 #
-# Example with profile:
+# DIM: Dimension for high-D experiments (3, 4, 10, 100)
+#      Required for section2_1_highd, section2_2_highd
+#
+# ARCH: Architecture type (shallow, deep)
+#       Required for section2_1_highd, section2_2_highd
+#
+# Examples:
 #   qsub -v SECTION=section1_1,EPOCHS=100,PROFILE=test run_experiment.qsub
+#   qsub -v SECTION=section2_1_highd,EPOCHS=10,DIM=3,ARCH=shallow run_experiment.qsub
+#   qsub -v SECTION=section2_1_highd,EPOCHS=10,DIM=100,ARCH=deep run_experiment.qsub
 #
 # =============================================================================
 
@@ -119,8 +127,12 @@ if [[ -z "${SECTION}" ]]; then
 fi
 
 # Validate SECTION format and extract section number
-if [[ ! "${SECTION}" =~ ^section[12]_[123]$ ]]; then
-    error "Invalid SECTION format: ${SECTION}. Expected format: section1_1, section1_2, section1_3, section2_1, or section2_2"
+# Supported formats:
+#   section1_1, section1_2, section1_3
+#   section2_1, section2_2, section2_3
+#   section2_1_highd, section2_2_highd (parameterized high-dimensional variants)
+if [[ ! "${SECTION}" =~ ^section[12]_[123](_highd)?$ ]]; then
+    error "Invalid SECTION format: ${SECTION}. Expected format: section1_1, section2_1, section2_1_highd, etc."
 fi
 
 SECTION_NUM=$(echo "${SECTION}" | cut -d'_' -f1 | sed 's/section//')
@@ -144,6 +156,30 @@ if ! [[ "${EPOCHS}" =~ ^[0-9]+$ ]] || [[ "${EPOCHS}" -le 0 ]]; then
     error "Invalid EPOCHS: ${EPOCHS}. Must be a positive integer."
 fi
 log "Epochs: ${EPOCHS}"
+
+# Check for optional parameters (DIM and ARCH for highd scripts)
+DIM="${DIM:-}"
+ARCH="${ARCH:-}"
+
+# Validate DIM and ARCH if running highd scripts
+if [[ "${SECTION}" =~ _highd$ ]]; then
+    if [[ -z "${DIM}" ]]; then
+        error "DIM parameter required for ${SECTION}. Usage: qsub -v SECTION=section2_1_highd,EPOCHS=10,DIM=3,ARCH=shallow"
+    fi
+    if [[ -z "${ARCH}" ]]; then
+        error "ARCH parameter required for ${SECTION}. Usage: qsub -v SECTION=section2_1_highd,EPOCHS=10,DIM=3,ARCH=shallow"
+    fi
+    # Validate DIM
+    if [[ ! "${DIM}" =~ ^(3|4|10|100)$ ]]; then
+        error "Invalid DIM: ${DIM}. Must be 3, 4, 10, or 100"
+    fi
+    # Validate ARCH
+    if [[ ! "${ARCH}" =~ ^(shallow|deep)$ ]]; then
+        error "Invalid ARCH: ${ARCH}. Must be 'shallow' or 'deep'"
+    fi
+    log "Dimension: ${DIM}D"
+    log "Architecture: ${ARCH}"
+fi
 
 # Auto-select or validate PROFILE
 if [[ -z "${PROFILE}" ]]; then
@@ -247,11 +283,23 @@ log ""
 
 START_TIME=$(date +%s)
 
-log "Command: python3 ${SECTION_SCRIPT} --epochs ${EPOCHS}"
+# Build command with conditional arguments
+SCRIPT_CMD="python3 \"${SECTION_SCRIPT}\" --epochs ${EPOCHS}"
+
+# Add dimension and architecture arguments if provided (for highd scripts)
+if [[ -n "${DIM}" ]]; then
+    SCRIPT_CMD="${SCRIPT_CMD} --dim ${DIM}"
+fi
+
+if [[ -n "${ARCH}" ]]; then
+    SCRIPT_CMD="${SCRIPT_CMD} --architecture ${ARCH}"
+fi
+
+log "Command: ${SCRIPT_CMD}"
 log ""
 
 # Run the experiment
-python3 "${SECTION_SCRIPT}" --epochs "${EPOCHS}" 2>&1 | tee -a "${LOG_FILE}"
+eval "${SCRIPT_CMD}" 2>&1 | tee -a "${LOG_FILE}"
 EXPERIMENT_EXIT_CODE=${PIPESTATUS[0]}
 
 END_TIME=$(date +%s)
@@ -305,9 +353,35 @@ JOB_SECTION_RESULTS="${RESULTS_DIR}/${SECTION}_results"
 mkdir -p "${JOB_SECTION_RESULTS}"
 
 # Copy all files from the latest run
+# This includes:
+# - Results DataFrames: *.pkl, *.parquet
+# - MLP/SIREN models: *.pth
+# - KAN models: *_config.yml, *_state, *_cache_data
 log "Copying results files..."
 COPIED_COUNT=0
-for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*; do
+
+# Copy pickle and parquet files
+for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.pkl "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.parquet; do
+    if [[ -f "${file}" ]]; then
+        cp "${file}" "${JOB_SECTION_RESULTS}/"
+        log "  Copied: $(basename ${file})"
+        COPIED_COUNT=$((COPIED_COUNT + 1))
+    fi
+done
+
+# Copy MLP and SIREN model files (.pth)
+for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*.pth; do
+    if [[ -f "${file}" ]]; then
+        cp "${file}" "${JOB_SECTION_RESULTS}/"
+        log "  Copied: $(basename ${file})"
+        COPIED_COUNT=$((COPIED_COUNT + 1))
+    fi
+done
+
+# Copy KAN model checkpoint files (config, state, cache_data)
+for file in "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*_config.yml \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*_state \
+            "${SECTION_RESULTS_DIR}/${SECTION}_${LATEST_TIMESTAMP}_"*_cache_data; do
     if [[ -f "${file}" ]]; then
         cp "${file}" "${JOB_SECTION_RESULTS}/"
         log "  Copied: $(basename ${file})"

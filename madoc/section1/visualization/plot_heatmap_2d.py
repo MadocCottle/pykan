@@ -432,6 +432,8 @@ if __name__ == '__main__':
                        help='Device to use (cpu or cuda)')
     parser.add_argument('--output', type=str, default=None,
                        help='Output path for the figure (default: auto-generated)')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
 
     args = parser.parse_args()
 
@@ -448,7 +450,10 @@ if __name__ == '__main__':
                 save_path=args.output
             )
 
-        plt.show()
+        if args.show:
+            plt.show()
+        else:
+            plt.close('all')
 
     except FileNotFoundError as e:
         print(f"Error: {e}")

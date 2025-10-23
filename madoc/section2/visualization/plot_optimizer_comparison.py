@@ -39,7 +39,7 @@ def find_latest_timestamp(section='section2_1'):
     return sorted(timestamps)[-1]  # Return most recent
 
 
-def plot_optimizer_comparison(section='section2_1', timestamp=None, dataset_idx=None):
+def plot_optimizer_comparison(section='section2_1', timestamp=None, dataset_idx=None, show=False):
     """
     Plot dense MSE over epochs comparing Adam and LM optimizers.
 
@@ -148,12 +148,14 @@ def plot_optimizer_comparison(section='section2_1', timestamp=None, dataset_idx=
     print(f"\nPlot saved to: {output_file}")
 
     # Show plot
-    plt.show()
-
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
     return fig, axes
 
 
-def plot_training_loss_comparison(section='section2_1', timestamp=None):
+def plot_training_loss_comparison(section='section2_1', timestamp=None, show=False):
     """
     Plot training and test loss comparison between optimizers.
 
@@ -228,8 +230,13 @@ def plot_training_loss_comparison(section='section2_1', timestamp=None):
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"\nPlot saved to: {output_file}")
 
-    plt.show()
+    if show:
 
+        plt.show()
+
+    else:
+
+        plt.close(fig)
     return fig, axes
 
 
@@ -248,6 +255,8 @@ if __name__ == '__main__':
     parser.add_argument('--plot-type', type=str, default='optimizer',
                        choices=['optimizer', 'training', 'both'],
                        help='Type of plot to generate (default: optimizer)')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
 
     args = parser.parse_args()
 
@@ -256,13 +265,15 @@ if __name__ == '__main__':
             plot_optimizer_comparison(
                 section=args.section,
                 timestamp=args.timestamp,
-                dataset_idx=args.dataset
+                dataset_idx=args.dataset,
+                show=args.show
             )
 
         if args.plot_type in ['training', 'both']:
             plot_training_loss_comparison(
                 section=args.section,
-                timestamp=args.timestamp
+                timestamp=args.timestamp,
+                show=args.show
             )
 
     except FileNotFoundError as e:

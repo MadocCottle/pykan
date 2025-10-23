@@ -11,7 +11,7 @@ def save_run(results, section, models=None, **meta):
 
     Args:
         results: Dict of DataFrames from training {'mlp': df, 'siren': df, 'kan': df, 'kan_pruning': df}
-        section: Section name (e.g., 'section1_1')
+        section: Section name (e.g., 'section1_1' or 'section2_1_highd_3d_shallow')
         models: Dict of {'mlp': {idx: model}, 'siren': {idx: model},
                         'kan': {idx: model}, 'kan_pruned': {idx: model}} or None
         **meta: Minimal metadata (epochs, device, etc.)
@@ -22,7 +22,19 @@ def save_run(results, section, models=None, **meta):
         Timestamp string
     """
     ts = datetime.now().strftime('%Y%m%d_%H%M%S')
-    sec_num = section.split('_')[-1]
+
+    # Extract section number intelligently
+    # Format: section{N}_{M} OR section{N}_{M}_highd_{dim}d_{arch}
+    # We need the second part (M) which is the subsection number
+    parts = section.split('_')
+
+    if len(parts) >= 2 and parts[1].isdigit():
+        # Standard: section2_1 -> sec_num = '1'
+        # OR composite: section2_1_highd_3d_shallow -> sec_num = '1' (ignore rest)
+        sec_num = parts[1]
+    else:
+        # Fallback (shouldn't happen with valid section names)
+        sec_num = parts[-1]
 
     # Save in section2/results/sec{N}_results/
     base_dir = Path(__file__).parent.parent  # Go to section2/
@@ -85,7 +97,7 @@ def load_run(section, timestamp, load_models=False):
     """Load experiment run by timestamp
 
     Args:
-        section: Section name (e.g., 'section1_1')
+        section: Section name (e.g., 'section1_1' or 'section2_1_highd_3d_shallow')
         timestamp: Timestamp string from save_run
         load_models: If True, also load saved model state_dicts. Default: False
                     Note: To use loaded models, you must reconstruct the model architecture
@@ -113,7 +125,13 @@ def load_run(section, timestamp, load_models=False):
         - activations: mlp_df['activation'].unique()
         - grids: kan_df['grid_size'].unique()
     """
-    sec_num = section.split('_')[-1]
+    # Extract section number using same logic as save_run
+    parts = section.split('_')
+    if len(parts) >= 2 and parts[1].isdigit():
+        sec_num = parts[1]
+    else:
+        sec_num = parts[-1]
+
     base_dir = Path(__file__).parent.parent
     results_dir = base_dir / 'results' / f'sec{sec_num}_results'
     p = results_dir

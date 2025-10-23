@@ -348,7 +348,7 @@ def load_kan_pruned_model(models, results, dataset_idx, device='cpu'):
     return model, config_info
 
 
-def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_individual=False):
+def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_individual=False, show=False):
     """
     Plot function fits for all datasets and model types.
 
@@ -357,6 +357,7 @@ def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_
         timestamp: Specific timestamp to load, or None for most recent
         device: Device to run on ('cpu' or 'cuda')
         save_individual: If True, save individual plots for each dataset
+        show: If True, display plot in window; otherwise only save to file (default: False)
     """
     # Find latest timestamp if not provided
     if timestamp is None:
@@ -517,8 +518,11 @@ def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"\nSaved combined plot to: {output_file}")
 
-    # Show plot
-    plt.show()
+    # Show plot only if requested
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
 
     return fig, axes
 
@@ -537,6 +541,8 @@ if __name__ == '__main__':
                        help='Device to use (cpu or cuda)')
     parser.add_argument('--save-individual', action='store_true',
                        help='Save individual plots for each dataset')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
 
     args = parser.parse_args()
 
@@ -545,7 +551,8 @@ if __name__ == '__main__':
             section=args.section,
             timestamp=args.timestamp,
             device=args.device,
-            save_individual=args.save_individual
+            save_individual=args.save_individual,
+            show=args.show
         )
     except FileNotFoundError as e:
         print(f"Error: {e}")

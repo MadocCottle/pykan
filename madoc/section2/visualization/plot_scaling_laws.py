@@ -75,7 +75,7 @@ def compute_theoretical_scaling(params, alpha, reference_param, reference_mse):
     return reference_mse * (params / reference_param) ** (-alpha)
 
 
-def plot_scaling_law_single_dim(dim, architecture, timestamp=None, save=True):
+def plot_scaling_law_single_dim(dim, architecture, timestamp=None, save=True, show=False):
     """
     Plot scaling law for a single dimension.
 
@@ -213,7 +213,7 @@ def plot_scaling_law_single_dim(dim, architecture, timestamp=None, save=True):
     return fig, ax
 
 
-def plot_scaling_law_comparison(dims=[3, 4, 10, 100], architecture='deep', save=True):
+def plot_scaling_law_comparison(dims=[3, 4, 10, 100], architecture='deep', save=True, show=False):
     """
     Compare scaling laws across multiple dimensions.
 
@@ -339,6 +339,8 @@ if __name__ == '__main__':
                        help='Architecture type (default: deep)')
     parser.add_argument('--timestamp', type=str, default=None,
                        help='Specific timestamp (default: most recent)')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
 
     args = parser.parse_args()
 
@@ -361,7 +363,10 @@ if __name__ == '__main__':
                 save=True
             )
 
-        plt.show()
+        if args.show:
+            plt.show()
+        else:
+            plt.close('all')
 
     except FileNotFoundError as e:
         print(f"Error: {e}")

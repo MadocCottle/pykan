@@ -111,7 +111,7 @@ def compute_1d_cross_section(func, dim, coord_idx, num_points=100, device='cpu')
     return x_vals, np.array(y_vals)
 
 
-def plot_1d_cross_sections(dim, architecture, optimizer='lbfgs', timestamp=None, save=True):
+def plot_1d_cross_sections(dim, architecture, optimizer='lbfgs', timestamp=None, save=True, show=False):
     """
     Plot 1D cross-sections for all coordinate directions.
 
@@ -228,7 +228,7 @@ def plot_1d_cross_sections(dim, architecture, optimizer='lbfgs', timestamp=None,
     return fig, axes
 
 
-def plot_comparison_all_optimizers(dim, architecture, timestamp=None, save=True):
+def plot_comparison_all_optimizers(dim, architecture, timestamp=None, save=True, show=False):
     """
     Plot 1D cross-sections comparing all optimizers.
 
@@ -355,6 +355,9 @@ if __name__ == '__main__':
                        help='Specific timestamp (default: most recent)')
     parser.add_argument('--compare', action='store_true',
                        help='Compare all optimizers in one plot')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
+
 
     args = parser.parse_args()
 
@@ -375,7 +378,10 @@ if __name__ == '__main__':
                 save=True
             )
 
-        plt.show()
+        if args.show:
+            plt.show()
+        else:
+            plt.close('all')
 
     except FileNotFoundError as e:
         print(f"Error: {e}")

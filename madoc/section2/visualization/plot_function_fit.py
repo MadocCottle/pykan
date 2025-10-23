@@ -117,7 +117,7 @@ def load_kan_model(models, results, optimizer, dataset_idx, device='cpu'):
     return model, config_info
 
 
-def plot_function_fits(section='section2_1', timestamp=None, device='cpu', save_individual=False):
+def plot_function_fits(section='section2_1', timestamp=None, device='cpu', save_individual=False, show=False):
     """
     Plot function fits comparing Adam and LM optimizers for all datasets.
 
@@ -252,12 +252,14 @@ def plot_function_fits(section='section2_1', timestamp=None, device='cpu', save_
     print(f"\nSaved combined plot to: {output_file}")
 
     # Show plot
-    plt.show()
-
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
     return fig, axes
 
 
-def plot_2d_heatmap(section='section2_1', timestamp=None, dataset_idx=0, device='cpu'):
+def plot_2d_heatmap(section='section2_1', timestamp=None, dataset_idx=0, device='cpu', show=False):
     """
     Plot 2D heatmap comparing optimizer results for a single dataset.
 
@@ -335,8 +337,13 @@ def plot_2d_heatmap(section='section2_1', timestamp=None, dataset_idx=0, device=
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"\nSaved heatmap to: {output_file}")
 
-    plt.show()
+    if show:
 
+        plt.show()
+
+    else:
+
+        plt.close(fig)
     return fig, axes
 
 
@@ -358,6 +365,8 @@ if __name__ == '__main__':
                        help='Generate 2D heatmap visualization')
     parser.add_argument('--dataset', type=int, default=0,
                        help='Dataset index for heatmap (default: 0)')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
 
     args = parser.parse_args()
 
@@ -367,14 +376,16 @@ if __name__ == '__main__':
                 section=args.section,
                 timestamp=args.timestamp,
                 dataset_idx=args.dataset,
-                device=args.device
+                device=args.device,
+                show=args.show
             )
         else:
             plot_function_fits(
                 section=args.section,
                 timestamp=args.timestamp,
                 device=args.device,
-                save_individual=args.save_individual
+                save_individual=args.save_individual,
+                show=args.show
             )
     except FileNotFoundError as e:
         print(f"Error: {e}")

@@ -97,7 +97,7 @@ def extract_final_mse(results, optimizer):
     return final_row['dense_mse'].iloc[0]
 
 
-def plot_dimension_comparison_heatmap(section='section2_1', save=True):
+def plot_dimension_comparison_heatmap(section='section2_1', save=True, show=False):
     """
     Create heatmap comparing all dimension/architecture/optimizer combinations.
 
@@ -213,7 +213,7 @@ def plot_dimension_comparison_heatmap(section='section2_1', save=True):
     return fig, ax
 
 
-def plot_architecture_depth_comparison(save=True):
+def plot_architecture_depth_comparison(save=True, show=False):
     """
     Create side-by-side comparison of shallow vs deep architectures.
 
@@ -317,6 +317,8 @@ if __name__ == '__main__':
     parser.add_argument('--plot-type', type=str, default='both',
                        choices=['heatmap', 'architecture', 'both'],
                        help='Type of plot to generate (default: both)')
+    parser.add_argument('--show', action='store_true',
+                       help='Display the plot in a window (default: only save to file)')
 
     args = parser.parse_args()
 
@@ -327,7 +329,10 @@ if __name__ == '__main__':
         if args.plot_type in ['architecture', 'both']:
             plot_architecture_depth_comparison(save=True)
 
-        plt.show()
+        if args.show:
+            plt.show()
+        else:
+            plt.close('all')
 
     except FileNotFoundError as e:
         print(f"Error: {e}")
