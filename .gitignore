@@ -34,3 +34,48 @@ venv/
 # SSH keys and sensitive files
 *.pem
 *.pem.pub
+
+# ============================================================================
+# Pipeline Results and Outputs - DO NOT COMMIT
+# ============================================================================
+
+# Results directories (training outputs)
+madoc/*/results/
+madoc/*/model/
+
+# Visualization outputs
+madoc/*/visualization/outputs/
+
+# Table outputs
+madoc/*/tables/outputs/
+
+# Model and result files (anywhere in madoc/)
+madoc/**/*.pkl
+madoc/**/*.pth
+madoc/**/*.parquet
+
+# KAN checkpoint files
+madoc/**/*_cache_data
+madoc/**/*_state
+madoc/**/*_config.yml
+madoc/**/*_checkpoint_metadata.pkl
+
+# Generated tables (in tables directories)
+madoc/*/tables/*.csv
+madoc/*/tables/*.tex
+madoc/*/tables/*.pdf
+madoc/*/tables/*.html
+
+# Generated plots (in visualization directories)
+madoc/*/visualization/*.png
+madoc/*/visualization/*.pdf
+madoc/*/visualization/*.jpg
+madoc/*/visualization/*.svg
+
+# Job results from Gadi
+job_results_*/
+*.o[0-9]*
+
+# Archive directories
+results_old/
+archived/
