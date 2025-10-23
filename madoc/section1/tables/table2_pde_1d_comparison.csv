@@ -1,0 +1,4 @@
+Dataset,MLP test_mse,MLP arch,SIREN test_mse,SIREN arch,KAN test_mse,KAN arch,KAN_PRUNING test_mse,KAN_PRUNING arch
+poisson_1d_sin,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+poisson_1d_poly,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+poisson_1d_highfreq,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A

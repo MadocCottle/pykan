@@ -348,7 +348,7 @@ def load_kan_pruned_model(models, results, dataset_idx, device='cpu'):
     return model, config_info
 
 
-def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_individual=False, show=False):
+def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_individual=False, show=False, output_dir=None):
     """
     Plot function fits for all datasets and model types.
 
@@ -358,6 +358,7 @@ def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_
         device: Device to run on ('cpu' or 'cuda')
         save_individual: If True, save individual plots for each dataset
         show: If True, display plot in window; otherwise only save to file (default: False)
+        output_dir: Directory to save plots (default: same directory as script)
     """
     # Find latest timestamp if not provided
     if timestamp is None:
@@ -502,7 +503,9 @@ def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_
             ax_single.legend(fontsize=12, loc='best')
             ax_single.grid(True, alpha=0.3)
 
-            output_file = Path(__file__).parent / f'function_fit_dataset_{dataset_idx}_{dataset_name}_{timestamp}.png'
+            save_dir = Path(output_dir) if output_dir else Path(__file__).parent
+            save_dir.mkdir(parents=True, exist_ok=True)
+            output_file = save_dir / f'function_fit_dataset_{dataset_idx}_{dataset_name}_{timestamp}.png'
             plt.tight_layout()
             fig_single.savefig(output_file, dpi=300, bbox_inches='tight')
             plt.close(fig_single)
@@ -513,7 +516,9 @@ def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_
         axes[idx].axis('off')
 
     # Save combined plot
-    output_file = Path(__file__).parent / f'function_fits_all_datasets_{timestamp}.png'
+    save_dir = Path(output_dir) if output_dir else Path(__file__).parent
+    save_dir.mkdir(parents=True, exist_ok=True)
+    output_file = save_dir / f'function_fits_all_datasets_{timestamp}.png'
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"\nSaved combined plot to: {output_file}")
@@ -541,6 +546,8 @@ if __name__ == '__main__':
                        help='Device to use (cpu or cuda)')
     parser.add_argument('--save-individual', action='store_true',
                        help='Save individual plots for each dataset')
+    parser.add_argument('--output-dir', type=str, default=None,
+                       help='Directory to save plots (default: same directory as script)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
 
@@ -551,6 +558,7 @@ if __name__ == '__main__':
             section=args.section,
             timestamp=args.timestamp,
             device=args.device,
+            output_dir=args.output_dir,
             save_individual=args.save_individual,
             show=args.show
         )

@@ -43,6 +43,12 @@ pyyaml>=6.0
 scikit-learn==1.1.3
 
 # ============================================================================
+# OPTIMIZERS: Additional optimization algorithms
+# ============================================================================
+# Levenberg-Marquardt optimizer for PyTorch (required for section2 LM tests)
+torch-levenberg-marquardt>=0.1.0
+
+# ============================================================================
 # DEVELOPMENT & UTILITIES
 # ============================================================================
 # For saving/loading results

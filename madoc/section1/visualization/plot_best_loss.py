@@ -148,7 +148,7 @@ def extract_training_curve(df, config):
     return curve
 
 
-def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test', show=False):
+def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test', show=False, output_dir=None):
     """
     Plot loss curves over epochs for the best model from each class for all datasets.
 
@@ -157,6 +157,7 @@ def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test'
         timestamp: Specific timestamp to load, or None for most recent
         loss_type: Which loss to plot - 'train', 'test', or 'both' (default: 'test')
         show: If True, display plot in window; otherwise only save to file (default: False)
+        output_dir: Directory to save plots (default: same directory as script)
     """
     # Load results
     if timestamp is None:
@@ -274,7 +275,11 @@ def plot_best_loss_curves(section='section1_1', timestamp=None, loss_type='test'
         axes[idx].axis('off')
 
     # Save combined plot
-    output_dir = Path(__file__).parent
+    if output_dir is None:
+        output_dir = Path(__file__).parent
+    else:
+        output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / f'best_loss_curves_all_datasets_{timestamp}.png'
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
@@ -302,6 +307,8 @@ if __name__ == '__main__':
     parser.add_argument('--loss-type', type=str, default='test',
                        choices=['train', 'test'],
                        help='Which loss to plot: train or test (default: test)')
+    parser.add_argument('--output-dir', type=str, default=None,
+                       help='Directory to save plots (default: same directory as script)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
 
@@ -312,7 +319,8 @@ if __name__ == '__main__':
             section=args.section,
             timestamp=args.timestamp,
             loss_type=args.loss_type,
-            show=args.show
+            show=args.show,
+            output_dir=args.output_dir
         )
     except FileNotFoundError as e:
         print(f"Error: {e}")

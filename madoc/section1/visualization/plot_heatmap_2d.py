@@ -383,13 +383,14 @@ def plot_2d_heatmap(dataset_idx, timestamp=None, device='cpu', save_path=None):
     return fig
 
 
-def plot_all_2d_heatmaps(timestamp=None, device='cpu'):
+def plot_all_2d_heatmaps(timestamp=None, device='cpu', output_dir=None):
     """
     Create heatmap visualizations for all 2D datasets in section1_3.
 
     Args:
         timestamp: Specific timestamp to load, or None for most recent
         device: Device to run on ('cpu' or 'cuda')
+        output_dir: Directory to save plots (default: same directory as script)
     """
     section = 'section1_3'
 
@@ -401,13 +402,27 @@ def plot_all_2d_heatmaps(timestamp=None, device='cpu'):
 
     print(f"\nGenerating heatmaps for all {len(true_functions)} datasets...")
 
+    # Set up output directory
+    if output_dir:
+        save_dir = Path(output_dir)
+        save_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        save_dir = None
+
     for dataset_idx in range(len(true_functions)):
         print(f"\n{'='*60}")
         print(f"Dataset {dataset_idx}: {dataset_names[dataset_idx]}")
         print('='*60)
 
         try:
-            plot_2d_heatmap(dataset_idx, timestamp, device)
+            # Generate save path if output_dir is specified
+            if save_dir:
+                func_name = dataset_names[dataset_idx]
+                save_path = save_dir / f'heatmap_2d_dataset_{dataset_idx}_{func_name.replace(" ", "_")}_{timestamp}.png'
+            else:
+                save_path = None
+
+            plot_2d_heatmap(dataset_idx, timestamp, device, save_path=save_path)
         except Exception as e:
             print(f"Error generating heatmap for dataset {dataset_idx}: {e}")
             import traceback
@@ -432,6 +447,8 @@ if __name__ == '__main__':
                        help='Device to use (cpu or cuda)')
     parser.add_argument('--output', type=str, default=None,
                        help='Output path for the figure (default: auto-generated)')
+    parser.add_argument('--output-dir', type=str, default=None,
+                       help='Directory to save plots when plotting all datasets (default: script directory)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
 
@@ -440,7 +457,7 @@ if __name__ == '__main__':
     try:
         if args.dataset is None:
             # Plot all datasets
-            plot_all_2d_heatmaps(timestamp=args.timestamp, device=args.device)
+            plot_all_2d_heatmaps(timestamp=args.timestamp, device=args.device, output_dir=args.output_dir)
         else:
             # Plot specific dataset
             plot_2d_heatmap(

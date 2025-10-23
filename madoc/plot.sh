@@ -17,6 +17,7 @@ SECTION2=true
 PLOTS=true
 TABLES=true
 CONTINUE_ON_ERROR=false
+RUN_LABEL=""
 
 for arg in "$@"; do
     case $arg in
@@ -35,6 +36,9 @@ for arg in "$@"; do
         --continue-on-error)
             CONTINUE_ON_ERROR=true
             ;;
+        --run-label=*)
+            RUN_LABEL="${arg#*=}"
+            ;;
         --help|-h)
             echo "Usage: $0 [OPTIONS]"
             echo ""
@@ -44,6 +48,7 @@ for arg in "$@"; do
             echo "  --plots-only          Generate only plots (skip tables)"
             echo "  --tables-only         Generate only tables (skip plots)"
             echo "  --continue-on-error   Continue even if some scripts fail"
+            echo "  --run-label=LABEL     Custom label for this run (default: 'results')"
             echo "  --help, -h            Show this help message"
             echo ""
             exit 0
@@ -61,6 +66,13 @@ if [ "$CONTINUE_ON_ERROR" = false ]; then
     set -e  # Exit on any error
 fi
 
+# Create run timestamp and label
+RUN_TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+if [ -z "$RUN_LABEL" ]; then
+    RUN_LABEL="results"
+fi
+RUN_FOLDER="${RUN_TIMESTAMP}_${RUN_LABEL}"
+
 echo "=========================================="
 echo "Starting Visualization and Table Generation"
 echo "=========================================="
@@ -70,11 +82,32 @@ echo "  Section 2: $SECTION2"
 echo "  Plots: $PLOTS"
 echo "  Tables: $TABLES"
 echo "  Continue on error: $CONTINUE_ON_ERROR"
+echo "  Run folder: $RUN_FOLDER"
 echo "=========================================="
 echo ""
 
 # Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Create output directories for this run
+if [ "$SECTION1" = true ] && [ "$PLOTS" = true ]; then
+    SECTION1_VIZ_DIR="$SCRIPT_DIR/section1/visualization/outputs/$RUN_FOLDER"
+    mkdir -p "$SECTION1_VIZ_DIR"
+    echo "Created Section 1 visualization output directory: $SECTION1_VIZ_DIR"
+fi
+
+if [ "$SECTION1" = true ] && [ "$TABLES" = true ]; then
+    SECTION1_TABLE_DIR="$SCRIPT_DIR/section1/tables/outputs/$RUN_FOLDER"
+    mkdir -p "$SECTION1_TABLE_DIR"
+    echo "Created Section 1 tables output directory: $SECTION1_TABLE_DIR"
+fi
+
+if [ "$SECTION2" = true ] && [ "$PLOTS" = true ]; then
+    SECTION2_VIZ_DIR="$SCRIPT_DIR/section2/visualization/outputs/$RUN_FOLDER"
+    mkdir -p "$SECTION2_VIZ_DIR"
+    echo "Created Section 2 visualization output directory: $SECTION2_VIZ_DIR"
+fi
+echo ""
 
 # Use virtual environment Python if available
 if [ -f "$SCRIPT_DIR/.venv/bin/python" ]; then
@@ -128,33 +161,33 @@ if [ "$SECTION1" = true ] && [ "$PLOTS" = true ]; then
     # Section 1.1 - Function Approximation
     echo "=== Section 1.1: Function Approximation Plots ==="
     run_script "Section 1.1 - Best loss curves" \
-        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_best_loss.py' --section section1_1 --loss-type test"
+        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_best_loss.py' --section section1_1 --loss-type test --output-dir '$SECTION1_VIZ_DIR'"
 
     run_script "Section 1.1 - Function fit plots" \
-        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_function_fit.py' --section section1_1"
+        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_function_fit.py' --section section1_1 --output-dir '$SECTION1_VIZ_DIR'"
 
     # Note: Checkpoint comparison script is not compatible with current checkpoint format
     # run_script "Section 1.1 - Checkpoint comparison" \
-    #     "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_checkpoint_comparison.py' --section section1_1"
+    #     "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_checkpoint_comparison.py' --section section1_1 --output-dir '$SECTION1_VIZ_DIR'"
 
     # Section 1.2 - 1D Poisson PDE
     echo "=== Section 1.2: 1D Poisson PDE Plots ==="
     run_script "Section 1.2 - Best loss curves" \
-        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_best_loss.py' --section section1_2 --loss-type test"
+        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_best_loss.py' --section section1_2 --loss-type test --output-dir '$SECTION1_VIZ_DIR'"
 
     run_script "Section 1.2 - Function fit plots" \
-        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_function_fit.py' --section section1_2"
+        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_function_fit.py' --section section1_2 --output-dir '$SECTION1_VIZ_DIR'"
 
     # Section 1.3 - 2D Poisson PDE
     echo "=== Section 1.3: 2D Poisson PDE Plots ==="
     run_script "Section 1.3 - Best loss curves" \
-        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_best_loss.py' --section section1_3 --loss-type test"
+        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_best_loss.py' --section section1_3 --loss-type test --output-dir '$SECTION1_VIZ_DIR'"
 
     run_script "Section 1.3 - Function fit plots" \
-        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_function_fit.py' --section section1_3"
+        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_function_fit.py' --section section1_3 --output-dir '$SECTION1_VIZ_DIR'"
 
     run_script "Section 1.3 - 2D heatmap visualizations" \
-        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_heatmap_2d.py'"
+        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_heatmap_2d.py' --output-dir '$SECTION1_VIZ_DIR'"
 fi
 
 # ============================================================================
@@ -168,7 +201,7 @@ if [ "$SECTION1" = true ] && [ "$TABLES" = true ]; then
     echo ""
 
     run_script "Section 1 - All tables" \
-        "$PYTHON '$SCRIPT_DIR/section1/tables/generate_all_tables.py' --output-dir '$SCRIPT_DIR/section1/tables'"
+        "$PYTHON '$SCRIPT_DIR/section1/tables/generate_all_tables.py' --output-dir '$SECTION1_TABLE_DIR'"
 fi
 
 # ============================================================================
@@ -248,14 +281,14 @@ fi
 echo "Generated artifacts:"
 if [ "$SECTION1" = true ]; then
     if [ "$PLOTS" = true ]; then
-        echo "  Section 1 Visualizations: section1/visualization/"
+        echo "  Section 1 Visualizations: section1/visualization/outputs/$RUN_FOLDER/"
     fi
     if [ "$TABLES" = true ]; then
-        echo "  Section 1 Tables:        section1/tables/"
+        echo "  Section 1 Tables:         section1/tables/outputs/$RUN_FOLDER/"
     fi
 fi
 if [ "$SECTION2" = true ] && [ "$PLOTS" = true ]; then
-    echo "  Section 2 Visualizations: section2/visualization/"
+    echo "  Section 2 Visualizations: section2/visualization/outputs/$RUN_FOLDER/"
 fi
 echo ""
 echo "Note: All plots are saved to files by default (no popups)"
