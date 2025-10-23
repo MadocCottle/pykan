@@ -174,15 +174,16 @@ def select_best_experts(experts):
     return selected_experts
 
 
-def merge_kans(expert_models, input_dim, device, grid=None, k=None):
+def merge_kans(expert_models, input_dim, device, grid=None, k=None, expert_dependencies=None):
     """
     Merge multiple expert KANs into a single wider KAN.
 
-    Strategy (Option A):
+    Strategy:
     - Create merged KAN with full input dimension
     - Sum hidden layer widths from all experts
     - Experts' inactive input connections remain masked (set to zero)
     - All expert outputs feed into final aggregation layer
+    - Track input dependencies to properly map expert inputs to merged model
 
     Args:
         expert_models: List of trained KAN models
@@ -190,6 +191,8 @@ def merge_kans(expert_models, input_dim, device, grid=None, k=None):
         device: Device for merged model
         grid: Initial grid size for merged model (default: use first expert's grid)
         k: Spline order for merged model (default: use first expert's k)
+        expert_dependencies: Optional list of tuples indicating which inputs each expert uses
+                           e.g., [(0, 1), (1, 2)] means expert 0 uses inputs [0,1], expert 1 uses [1,2]
 
     Returns:
         Merged KAN model
@@ -237,44 +240,59 @@ def merge_kans(expert_models, input_dim, device, grid=None, k=None):
         expert_layer = expert.act_fun[0]
         merged_layer = merged.act_fun[0]
 
-        # Copy spline coefficients and grid
-        # Source: expert_layer has shape (expert_input, expert_hidden, ...)
-        # Target: merged_layer slice (input_dim, hidden_offset:hidden_offset+expert_hidden, ...)
+        # Determine input mapping (which merged inputs correspond to expert inputs)
+        if expert_dependencies is not None and expert_idx < len(expert_dependencies):
+            # Use provided dependency mapping
+            input_mapping = list(expert_dependencies[expert_idx])
+            print(f"  Expert {expert_idx+1} uses inputs: {input_mapping}")
+        else:
+            # Default: assume expert uses first expert_input dimensions
+            input_mapping = list(range(min(expert_input, input_dim)))
 
-        # We need to map expert inputs to full input space
-        # For now, assume expert uses first expert_input dimensions
-        # TODO: Track actual input mapping from dependency detection
+        # Validate mapping
+        if len(input_mapping) != expert_input:
+            print(f"    Warning: Dependency mapping size mismatch. Expected {expert_input}, got {len(input_mapping)}")
+            input_mapping = list(range(min(expert_input, input_dim)))
 
         # Check if expert's grid/k parameters match merged model
         params_match = (expert.grid == merged.grid and expert.k == merged.k)
 
         if params_match:
             # Direct weight transfer when grid/k match
-            for i in range(min(expert_input, input_dim)):
-                # Copy grid for this input dimension
-                merged_layer.grid.data[i, :] = expert_layer.grid.data[i, :]
+            for expert_i, merged_i in enumerate(input_mapping):
+                if merged_i >= input_dim:
+                    continue  # Skip if mapping is out of bounds
+
+                # FIXED: Only copy grid for first expert or when grids differ
+                # This prevents overwriting grids from previous experts
+                if expert_idx == 0 or not torch.allclose(merged_layer.grid.data[merged_i, :],
+                                                         expert_layer.grid.data[expert_i, :]):
+                    merged_layer.grid.data[merged_i, :] = expert_layer.grid.data[expert_i, :]
 
                 for j in range(expert_hidden):
                     target_j = hidden_offset + j
 
                     # Copy spline coefficients
-                    merged_layer.coef.data[i, target_j, :] = expert_layer.coef.data[i, j, :]
+                    merged_layer.coef.data[merged_i, target_j, :] = expert_layer.coef.data[expert_i, j, :]
 
                     # Copy scaling factors
-                    merged_layer.scale_base.data[i, target_j] = expert_layer.scale_base.data[i, j]
-                    merged_layer.scale_sp.data[i, target_j] = expert_layer.scale_sp.data[i, j]
+                    merged_layer.scale_base.data[merged_i, target_j] = expert_layer.scale_base.data[expert_i, j]
+                    merged_layer.scale_sp.data[merged_i, target_j] = expert_layer.scale_sp.data[expert_i, j]
 
-                    # Set mask to active
-                    merged_layer.mask.data[i, target_j] = expert_layer.mask.data[i, j]
+                    # Set mask to active (preserve expert's mask)
+                    merged_layer.mask.data[merged_i, target_j] = expert_layer.mask.data[expert_i, j]
         else:
-            # If grid/k don't match, just initialize connections and let training adjust
-            # Set masks to active for expert's connections
-            print(f"    Warning: Expert {expert_idx+1} has different grid/k, will retrain connections")
-            for i in range(min(expert_input, input_dim)):
+            # IMPROVED: When grid/k don't match, use interpolation or approximation
+            # For now, still activate masks but warn user
+            print(f"    Warning: Expert {expert_idx+1} has different grid/k, connections will be reinitialized")
+            print(f"             Consider retraining experts with consistent grid/k settings")
+            for expert_i, merged_i in enumerate(input_mapping):
+                if merged_i >= input_dim:
+                    continue
                 for j in range(expert_hidden):
                     target_j = hidden_offset + j
-                    # Just activate the mask, keep random initialization
-                    merged_layer.mask.data[i, target_j] = 1.0
+                    # Activate the mask for these connections
+                    merged_layer.mask.data[merged_i, target_j] = 1.0
 
         hidden_offset += expert_hidden
         print(f"  Copied expert {expert_idx+1} to hidden neurons [{hidden_offset-expert_hidden}:{hidden_offset}]")
@@ -396,8 +414,10 @@ def run_merge_kan_experiment(dataset, dataset_idx, dataset_name, device, true_fu
     # Phase 3: Merge experts
     n_var = dataset['train_input'].shape[1]
     expert_models = [e['model'] for e in selected_experts]
+    expert_dependencies = [e['dependencies'] for e in selected_experts]
     # Use grid/k from first expert (will be consistent if all experts trained with same config)
-    merged_model = merge_kans(expert_models, input_dim=n_var, device=device)
+    merged_model = merge_kans(expert_models, input_dim=n_var, device=device,
+                             expert_dependencies=expert_dependencies)
 
     # Phase 4: Train merged model
     training_results = train_merged_kan_with_refinement(

@@ -40,6 +40,15 @@ This document contains all academic papers, references, and citations explicitly
 **Usage in Repo:**
 - Foundation for all KAN implementations
 - Core architecture in `kan/MultKAN.py`, `kan/LBFGSKAN.py`
+- **Section 1**: Function approximation and PDE solving benchmarks
+  - 1D Poisson: `section1/section1_2.py` (3 datasets)
+  - 2D Poisson: `section1/section1_3.py` (4 datasets)
+  - Grid extension methodology: G={3,5,10,20,50,100}
+  - **Pruning workflow** (Section 3.2.1 of paper):
+    - Stage 1: Sparsification training with λ=1e-2 for 200 steps
+    - Stage 2: Pruning with node_th=1e-2, edge_th=3e-2
+    - Stage 3: Retraining for 200 steps
+  - Implementation: `section1/utils/model_tests.py:686-805`
 - Theoretical basis for all extensions
 
 **BibTeX:**
@@ -345,12 +354,20 @@ This document contains all academic papers, references, and citations explicitly
 - Applications to solving PDEs and boundary value problems
 
 **Usage in Repo:**
-- **Baseline comparison** for KAN in PDE solving (Section 2)
-- Model implementation in `section2/models.py`
-- Benchmark for function approximation tasks
-- Compared in Poisson, Heat, and Burgers equation experiments
+- **Section 1**: Baseline comparison for function approximation and 1D/2D Poisson PDEs
+  - Implementation: `section1/utils/trad_nn.py` (SIREN class)
+  - Training: Adam optimizer with learning rate schedule (1e-4 → 1e-5)
+  - Special initialization following paper specifications (sin(ω₀·x) with ω₀=30)
+  - Gradient clipping: max_norm=0.1 for stability
+  - Compared against MLP and KAN in all Section 1 experiments
+- **Section 2**: Baseline comparison for KAN in PDE solving
+  - Model implementation in `section2/models.py`
+  - Benchmark for function approximation tasks
+  - Compared in Poisson, Heat, and Burgers equation experiments
 
 **Location in Repo:**
+- `/Users/main/Desktop/my_pykan/pykan/madoc/section1/utils/trad_nn.py` (SIREN implementation)
+- `/Users/main/Desktop/my_pykan/pykan/madoc/section1/utils/model_tests.py:149-263` (SIREN training)
 - `/Users/main/Desktop/my_pykan/pykan/madoc/section2/README.md`
 - Multiple comparison experiments
 
@@ -483,9 +500,16 @@ This document contains all academic papers, references, and citations explicitly
 
 ## Papers by Repository Section
 
-### Section 1 (Core KAN Implementation)
+### Section 1 (Function Approximation & Basic PDE Solving)
 - Liu et al. (2024a) - KAN: Kolmogorov-Arnold Networks
-- Kingma & Ba (2015) - Adam optimizer
+  - Grid extension methodology
+  - Pruning and simplification (Section 3.2.1)
+  - Sparsification regularization (λ=1e-2)
+- Sitzmann et al. (2020) - SIREN (baseline comparison)
+  - Periodic activation functions: sin(ω₀·x) with ω₀=30
+  - Specialized initialization: uniform(-1/n, 1/n) for first layer
+  - Adam optimizer training with learning rate schedule
+- Kingma & Ba (2015) - Adam optimizer (used for SIREN training)
 
 ### Section 2 (PDE Solving & Physics-Informed)
 - Liu et al. (2024b) - KAN 2.0

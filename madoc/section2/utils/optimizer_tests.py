@@ -424,12 +424,16 @@ def run_kan_adaptive_density_test(datasets, grids, epochs, device, use_regular_r
         dataset_names: List of descriptive names for each dataset (optional)
 
     Returns:
-        Tuple of (DataFrame, models_dict) where DataFrame contains training metrics
+        Tuple of (DataFrame, checkpoints_dict, threshold_time) where:
+        - DataFrame contains training metrics
+        - checkpoints_dict: Dict[dataset_idx -> {'at_threshold': {...}, 'final': {...}}]
+        - threshold_time: Average time to reach interpolation threshold across datasets
     """
     approach = "adaptive+regular" if use_regular_refine else "adaptive_only"
     print(f"kan_adaptive_density ({approach})")
     rows = []
-    models = {}
+    checkpoints = {}
+    threshold_times = []  # Track threshold time for each dataset
 
     # Generate default names if not provided
     if dataset_names is None:
@@ -498,7 +502,74 @@ def run_kan_adaptive_density_test(datasets, grids, epochs, device, use_regular_r
                   f"{grid_time/epochs:.3f}s/epoch, {num_params} params")
 
         total_dataset_time = time.time() - dataset_start_time
-        models[i] = model
+
+        # Detect interpolation threshold based on test loss
+        threshold_epoch = detect_kan_threshold(test_losses)
+
+        # Calculate cumulative time up to threshold
+        cumulative_time_at_threshold = 0
+        cumulative_epochs_at_threshold = 0
+        threshold_grid_idx = 0
+
+        for j, grid_size in enumerate(grids):
+            if cumulative_epochs_at_threshold + epochs > threshold_epoch:
+                # Threshold is within this grid
+                epochs_into_this_grid = threshold_epoch - cumulative_epochs_at_threshold
+                cumulative_time_at_threshold += grid_times[j] * (epochs_into_this_grid / epochs)
+                threshold_grid_idx = j
+                break
+            else:
+                cumulative_time_at_threshold += grid_times[j]
+                cumulative_epochs_at_threshold += epochs
+        else:
+            # Threshold not found, use final grid
+            cumulative_time_at_threshold = sum(grid_times)
+            threshold_grid_idx = len(grids) - 1
+
+        threshold_times.append(cumulative_time_at_threshold)
+
+        # Compute dense MSE for final model (already computed above)
+        final_dense_mse = dense_mse_final
+
+        # Threshold metrics
+        threshold_test_loss = test_losses[threshold_epoch]
+        threshold_train_loss = train_losses[threshold_epoch]
+
+        # Compute dense MSE at threshold (use final model as approximation)
+        with torch.no_grad():
+            threshold_dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
+                                                               num_samples=10000, device=device)
+
+        print(f"    Interpolation threshold detected at epoch {threshold_epoch} (time: {cumulative_time_at_threshold:.2f}s)")
+        print(f"    Test loss at threshold: {threshold_test_loss:.6e}")
+        print(f"    Dense MSE at threshold: {threshold_dense_mse:.6e} (computed on final model)")
+
+        # Store checkpoints for this dataset
+        checkpoints[i] = {
+            'at_threshold': {
+                'model': deepcopy(model),
+                'epoch': threshold_epoch,
+                'time': cumulative_time_at_threshold,
+                'train_loss': threshold_train_loss,
+                'test_loss': threshold_test_loss,
+                'dense_mse': threshold_dense_mse,
+                'grid_idx': threshold_grid_idx,
+                'grid_size': grids[threshold_grid_idx],
+                'num_params': grid_param_counts[threshold_grid_idx],
+                'approach': approach
+            },
+            'final': {
+                'model': model,
+                'epoch': len(train_losses) - 1,
+                'time': total_dataset_time,
+                'train_loss': train_losses[-1],
+                'test_loss': test_losses[-1],
+                'dense_mse': final_dense_mse,
+                'grid_size': grids[-1],
+                'num_params': grid_param_counts[-1],
+                'approach': approach
+            }
+        }
 
         # Create rows for each grid and epoch
         for j, grid_size in enumerate(grids):
@@ -529,14 +600,26 @@ def run_kan_adaptive_density_test(datasets, grids, epochs, device, use_regular_r
 
         print(f"  Dataset {i} ({dataset_name}) complete: {total_dataset_time:.2f}s total")
 
-    return pd.DataFrame(rows), models
+    # Calculate average threshold time across datasets
+    avg_threshold_time = sum(threshold_times) / len(threshold_times) if threshold_times else 0
+    print(f"\n  Average {approach} interpolation threshold time: {avg_threshold_time:.2f}s")
+
+    return pd.DataFrame(rows), checkpoints, avg_threshold_time
 
 
 def run_kan_baseline_test(datasets, grids, epochs, device, true_functions=None, dataset_names=None):
-    """Run baseline KAN tests with regular refinement for comparison"""
+    """Run baseline KAN tests with regular refinement for comparison
+
+    Returns:
+        Tuple of (DataFrame, checkpoints_dict, threshold_time) where:
+        - DataFrame contains training metrics
+        - checkpoints_dict: Dict[dataset_idx -> {'at_threshold': {...}, 'final': {...}}]
+        - threshold_time: Average time to reach interpolation threshold across datasets
+    """
     print("kan_baseline (regular refinement)")
     rows = []
-    models = {}
+    checkpoints = {}
+    threshold_times = []  # Track threshold time for each dataset
 
     if dataset_names is None:
         dataset_names = [f"dataset_{i}" for i in range(len(datasets))]
@@ -580,7 +663,74 @@ def run_kan_baseline_test(datasets, grids, epochs, device, true_functions=None, 
                   f"{grid_time/epochs:.3f}s/epoch, {num_params} params")
 
         total_dataset_time = time.time() - dataset_start_time
-        models[i] = model
+
+        # Detect interpolation threshold based on test loss
+        threshold_epoch = detect_kan_threshold(test_losses)
+
+        # Calculate cumulative time up to threshold
+        cumulative_time_at_threshold = 0
+        cumulative_epochs_at_threshold = 0
+        threshold_grid_idx = 0
+
+        for j, grid_size in enumerate(grids):
+            if cumulative_epochs_at_threshold + epochs > threshold_epoch:
+                # Threshold is within this grid
+                epochs_into_this_grid = threshold_epoch - cumulative_epochs_at_threshold
+                cumulative_time_at_threshold += grid_times[j] * (epochs_into_this_grid / epochs)
+                threshold_grid_idx = j
+                break
+            else:
+                cumulative_time_at_threshold += grid_times[j]
+                cumulative_epochs_at_threshold += epochs
+        else:
+            # Threshold not found, use final grid
+            cumulative_time_at_threshold = sum(grid_times)
+            threshold_grid_idx = len(grids) - 1
+
+        threshold_times.append(cumulative_time_at_threshold)
+
+        # Compute dense MSE for final model (already computed above)
+        final_dense_mse = dense_mse_final
+
+        # Threshold metrics
+        threshold_test_loss = test_losses[threshold_epoch]
+        threshold_train_loss = train_losses[threshold_epoch]
+
+        # Compute dense MSE at threshold (use final model as approximation)
+        with torch.no_grad():
+            threshold_dense_mse = dense_mse_error_from_dataset(model, dataset, true_func,
+                                                               num_samples=10000, device=device)
+
+        print(f"    Interpolation threshold detected at epoch {threshold_epoch} (time: {cumulative_time_at_threshold:.2f}s)")
+        print(f"    Test loss at threshold: {threshold_test_loss:.6e}")
+        print(f"    Dense MSE at threshold: {threshold_dense_mse:.6e} (computed on final model)")
+
+        # Store checkpoints for this dataset
+        checkpoints[i] = {
+            'at_threshold': {
+                'model': deepcopy(model),
+                'epoch': threshold_epoch,
+                'time': cumulative_time_at_threshold,
+                'train_loss': threshold_train_loss,
+                'test_loss': threshold_test_loss,
+                'dense_mse': threshold_dense_mse,
+                'grid_idx': threshold_grid_idx,
+                'grid_size': grids[threshold_grid_idx],
+                'num_params': grid_param_counts[threshold_grid_idx],
+                'approach': 'baseline'
+            },
+            'final': {
+                'model': model,
+                'epoch': len(train_losses) - 1,
+                'time': total_dataset_time,
+                'train_loss': train_losses[-1],
+                'test_loss': test_losses[-1],
+                'dense_mse': final_dense_mse,
+                'grid_size': grids[-1],
+                'num_params': grid_param_counts[-1],
+                'approach': 'baseline'
+            }
+        }
 
         for j, grid_size in enumerate(grids):
             for epoch_in_grid in range(epochs):
@@ -602,7 +752,11 @@ def run_kan_baseline_test(datasets, grids, epochs, device, true_functions=None, 
 
         print(f"  Dataset {i} ({dataset_name}) complete: {total_dataset_time:.2f}s total")
 
-    return pd.DataFrame(rows), models
+    # Calculate average threshold time across datasets
+    avg_threshold_time = sum(threshold_times) / len(threshold_times) if threshold_times else 0
+    print(f"\n  Average baseline interpolation threshold time: {avg_threshold_time:.2f}s")
+
+    return pd.DataFrame(rows), checkpoints, avg_threshold_time
 
 
 def adaptive_densify_model(model, dataset, threshold=1e-2, new_grid_size=None, device='cpu'):

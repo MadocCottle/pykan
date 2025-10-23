@@ -306,10 +306,12 @@ def load_run(section, timestamp, load_models=False):
         # Load pruned KAN models (store checkpoint paths)
         # Try new checkpoint-based naming first
         kan_pruned_models = {}
-        for state_file in p.glob(f'{section}_{timestamp}_kan_pruning_*_final_state'):
+
+        # NEW: Try format with epochs first (e.g., section1_3_20251024_044352_e30_kan_pruning_0_final_state)
+        for state_file in p.glob(f'{section}_{timestamp}_e*_kan_pruning_*_final_state'):
             # Extract the base path by removing '_state' suffix
             base_path = str(state_file)[:-6]
-            # Extract index from path like: .../section1_1_20251023_215658_kan_pruning_0_final
+            # Extract index from path like: .../section1_1_20251024_044352_e30_kan_pruning_0_final
             parts = base_path.split('_')
             for i, part in enumerate(parts):
                 if part == 'final' and i > 0:
@@ -317,7 +319,20 @@ def load_run(section, timestamp, load_models=False):
                     kan_pruned_models[idx] = base_path
                     break
 
-        # Fallback: try old naming with 'pruned' prefix
+        # Fallback: Try without epochs (backward compatibility for old format)
+        if not kan_pruned_models:
+            for state_file in p.glob(f'{section}_{timestamp}_kan_pruning_*_final_state'):
+                # Extract the base path by removing '_state' suffix
+                base_path = str(state_file)[:-6]
+                # Extract index from path like: .../section1_1_20251023_215658_kan_pruning_0_final
+                parts = base_path.split('_')
+                for i, part in enumerate(parts):
+                    if part == 'final' and i > 0:
+                        idx = int(parts[i-1])
+                        kan_pruned_models[idx] = base_path
+                        break
+
+        # Fallback: try old naming with 'pruned' prefix (very old format)
         if not kan_pruned_models:
             for state_file in p.glob(f'{section}_{timestamp}_pruned_*_state'):
                 if '_final_state' in str(state_file) or '_at_threshold_state' in str(state_file):

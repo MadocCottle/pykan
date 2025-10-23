@@ -3,8 +3,20 @@
 This directory contains visualization scripts for analyzing Section 2 results:
 - **Section 2.1**: Optimizer comparison (Adam, LBFGS, Levenberg-Marquardt)
 - **Section 2.2**: Adaptive density strategies
+- **Section 2.3**: Merge_KAN experiments
 
 All experiments use 2D Poisson PDE test problems.
+
+## Quick Start
+
+**NEW: Checkpoint Comparison Plots** 🎉
+```bash
+# Create iso-compute and final comparison plots
+python plot_checkpoint_comparison.py section2_1  # Optimizer comparison
+python plot_checkpoint_comparison.py section2_2  # Adaptive density comparison
+```
+
+See [CHECKPOINT_VISUALIZATION_GUIDE.md](CHECKPOINT_VISUALIZATION_GUIDE.md) for detailed documentation.
 
 ## Available Visualizations
 
@@ -52,7 +64,39 @@ python plot_heatmap_2d.py --section section2_1 --dataset 0 --device cuda
   - Row 1: Adaptive Only and Adaptive+Regular predictions
   - Row 2: Baseline predictions
 
-### 2. Best Loss Curves (`plot_best_loss.py`) ⭐ NEW
+### 2. Checkpoint Comparison Plots (`plot_checkpoint_comparison.py`) ⭐ NEW - TWO-CHECKPOINT STRATEGY
+
+Creates bar chart comparisons for **iso-compute** and **final** performance analysis.
+
+**What it does:**
+- **Iso-Compute**: Compare performance when reference approach reaches threshold (fair speed comparison)
+- **Final**: Compare performance after full training budget (asymptotic behavior)
+- **Time-to-Threshold**: Direct convergence speed comparison (Section 2.1 only)
+
+**Usage:**
+```bash
+# Section 2.1: Optimizer comparison
+python plot_checkpoint_comparison.py section2_1
+# Outputs: iso_compute.png, final.png, time_to_threshold.png
+
+# Section 2.2: Adaptive density comparison
+python plot_checkpoint_comparison.py section2_2
+# Outputs: iso_compute.png, final.png
+
+# Specify timestamp
+python plot_checkpoint_comparison.py section2_1 --timestamp 20251024_143022
+
+# Show plots interactively
+python plot_checkpoint_comparison.py section2_1 --show
+```
+
+**Key Insights:**
+- **Section 2.1**: Which optimizer converges fastest? (LBFGS typically wins)
+- **Section 2.2**: Does adaptive density provide speed advantage? (Dataset-dependent)
+
+See [CHECKPOINT_VISUALIZATION_GUIDE.md](CHECKPOINT_VISUALIZATION_GUIDE.md) for complete documentation.
+
+### 3. Best Loss Curves (`plot_best_loss.py`) ⭐ NEW
 
 Plots dense MSE evolution over training epochs for all optimizers/approaches across all datasets.
 

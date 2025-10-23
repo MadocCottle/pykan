@@ -37,25 +37,28 @@ print("="*60 + "\n")
 
 timers = {}
 
-print("Test 1: Training KANs with adaptive density (alternative to regular densification)...")
-adaptive_only_results, adaptive_only_models = track_time(
+# Run baseline first to get reference threshold time
+print("Training baseline KANs (regular refinement only for comparison)...")
+baseline_results, baseline_checkpoints, baseline_threshold_time = track_time(
+    timers, "KAN baseline",
+    run_kan_baseline_test,
+    datasets, grids, epochs, device, true_functions, dataset_names
+)
+
+print(f"\nUsing baseline threshold time for reference: {baseline_threshold_time:.2f}s")
+
+print("\nTest 1: Training KANs with adaptive density (alternative to regular densification)...")
+adaptive_only_results, adaptive_only_checkpoints, adaptive_only_threshold_time = track_time(
     timers, "KAN adaptive density only",
     run_kan_adaptive_density_test,
     datasets, grids, epochs, device, False, 1e-2, true_functions, dataset_names
 )
 
 print("\nTest 2: Training KANs with adaptive + regular densification...")
-adaptive_regular_results, adaptive_regular_models = track_time(
+adaptive_regular_results, adaptive_regular_checkpoints, adaptive_regular_threshold_time = track_time(
     timers, "KAN adaptive + regular density",
     run_kan_adaptive_density_test,
     datasets, grids, epochs, device, True, 1e-2, true_functions, dataset_names
-)
-
-print("\nTraining baseline KANs (regular refinement only for comparison)...")
-baseline_results, baseline_models = track_time(
-    timers, "KAN baseline",
-    run_kan_baseline_test,
-    datasets, grids, epochs, device, true_functions, dataset_names
 )
 
 # Print timing summary
@@ -74,10 +77,11 @@ for model_type, df in all_results.items():
 # Print approach summary table
 print_optimizer_summary(all_results, dataset_names)
 
+# Save with checkpoints instead of simple models
 save_run(all_results, 'section2_2',
-         models={
-             'adaptive_only': adaptive_only_models,
-             'adaptive_regular': adaptive_regular_models,
-             'baseline': baseline_models
+         checkpoints={
+             'adaptive_only': adaptive_only_checkpoints,
+             'adaptive_regular': adaptive_regular_checkpoints,
+             'baseline': baseline_checkpoints
          },
-         epochs=epochs, device=str(device))
+         epochs=epochs, device=str(device), baseline_threshold_time=baseline_threshold_time)

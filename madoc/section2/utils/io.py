@@ -50,7 +50,8 @@ def save_run(results, section, models=None, checkpoints=None, **meta):
         'timestamp': ts,
         'epochs': meta.get('epochs'),
         'device': meta.get('device'),
-        'lbfgs_threshold_time': meta.get('lbfgs_threshold_time'),  # Section2 uses LBFGS as reference
+        'lbfgs_threshold_time': meta.get('lbfgs_threshold_time'),  # Section2_1 uses LBFGS as reference
+        'baseline_threshold_time': meta.get('baseline_threshold_time'),  # Section2_2 uses baseline as reference
     }
 
     # Format filename with epochs if provided

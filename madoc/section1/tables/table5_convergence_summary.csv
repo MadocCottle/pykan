@@ -1,5 +1,0 @@
-Section,Model,Avg Time/Epoch (s),Std Time/Epoch (s),Avg Best MSE,Std Best MSE,Avg Params,Num Configs
-Function Approximation,MLP,0.0155,0.0048,N/A,N/A,76,675
-Function Approximation,SIREN,0.0211,0.0061,N/A,N/A,76,225
-Function Approximation,KAN,0.1011,0.0167,N/A,N/A,120,45
-Function Approximation,KAN_PRUNING,0.0756,0.0342,N/A,N/A,120,54

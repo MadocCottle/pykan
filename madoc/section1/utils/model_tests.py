@@ -147,7 +147,7 @@ def print_best_dense_mse_summary(all_results, dataset_names):
     print("="*80 + "\n")
 
 def train_model(model, dataset, epochs, device, true_function):
-    """Train any model using LBFGS optimizer and return loss history with timing
+    """Train any model using appropriate optimizer and return loss history with timing
 
     Args:
         model: Model to train
@@ -158,11 +158,27 @@ def train_model(model, dataset, epochs, device, true_function):
 
     Returns: train_losses, test_losses, total_time, time_per_epoch, final_dense_mse
     """
-    # Use standard PyTorch LBFGS with stable parameters
-    # Line search helps prevent divergence
-    optimizer = torch.optim.LBFGS(model.parameters(), lr=1.0, max_iter=20,
-                                  tolerance_grad=1e-7, tolerance_change=1e-9,
-                                  history_size=50, line_search_fn="strong_wolfe")
+    # Detect model type for optimizer selection
+    is_siren = hasattr(model, 'net') and any(isinstance(m, tnn.Sine) for m in model.modules())
+
+    # SIREN requires Adam optimizer with lower learning rate for stability
+    # MLPs work well with LBFGS
+    if is_siren:
+        # Adam optimizer with learning rate schedule for SIREN stability
+        # Start with lr=1e-4 for first half, then 1e-5 for second half
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=max(1, epochs//2), gamma=0.1)
+        use_closure = False
+        grad_clip_norm = 0.1  # Tighter clipping for SIREN
+    else:
+        # LBFGS for MLPs - more stable with line search
+        optimizer = torch.optim.LBFGS(model.parameters(), lr=1.0, max_iter=20,
+                                      tolerance_grad=1e-7, tolerance_change=1e-9,
+                                      history_size=50, line_search_fn="strong_wolfe")
+        scheduler = None
+        use_closure = True
+        grad_clip_norm = 1.0
+
     criterion = nn.MSELoss()
 
     train_losses = []
@@ -171,19 +187,34 @@ def train_model(model, dataset, epochs, device, true_function):
     start_time = time.time()
 
     for epoch in range(epochs):
-        def closure():
-            """LBFGS optimizer requires closure that computes loss"""
+        if use_closure:
+            # LBFGS requires closure
+            def closure():
+                """LBFGS optimizer requires closure that computes loss"""
+                optimizer.zero_grad()
+                train_pred = model(dataset['train_input'])
+                loss = criterion(train_pred, dataset['train_label'])
+                loss.backward()
+
+                # Add gradient clipping to prevent explosions
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip_norm)
+
+                return loss
+
+            optimizer.step(closure)
+        else:
+            # Adam-style training
             optimizer.zero_grad()
             train_pred = model(dataset['train_input'])
             loss = criterion(train_pred, dataset['train_label'])
             loss.backward()
 
-            # Add gradient clipping to prevent explosions
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            # Gradient clipping is critical for SIREN stability
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip_norm)
 
-            return loss
-
-        optimizer.step(closure)
+            optimizer.step()
+            if scheduler:
+                scheduler.step()
 
         with torch.no_grad():
             # Track training and test loss after each epoch
@@ -194,8 +225,8 @@ def train_model(model, dataset, epochs, device, true_function):
 
             # Check for NaN/Inf and stop training if detected
             import math
-            if math.isnan(train_loss) or math.isinf(train_loss):
-                print(f"    WARNING: Training diverged at epoch {epoch+1} (loss={train_loss:.6e})")
+            if math.isnan(train_loss) or math.isinf(train_loss) or math.isnan(test_loss) or math.isinf(test_loss):
+                print(f"    WARNING: Training diverged at epoch {epoch+1} (train_loss={train_loss:.6e}, test_loss={test_loss:.6e})")
                 # Fill remaining epochs with nan
                 for _ in range(epoch, epochs):
                     train_losses.append(float('nan'))
@@ -205,16 +236,28 @@ def train_model(model, dataset, epochs, device, true_function):
             train_losses.append(train_loss)
             test_losses.append(test_loss)
 
-            # Print loss after each epoch
-            print(f"    Epoch {epoch+1}/{epochs}: Train Loss = {train_loss:.6e}, Test Loss = {test_loss:.6e}")
+            # Print loss after each epoch (show LR for SIREN)
+            if is_siren and scheduler:
+                current_lr = scheduler.get_last_lr()[0]
+                print(f"    Epoch {epoch+1}/{epochs}: Train Loss = {train_loss:.6e}, Test Loss = {test_loss:.6e}, LR = {current_lr:.2e}")
+            else:
+                print(f"    Epoch {epoch+1}/{epochs}: Train Loss = {train_loss:.6e}, Test Loss = {test_loss:.6e}")
 
     total_time = time.time() - start_time
     time_per_epoch = total_time / epochs if epochs > 0 else 0
 
-    # Compute dense MSE only once at the end
+    # Compute dense MSE only once at the end (handle NaN case)
     with torch.no_grad():
-        final_dense_mse = dense_mse_error_from_dataset(model, dataset, true_function,
-                                                        num_samples=10000, device=device)
+        try:
+            final_dense_mse = dense_mse_error_from_dataset(model, dataset, true_function,
+                                                            num_samples=10000, device=device)
+            # Check if result is valid
+            import math
+            if math.isnan(final_dense_mse) or math.isinf(final_dense_mse):
+                final_dense_mse = float('nan')
+        except:
+            final_dense_mse = float('nan')
+
     print(f"    Final Dense MSE = {final_dense_mse:.6e}")
 
     return train_losses, test_losses, total_time, time_per_epoch, final_dense_mse
@@ -513,32 +556,58 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
             steps_for_this_grid = min(steps_per_grid, remaining_budget)
 
             grid_start_time = time.time()
-            if j == 0:
-                # Initialize KAN on first grid
-                model = KAN(width=[n_var, 5, 1], grid=grid_size, k=3, seed=1, device=device)
-                print(f"  Training KAN: Dataset {i} ({dataset_name}), grid={grid_size} (budget: {cumulative_epochs}/{epochs} epochs used, training {steps_for_this_grid} epochs)")
-            else:
-                # Refine to next grid size (preserves learned splines)
-                model = model.refine(grid_size)
-                print(f"  Refining KAN: Dataset {i} ({dataset_name}), grid={grid_size} (budget: {cumulative_epochs}/{epochs} epochs used, training {steps_for_this_grid} epochs)")
-            num_params = count_parameters(model)
-            grid_param_counts.append(num_params)
-            train_results = model.fit(dataset, opt="LBFGS", steps=steps_for_this_grid, log=1)
-            train_losses += train_results['train_loss']
-            test_losses += train_results['test_loss']
 
-            # Print losses for each epoch in this grid
-            for epoch_in_grid in range(steps_for_this_grid):
-                global_epoch = cumulative_epochs + epoch_in_grid + 1
-                train_loss_val = train_results['train_loss'][epoch_in_grid]
-                test_loss_val = train_results['test_loss'][epoch_in_grid]
-                print(f"    Epoch {global_epoch}/{epochs}: Train Loss = {train_loss_val:.6e}, Test Loss = {test_loss_val:.6e}")
+            try:
+                if j == 0:
+                    # Initialize KAN on first grid
+                    model = KAN(width=[n_var, 5, 1], grid=grid_size, k=3, seed=1, device=device)
+                    print(f"  Training KAN: Dataset {i} ({dataset_name}), grid={grid_size} (budget: {cumulative_epochs}/{epochs} epochs used, training {steps_for_this_grid} epochs)")
+                else:
+                    # Refine to next grid size (preserves learned splines)
+                    model = model.refine(grid_size)
+                    print(f"  Refining KAN: Dataset {i} ({dataset_name}), grid={grid_size} (budget: {cumulative_epochs}/{epochs} epochs used, training {steps_for_this_grid} epochs)")
 
-            cumulative_epochs += steps_for_this_grid
-            grids_completed.append((grid_size, steps_for_this_grid))
-            grid_time = time.time() - grid_start_time
-            grid_times.append(grid_time)
-            print(f"  Grid {grid_size} completed: {grid_time:.2f}s total, {grid_time/steps_for_this_grid:.3f}s/epoch, {num_params} params")
+                num_params = count_parameters(model)
+                grid_param_counts.append(num_params)
+
+                train_results = model.fit(dataset, opt="LBFGS", steps=steps_for_this_grid, log=1)
+
+                # Check if training produced valid results
+                if not train_results or 'train_loss' not in train_results or 'test_loss' not in train_results:
+                    raise RuntimeError("Training returned invalid results (missing loss values)")
+
+                train_losses += train_results['train_loss']
+                test_losses += train_results['test_loss']
+
+                # Check for NaN/Inf in losses
+                import math
+                if any(math.isnan(loss) or math.isinf(loss) for loss in train_results['train_loss']):
+                    raise RuntimeError("Training produced NaN/Inf values in train loss")
+                if any(math.isnan(loss) or math.isinf(loss) for loss in train_results['test_loss']):
+                    raise RuntimeError("Training produced NaN/Inf values in test loss")
+
+                # Print losses for each epoch in this grid
+                for epoch_in_grid in range(steps_for_this_grid):
+                    global_epoch = cumulative_epochs + epoch_in_grid + 1
+                    train_loss_val = train_results['train_loss'][epoch_in_grid]
+                    test_loss_val = train_results['test_loss'][epoch_in_grid]
+                    print(f"    Epoch {global_epoch}/{epochs}: Train Loss = {train_loss_val:.6e}, Test Loss = {test_loss_val:.6e}")
+
+                cumulative_epochs += steps_for_this_grid
+                grids_completed.append((grid_size, steps_for_this_grid))
+                grid_time = time.time() - grid_start_time
+                grid_times.append(grid_time)
+                print(f"  Grid {grid_size} completed: {grid_time:.2f}s total, {grid_time/steps_for_this_grid:.3f}s/epoch, {num_params} params")
+
+            except Exception as e:
+                # Catch any training errors and log them
+                grid_time = time.time() - grid_start_time
+                print(f"  ERROR: KAN training failed at grid {grid_size} for dataset {i} ({dataset_name})")
+                print(f"  Error type: {type(e).__name__}")
+                print(f"  Error message: {str(e)}")
+                print(f"  Stopping training for this dataset. Completed {len(grids_completed)}/{len(grids)} grids.")
+                # Break out of grid loop but continue with other datasets
+                break
 
         # Compute dense MSE and detect interpolation threshold (only if at least one grid completed)
         if grids_completed:
@@ -641,34 +710,99 @@ def run_kan_grid_tests(datasets, grids, epochs, device, prune, true_functions, d
             cumulative_global_epoch += steps_trained
 
         if prune:
-            # Apply pruning to remove insignificant edges and nodes
-            print(f"  Pruning KAN: Dataset {i} ({dataset_name})")
-            prune_start_time = time.time()
-            model_pruned = model.prune(node_th=1e-2, edge_th=3e-2)
-            pruned_models[i] = model_pruned
-            num_params_pruned = count_parameters(model_pruned)
-            prune_time = time.time() - prune_start_time
-            with torch.no_grad():
-                train_loss_pruned = nn.MSELoss()(model_pruned(dataset['train_input']), dataset['train_label']).item()
-                test_loss_pruned = nn.MSELoss()(model_pruned(dataset['test_input']), dataset['test_label']).item()
-                dense_mse_pruned = dense_mse_error_from_dataset(model_pruned, dataset, true_func,
-                                                               num_samples=10000, device=device)
-            print(f"  Pruning completed: {prune_time:.2f}s, {num_params_pruned} params, Dense MSE = {dense_mse_pruned:.6e}")
+            # KAN Paper pruning workflow (Section 3.2.1):
+            # Stage 1: Train with sparsification regularization
+            # Stage 2: Prune based on attribution scores
+            # Stage 3: Retrain the pruned network with grid extension
 
-            # Add pruned result row (single row, no epoch tracking for pruned)
-            rows.append({
-                'dataset_idx': i,
-                'dataset_name': dataset_name,
-                'grid_size': grids_completed[-1][0] if grids_completed else grids[0],  # Associate with final completed grid
-                'epoch': cumulative_epochs,  # Epoch after all training
-                'train_loss': train_loss_pruned,
-                'test_loss': test_loss_pruned,
-                'dense_mse': dense_mse_pruned,
-                'total_time': prune_time,
-                'time_per_epoch': 0,  # Pruning doesn't have epochs
-                'num_params': num_params_pruned,
-                'is_pruned': True
-            })
+            try:
+                print(f"  === KAN Pruning Workflow (Paper-aligned) ===")
+                print(f"  Stage 1: Sparsification training with regularization (lamb=1e-2)")
+
+                # Stage 1: Train with sparsification for 200 steps (paper default)
+                sparsification_steps = min(200, steps_per_grid)
+                sparsification_start_time = time.time()
+
+                # The model.fit() with lamb parameter applies L1 regularization on activations
+                # This encourages sparsity before pruning
+                sparsification_results = model.fit(dataset, opt="LBFGS", steps=sparsification_steps,
+                                                   lamb=1e-2, log=1)
+
+                sparsification_time = time.time() - sparsification_start_time
+                print(f"  Sparsification complete: {sparsification_time:.2f}s")
+                print(f"  Final sparsification loss: train={sparsification_results['train_loss'][-1]:.6e}, test={sparsification_results['test_loss'][-1]:.6e}")
+
+                # Stage 2: Apply pruning based on attribution scores
+                print(f"  Stage 2: Pruning insignificant nodes and edges")
+                prune_start_time = time.time()
+
+                # Compute attribution scores before pruning (required by prune() method)
+                model.forward(dataset['train_input'])
+                model.attribute()
+
+                # Prune with thresholds from paper (node_th=1e-2, edge_th not explicitly mentioned but 3e-2 is reasonable)
+                model_pruned = model.prune(node_th=1e-2, edge_th=3e-2)
+                pruned_models[i] = model_pruned
+                num_params_pruned = count_parameters(model_pruned)
+                prune_time = time.time() - prune_start_time
+
+                print(f"  Pruning complete: {prune_time:.2f}s")
+                print(f"  Parameters: {count_parameters(model)} -> {num_params_pruned} (removed {count_parameters(model) - num_params_pruned})")
+
+                # Compute metrics immediately after pruning (before retraining)
+                with torch.no_grad():
+                    train_loss_after_prune = nn.MSELoss()(model_pruned(dataset['train_input']), dataset['train_label']).item()
+                    test_loss_after_prune = nn.MSELoss()(model_pruned(dataset['test_input']), dataset['test_label']).item()
+                    dense_mse_after_prune = dense_mse_error_from_dataset(model_pruned, dataset, true_func,
+                                                                         num_samples=10000, device=device)
+                print(f"  Metrics after pruning (before retrain): Dense MSE = {dense_mse_after_prune:.6e}")
+
+                # Stage 3: Retrain the pruned network with grid extension
+                # Paper mentions continuing training with grid extension after pruning
+                print(f"  Stage 3: Retraining pruned network")
+                retrain_steps = min(200, steps_per_grid)
+                retrain_start_time = time.time()
+
+                # Retrain without regularization to allow the pruned network to optimize
+                retrain_results = model_pruned.fit(dataset, opt="LBFGS", steps=retrain_steps, log=1)
+
+                retrain_time = time.time() - retrain_start_time
+                print(f"  Retraining complete: {retrain_time:.2f}s")
+                print(f"  Final retrain loss: train={retrain_results['train_loss'][-1]:.6e}, test={retrain_results['test_loss'][-1]:.6e}")
+
+                # Compute final metrics after retraining
+                with torch.no_grad():
+                    train_loss_pruned = nn.MSELoss()(model_pruned(dataset['train_input']), dataset['train_label']).item()
+                    test_loss_pruned = nn.MSELoss()(model_pruned(dataset['test_input']), dataset['test_label']).item()
+                    dense_mse_pruned = dense_mse_error_from_dataset(model_pruned, dataset, true_func,
+                                                                   num_samples=10000, device=device)
+
+                total_pruning_time = sparsification_time + prune_time + retrain_time
+                print(f"  === Pruning workflow complete ===")
+                print(f"  Total time: {total_pruning_time:.2f}s (sparsify: {sparsification_time:.2f}s, prune: {prune_time:.2f}s, retrain: {retrain_time:.2f}s)")
+                print(f"  Final pruned model: {num_params_pruned} params, Dense MSE = {dense_mse_pruned:.6e}")
+
+                # Add pruned result row (single row, no epoch tracking for pruned)
+                rows.append({
+                    'dataset_idx': i,
+                    'dataset_name': dataset_name,
+                    'grid_size': grids_completed[-1][0] if grids_completed else grids[0],  # Associate with final completed grid
+                    'epoch': cumulative_epochs + sparsification_steps + retrain_steps,  # Include all training steps
+                    'train_loss': train_loss_pruned,
+                    'test_loss': test_loss_pruned,
+                    'dense_mse': dense_mse_pruned,
+                    'total_time': total_pruning_time,
+                    'time_per_epoch': 0,  # Pruning workflow is multi-stage
+                    'num_params': num_params_pruned,
+                    'is_pruned': True
+                })
+
+            except Exception as e:
+                # Catch any pruning errors and log them
+                print(f"  ERROR: KAN pruning workflow failed for dataset {i} ({dataset_name})")
+                print(f"  Error type: {type(e).__name__}")
+                print(f"  Error message: {str(e)}")
+                print(f"  Skipping pruned results for this dataset, but keeping unpruned model.")
 
         print(f"  Dataset {i} ({dataset_name}) complete: {total_dataset_time:.2f}s total")
 

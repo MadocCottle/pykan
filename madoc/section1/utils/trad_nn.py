@@ -33,17 +33,33 @@ class SIREN(nn.Module):
         self._init_weights()
     
     def _init_weights(self):
+        """Initialize weights according to SIREN paper (Sitzmann et al. 2020)
+
+        First layer: uniform(-1/n, 1/n) where n is input features
+        Hidden layers: uniform(-sqrt(6/n)/omega_0, sqrt(6/n)/omega_0)
+        Final layer: uniform(-sqrt(6/n)/omega_0, sqrt(6/n)/omega_0)
+        All biases: zero initialization
+        """
         with torch.no_grad():
-            # First layer
-            self.net[0].weight.uniform_(-1 / self.net[0].in_features, 
+            # First layer - special initialization for first layer with sine activation
+            self.net[0].weight.uniform_(-1 / self.net[0].in_features,
                                          1 / self.net[0].in_features)
-            # Hidden layers
+            if self.net[0].bias is not None:
+                nn.init.zeros_(self.net[0].bias)
+
+            # Hidden layers (every 2nd index starting from 2 is a Linear layer)
             for i in range(2, len(self.net)-1, 2):
-                self.net[i].weight.uniform_(-np.sqrt(6 / self.net[i].in_features) / 30.0,
-                                             np.sqrt(6 / self.net[i].in_features) / 30.0)
-            # Final layer
-            self.net[-1].weight.uniform_(-np.sqrt(6 / self.net[-1].in_features) / 30.0,
-                                          np.sqrt(6 / self.net[-1].in_features) / 30.0)
+                # Uniform initialization scaled by omega_0 = 30.0
+                bound = np.sqrt(6 / self.net[i].in_features) / 30.0
+                self.net[i].weight.uniform_(-bound, bound)
+                if self.net[i].bias is not None:
+                    nn.init.zeros_(self.net[i].bias)
+
+            # Final layer (outermost linear layer)
+            bound = np.sqrt(6 / self.net[-1].in_features) / 30.0
+            self.net[-1].weight.uniform_(-bound, bound)
+            if self.net[-1].bias is not None:
+                nn.init.zeros_(self.net[-1].bias)
     
     def forward(self, x):
         return self.net(x)
