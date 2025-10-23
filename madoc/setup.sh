@@ -21,27 +21,69 @@ echo "PyKAN Madoc Environment Setup"
 echo "=========================================="
 echo ""
 
-# Check if running on Gadi
+# Check if running on Gadi (multiple detection methods)
+ON_GADI=false
 if [[ -f /etc/nci-environment ]]; then
-    echo "Detected NCI Gadi environment"
+    echo "Detected NCI Gadi environment (via /etc/nci-environment)"
     ON_GADI=true
-else
+elif [[ $(hostname) =~ gadi ]]; then
+    echo "Detected NCI Gadi environment (via hostname)"
+    ON_GADI=true
+elif [[ -n "${PBS_O_WORKDIR}" ]] || [[ -n "${PBS_JOBID}" ]]; then
+    echo "Detected NCI Gadi environment (via PBS variables)"
+    ON_GADI=true
+elif command -v module >/dev/null 2>&1 && module avail python3 2>&1 | grep -q "python3/3.10"; then
+    echo "Detected environment with module system (assuming Gadi/HPC)"
+    ON_GADI=true
+fi
+
+if [[ "$ON_GADI" == false ]]; then
     echo "Running on local/non-Gadi environment"
-    ON_GADI=false
 fi
 echo ""
 
-# Load Python module if on Gadi
-if [[ "$ON_GADI" == true ]]; then
-    echo "Loading Python module..."
-    module load python3/3.10.4 || {
-        echo "ERROR: Failed to load python3/3.10.4 module"
-        echo "Available Python modules:"
-        module avail python3
-        exit 1
-    }
-    echo "Python module loaded successfully"
-    echo ""
+# Load Python module if on Gadi or if module command is available
+if [[ "$ON_GADI" == true ]] || command -v module >/dev/null 2>&1; then
+    echo "Attempting to load Python module..."
+
+    # Try to load the module command if not already available
+    if ! command -v module >/dev/null 2>&1; then
+        # Common locations for module initialization
+        for init_script in /etc/profile.d/modules.sh /usr/share/Modules/init/bash; do
+            if [[ -f "$init_script" ]]; then
+                echo "Initializing module system from $init_script"
+                source "$init_script"
+                break
+            fi
+        done
+    fi
+
+    if command -v module >/dev/null 2>&1; then
+        # Try to load Python 3.10.4 or newer
+        if module load python3/3.10.4 2>/dev/null; then
+            echo "✓ Loaded python3/3.10.4 module"
+        elif module load python3/3.10 2>/dev/null; then
+            echo "✓ Loaded python3/3.10 module"
+        elif module load python3/3.11 2>/dev/null; then
+            echo "✓ Loaded python3/3.11 module"
+        elif module load python3/3.12 2>/dev/null; then
+            echo "✓ Loaded python3/3.12 module"
+        else
+            echo "WARNING: Could not load Python 3.10+ module automatically"
+            echo "Available Python modules:"
+            module avail python3 2>&1 | head -20
+            echo ""
+            echo "Please load a Python 3.10+ module manually:"
+            echo "  module load python3/3.10.4"
+            echo "Then re-run this script."
+            exit 1
+        fi
+        echo ""
+    else
+        echo "WARNING: 'module' command not found"
+        echo "Proceeding with system Python..."
+        echo ""
+    fi
 fi
 
 # Check Python version
@@ -51,8 +93,31 @@ echo "Using Python version: $PYTHON_VERSION"
 # Verify Python version is 3.10+
 PYTHON_MAJOR=$(echo $PYTHON_VERSION | cut -d. -f1)
 PYTHON_MINOR=$(echo $PYTHON_VERSION | cut -d. -f2)
-if [[ $PYTHON_MAJOR -lt 3 ]] || [[ $PYTHON_MAJOR -eq 3 && $PYTHON_MINOR -lt 10 ]]; then
-    echo "WARNING: Python 3.10+ recommended, you have $PYTHON_VERSION"
+if [[ $PYTHON_MAJOR -lt 3 ]] || [[ $PYTHON_MAJOR -eq 3 && $PYTHON_MINOR -lt 8 ]]; then
+    echo ""
+    echo "=========================================="
+    echo "ERROR: Python version too old"
+    echo "=========================================="
+    echo "Current version: $PYTHON_VERSION"
+    echo "Required: Python 3.8+ (3.10+ recommended)"
+    echo ""
+    echo "This version is too old to install PyTorch 2.2.2 and other dependencies."
+    echo ""
+    if command -v module >/dev/null 2>&1; then
+        echo "On Gadi/HPC systems, load a newer Python module:"
+        echo "  module load python3/3.10.4"
+        echo "  bash setup.sh"
+        echo ""
+        echo "Available Python 3 modules:"
+        module avail python3 2>&1 | grep -E "python3/3\.(8|9|10|11|12)" | head -10
+    else
+        echo "Please install Python 3.10 or newer and try again."
+    fi
+    echo ""
+    exit 1
+elif [[ $PYTHON_MAJOR -eq 3 && $PYTHON_MINOR -lt 10 ]]; then
+    echo "WARNING: Python 3.10+ recommended for best compatibility, you have $PYTHON_VERSION"
+    echo "         Some features may not work correctly with Python $PYTHON_VERSION"
 fi
 echo ""
 

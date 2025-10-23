@@ -23,7 +23,11 @@ In the interests of remaining below the interpolation threshold, reduce the dens
 Yeah ok so maybe once we approach the interpolation threshold.... we find some way to prune, reduce density etc on... some nodes? Like try to do what we can before we hit that threshold.
 
 # Idea lol:
-Would using a more dense MSE loss function actually prevent overfitting past the interpolation threshold.
+Would using a more dense MSE loss function actually prevent overfitting past the interpolation threshold?
+
+More fine tuned grid size selection/changing, rather than picking from a list?
+
+Maybe a one step look ahead to determine like the.... marge of each additional point haha.
 
 ## Section 2.3 - Merge_KAN
 

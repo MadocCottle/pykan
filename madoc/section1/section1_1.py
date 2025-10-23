@@ -12,13 +12,16 @@ import argparse
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Section 1.1: Function Approximation')
-parser.add_argument('--epochs', type=int, default=100, help='Number of epochs for training (default: 100, matching KAN paper)')
+parser.add_argument('--epochs', type=int, default=100, help='Total epoch budget for all models (default: 100)')
+parser.add_argument('--steps_per_grid', type=int, default=200, help='Number of epochs per grid size for KAN (default: 200)')
 args = parser.parse_args()
 
 epochs = args.epochs
+steps_per_grid = args.steps_per_grid
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu'); print(device)
-print(f"Running with {epochs} epochs")
+print(f"Running with {epochs} total epochs budget")
+print(f"KAN will train {steps_per_grid} epochs per grid (completing as many grids as budget allows)")
 
 #Section 1.1: Function Approximation
 # ============= Create Datasets =============
@@ -72,10 +75,10 @@ print("Training SIRENs (with dense MSE metrics)...")
 siren_results, siren_models = track_time(timers, "SIREN training", run_siren_tests, datasets, depths, epochs, device, true_functions, dataset_names)
 
 print("Training KANs (with dense MSE metrics)...")
-kan_results, kan_models = track_time(timers, "KAN training", run_kan_grid_tests, datasets, grids, epochs, device, False, true_functions, dataset_names)
+kan_results, kan_models = track_time(timers, "KAN training", run_kan_grid_tests, datasets, grids, epochs, device, False, true_functions, dataset_names, steps_per_grid)
 
 print("Training KANs with pruning (with dense MSE metrics)...")
-kan_pruning_results, _, kan_pruned_models = track_time(timers, "KAN pruning training", run_kan_grid_tests, datasets, grids, epochs, device, True, true_functions, dataset_names)
+kan_pruning_results, _, kan_pruned_models = track_time(timers, "KAN pruning training", run_kan_grid_tests, datasets, grids, epochs, device, True, true_functions, dataset_names, steps_per_grid)
 
 # Print timing summary
 print_timing_summary(timers, "Section 1.1", num_datasets=len(datasets))
