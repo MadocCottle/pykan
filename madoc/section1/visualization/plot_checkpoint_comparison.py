@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from utils import load_run
+from utils.result_finder import select_run
 
 
 def plot_iso_compute_comparison(checkpoint_metadata, dataset_names, output_path=None):
@@ -188,28 +189,6 @@ def plot_time_to_threshold(checkpoint_metadata, dataset_names, output_path=None)
     return fig
 
 
-def find_latest_timestamp(section='section1_1'):
-    """Find the most recent timestamp for a section"""
-    sec_num = section.split('_')[-1]
-    base_dir = Path(__file__).parent.parent
-    results_dir = base_dir / 'results' / f'sec{sec_num}_results'
-
-    if not results_dir.exists():
-        raise FileNotFoundError(f"Results directory not found: {results_dir}")
-
-    # Find all timestamps
-    timestamps = set()
-    for f in results_dir.glob(f'{section}_*_checkpoint_metadata.pkl'):
-        # Extract timestamp from filename: section1_1_TIMESTAMP_checkpoint_metadata.pkl
-        timestamp = f.stem.replace(f'{section}_', '').replace('_checkpoint_metadata', '')
-        timestamps.add(timestamp)
-
-    if not timestamps:
-        raise FileNotFoundError(f"No checkpoint metadata found for {section}")
-
-    return sorted(timestamps)[-1]  # Return most recent
-
-
 def main():
     """
     Example usage: Load results and create all comparison plots
@@ -221,12 +200,23 @@ def main():
     parser.add_argument('timestamp', nargs='?', default=None, type=str,
                        help='Timestamp of the run (default: auto-detect latest)')
     parser.add_argument('--output-dir', type=str, default=None, help='Output directory for plots')
+    parser.add_argument('--strategy', type=str, default='latest',
+                       choices=['latest', 'max_epochs', 'min_epochs', 'exact_epochs'],
+                       help='Run selection strategy (default: latest)')
+    parser.add_argument('--epochs', type=int, default=None,
+                       help='Epoch count for exact_epochs strategy')
+    parser.add_argument('--verbose', action='store_true',
+                       help='Print run selection details')
     args = parser.parse_args()
 
     # Auto-detect timestamp if not provided
     if args.timestamp is None:
-        args.timestamp = find_latest_timestamp(args.section)
-        print(f"Using most recent timestamp: {args.timestamp}")
+        results_base = Path(__file__).parent.parent / 'results'
+        args.timestamp = select_run(args.section, results_base,
+                                   strategy=args.strategy,
+                                   epochs=args.epochs,
+                                   verbose=args.verbose)
+        print(f"Using selected timestamp: {args.timestamp}")
 
     # Load results
     print(f"Loading results from {args.section}, timestamp {args.timestamp}")

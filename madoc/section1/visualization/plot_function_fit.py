@@ -36,28 +36,8 @@ yaml.safe_load = _patched_safe_load
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils import load_run, trad_nn as tnn, data_funcs as dfs
+from utils.result_finder import select_run
 from kan import KAN
-
-
-def find_latest_timestamp(section='section1_1'):
-    """Find the most recent timestamp for a section"""
-    sec_num = section.split('_')[-1]
-    results_dir = Path(__file__).parent.parent / 'results' / f'sec{sec_num}_results'
-
-    if not results_dir.exists():
-        raise FileNotFoundError(f"Results directory not found: {results_dir}")
-
-    # Find all timestamps
-    timestamps = set()
-    for f in results_dir.glob(f'{section}_*_mlp.pkl'):
-        # Extract timestamp from filename: section1_1_TIMESTAMP_mlp.pkl
-        timestamp = f.stem.replace(f'{section}_', '').replace('_mlp', '')
-        timestamps.add(timestamp)
-
-    if not timestamps:
-        raise FileNotFoundError(f"No results found for {section}")
-
-    return sorted(timestamps)[-1]  # Return most recent
 
 
 def get_true_functions_and_names(section='section1_1'):
@@ -348,22 +328,30 @@ def load_kan_pruned_model(models, results, dataset_idx, device='cpu'):
     return model, config_info
 
 
-def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_individual=False, show=False, output_dir=None):
+def plot_function_fits(section='section1_1', timestamp=None, device='cpu', save_individual=False, show=False, output_dir=None,
+                       strategy='latest', epochs=None, verbose=False):
     """
     Plot function fits for all datasets and model types.
 
     Args:
         section: Section name (e.g., 'section1_1')
-        timestamp: Specific timestamp to load, or None for most recent
+        timestamp: Specific timestamp to load, or None for auto-selection
         device: Device to run on ('cpu' or 'cuda')
         save_individual: If True, save individual plots for each dataset
         show: If True, display plot in window; otherwise only save to file (default: False)
         output_dir: Directory to save plots (default: same directory as script)
+        strategy: Run selection strategy ('latest', 'max_epochs', 'min_epochs', 'exact_epochs')
+        epochs: Epoch count for 'exact_epochs' strategy
+        verbose: Print run selection details
     """
     # Find latest timestamp if not provided
     if timestamp is None:
-        timestamp = find_latest_timestamp(section)
-        print(f"Using most recent timestamp: {timestamp}")
+        results_base = Path(__file__).parent.parent / 'results'
+        timestamp = select_run(section, results_base,
+                             strategy=strategy,
+                             epochs=epochs,
+                             verbose=verbose)
+        print(f"Using selected timestamp: {timestamp}")
 
     print(f"Loading results and models from {section}_{timestamp}...")
 
@@ -550,6 +538,13 @@ if __name__ == '__main__':
                        help='Directory to save plots (default: same directory as script)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
+    parser.add_argument('--strategy', type=str, default='latest',
+                       choices=['latest', 'max_epochs', 'min_epochs', 'exact_epochs'],
+                       help='Run selection strategy (default: latest)')
+    parser.add_argument('--epochs', type=int, default=None,
+                       help='Epoch count for exact_epochs strategy')
+    parser.add_argument('--verbose', action='store_true',
+                       help='Print run selection details')
 
     args = parser.parse_args()
 
@@ -560,7 +555,10 @@ if __name__ == '__main__':
             device=args.device,
             output_dir=args.output_dir,
             save_individual=args.save_individual,
-            show=args.show
+            show=args.show,
+            strategy=args.strategy,
+            epochs=args.epochs,
+            verbose=args.verbose
         )
     except FileNotFoundError as e:
         print(f"Error: {e}")

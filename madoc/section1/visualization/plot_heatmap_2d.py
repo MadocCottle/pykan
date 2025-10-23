@@ -43,26 +43,8 @@ yaml.safe_load = _patched_safe_load
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils import load_run, trad_nn as tnn, data_funcs as dfs
+from utils.result_finder import select_run
 from kan import KAN
-
-
-def find_latest_timestamp(section='section1_3'):
-    """Find the most recent timestamp for section1_3"""
-    sec_num = section.split('_')[-1]
-    results_dir = Path(__file__).parent.parent / 'results' / f'sec{sec_num}_results'
-
-    if not results_dir.exists():
-        raise FileNotFoundError(f"Results directory not found: {results_dir}")
-
-    timestamps = set()
-    for f in results_dir.glob(f'{section}_*_mlp.pkl'):
-        timestamp = f.stem.replace(f'{section}_', '').replace('_mlp', '')
-        timestamps.add(timestamp)
-
-    if not timestamps:
-        raise FileNotFoundError(f"No results found for {section}")
-
-    return sorted(timestamps)[-1]
 
 
 def get_2d_functions():
@@ -383,7 +365,8 @@ def plot_2d_heatmap(dataset_idx, timestamp=None, device='cpu', save_path=None):
     return fig
 
 
-def plot_all_2d_heatmaps(timestamp=None, device='cpu', output_dir=None):
+def plot_all_2d_heatmaps(timestamp=None, device='cpu', output_dir=None,
+                         strategy='latest', epochs=None, verbose=False):
     """
     Create heatmap visualizations for all 2D datasets in section1_3.
 
@@ -391,12 +374,19 @@ def plot_all_2d_heatmaps(timestamp=None, device='cpu', output_dir=None):
         timestamp: Specific timestamp to load, or None for most recent
         device: Device to run on ('cpu' or 'cuda')
         output_dir: Directory to save plots (default: same directory as script)
+        strategy: Run selection strategy ('latest', 'max_epochs', 'min_epochs', 'exact_epochs')
+        epochs: Epoch count for exact_epochs strategy
+        verbose: Print run selection details
     """
     section = 'section1_3'
 
     if timestamp is None:
-        timestamp = find_latest_timestamp(section)
-        print(f"Using most recent timestamp: {timestamp}")
+        results_base = Path(__file__).parent.parent / 'results'
+        timestamp = select_run(section, results_base,
+                             strategy=strategy,
+                             epochs=epochs,
+                             verbose=verbose)
+        print(f"Using selected timestamp: {timestamp}")
 
     true_functions, dataset_names = get_2d_functions()
 
@@ -451,13 +441,21 @@ if __name__ == '__main__':
                        help='Directory to save plots when plotting all datasets (default: script directory)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
+    parser.add_argument('--strategy', type=str, default='latest',
+                       choices=['latest', 'max_epochs', 'min_epochs', 'exact_epochs'],
+                       help='Run selection strategy (default: latest)')
+    parser.add_argument('--epochs', type=int, default=None,
+                       help='Epoch count for exact_epochs strategy')
+    parser.add_argument('--verbose', action='store_true',
+                       help='Print run selection details')
 
     args = parser.parse_args()
 
     try:
         if args.dataset is None:
             # Plot all datasets
-            plot_all_2d_heatmaps(timestamp=args.timestamp, device=args.device, output_dir=args.output_dir)
+            plot_all_2d_heatmaps(timestamp=args.timestamp, device=args.device, output_dir=args.output_dir,
+                               strategy=args.strategy, epochs=args.epochs, verbose=args.verbose)
         else:
             # Plot specific dataset
             plot_2d_heatmap(
