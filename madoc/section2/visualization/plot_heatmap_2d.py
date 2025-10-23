@@ -48,42 +48,8 @@ yaml.safe_load = _patched_safe_load
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils import load_run, data_funcs as dfs
+from utils.result_finder import select_run
 from kan import KAN
-
-
-def find_latest_timestamp(section='section2_1'):
-    """Find the most recent timestamp for a section"""
-    sec_num = section.split('_')[-1]
-    results_dir = Path(__file__).parent.parent / 'results' / f'sec{sec_num}_results'
-
-    if not results_dir.exists():
-        raise FileNotFoundError(f"Results directory not found: {results_dir}")
-
-    timestamps = set()
-
-    # Look for different file patterns depending on section
-    if section == 'section2_1':
-        # Look for lbfgs or lm files
-        patterns = [f'{section}_*_lbfgs.pkl', f'{section}_*_lm.pkl']
-    elif section == 'section2_2':
-        # Look for adaptive files
-        patterns = [f'{section}_*_adaptive_only.pkl', f'{section}_*_baseline.pkl']
-    else:
-        patterns = [f'{section}_*.pkl']
-
-    for pattern in patterns:
-        for f in results_dir.glob(pattern):
-            # Extract timestamp from filename
-            parts = f.stem.split('_')
-            # Format: section2_1_TIMESTAMP_optimizer
-            if len(parts) >= 4:
-                timestamp = parts[2]
-                timestamps.add(timestamp)
-
-    if not timestamps:
-        raise FileNotFoundError(f"No results found for {section}")
-
-    return sorted(timestamps)[-1]
 
 
 def get_2d_functions():
@@ -325,7 +291,8 @@ def plot_2d_heatmap(dataset_idx, section='section2_1', timestamp=None, device='c
     return fig
 
 
-def plot_all_2d_heatmaps(section='section2_1', timestamp=None, device='cpu', show=False):
+def plot_all_2d_heatmaps(section='section2_1', timestamp=None, device='cpu', show=False,
+                         strategy='latest', epochs=None, verbose=False):
     """
     Create heatmap visualizations for all 2D datasets.
 
@@ -333,10 +300,17 @@ def plot_all_2d_heatmaps(section='section2_1', timestamp=None, device='cpu', sho
         section: Section name ('section2_1' or 'section2_2')
         timestamp: Specific timestamp to load, or None for most recent
         device: Device to run on ('cpu' or 'cuda')
+        strategy: Run selection strategy ('latest', 'max_epochs', 'min_epochs', 'exact_epochs')
+        epochs: Epoch count for exact_epochs strategy
+        verbose: Print run selection details
     """
     if timestamp is None:
-        timestamp = find_latest_timestamp(section)
-        print(f"Using most recent timestamp: {timestamp}")
+        results_base = Path(__file__).parent.parent / 'results'
+        timestamp = select_run(section, results_base,
+                             strategy=strategy,
+                             epochs=epochs,
+                             verbose=verbose)
+        print(f"Using selected timestamp: {timestamp}")
 
     true_functions, dataset_names = get_2d_functions()
 
@@ -378,13 +352,21 @@ if __name__ == '__main__':
                        help='Output path for the figure (default: auto-generated)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
+    parser.add_argument('--strategy', type=str, default='latest',
+                       choices=['latest', 'max_epochs', 'min_epochs', 'exact_epochs'],
+                       help='Run selection strategy (default: latest)')
+    parser.add_argument('--epochs', type=int, default=None,
+                       help='Epoch count for exact_epochs strategy')
+    parser.add_argument('--verbose', action='store_true',
+                       help='Print run selection details')
 
     args = parser.parse_args()
 
     try:
         if args.dataset is None:
             # Plot all datasets
-            plot_all_2d_heatmaps(section=args.section, timestamp=args.timestamp, device=args.device)
+            plot_all_2d_heatmaps(section=args.section, timestamp=args.timestamp, device=args.device,
+                               strategy=args.strategy, epochs=args.epochs, verbose=args.verbose)
         else:
             # Plot specific dataset
             plot_2d_heatmap(

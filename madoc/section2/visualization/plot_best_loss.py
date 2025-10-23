@@ -17,37 +17,7 @@ import numpy as np
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils import load_run
-
-
-def find_latest_timestamp(section='section2_1'):
-    """Find the most recent timestamp for a section"""
-    sec_num = section.split('_')[-1]
-    results_dir = Path(__file__).parent.parent / 'results' / f'sec{sec_num}_results'
-
-    if not results_dir.exists():
-        raise FileNotFoundError(f"Results directory not found: {results_dir}")
-
-    timestamps = set()
-
-    # Look for different file patterns depending on section
-    if section == 'section2_1':
-        patterns = [f'{section}_*_adam.pkl', f'{section}_*_lbfgs.pkl', f'{section}_*_lm.pkl']
-    elif section == 'section2_2':
-        patterns = [f'{section}_*_adaptive_only.pkl', f'{section}_*_baseline.pkl']
-    else:
-        patterns = [f'{section}_*.pkl']
-
-    for pattern in patterns:
-        for f in results_dir.glob(pattern):
-            parts = f.stem.split('_')
-            if len(parts) >= 4:
-                timestamp = parts[2]
-                timestamps.add(timestamp)
-
-    if not timestamps:
-        raise FileNotFoundError(f"No results found for {section}")
-
-    return sorted(timestamps)[-1]
+from utils.result_finder import select_run
 
 
 def get_dataset_names(section='section2_1'):
@@ -66,7 +36,8 @@ def get_dataset_names(section='section2_1'):
     return dataset_names
 
 
-def plot_best_loss_curves(section='section2_1', timestamp=None, metric='dense_mse', show=False):
+def plot_best_loss_curves(section='section2_1', timestamp=None, metric='dense_mse', show=False,
+                         strategy='latest', epochs=None, verbose=False):
     """
     Plot loss curves over epochs for all optimizers/approaches for all datasets.
 
@@ -74,11 +45,18 @@ def plot_best_loss_curves(section='section2_1', timestamp=None, metric='dense_ms
         section: Section name (e.g., 'section2_1', 'section2_2')
         timestamp: Specific timestamp to load, or None for most recent
         metric: Which metric to plot - 'dense_mse', 'test_loss', or 'train_loss' (default: 'dense_mse')
+        strategy: Run selection strategy ('latest', 'max_epochs', 'min_epochs', 'exact_epochs')
+        epochs: Epoch count for exact_epochs strategy
+        verbose: Print run selection details
     """
     # Load results
     if timestamp is None:
-        timestamp = find_latest_timestamp(section)
-        print(f"Using most recent timestamp: {timestamp}")
+        results_base = Path(__file__).parent.parent / 'results'
+        timestamp = select_run(section, results_base,
+                             strategy=strategy,
+                             epochs=epochs,
+                             verbose=verbose)
+        print(f"Using selected timestamp: {timestamp}")
 
     print(f"Loading results from {section}_{timestamp}...")
     results, meta = load_run(section, timestamp)
@@ -193,6 +171,13 @@ if __name__ == '__main__':
                        help='Which metric to plot (default: dense_mse)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
+    parser.add_argument('--strategy', type=str, default='latest',
+                       choices=['latest', 'max_epochs', 'min_epochs', 'exact_epochs'],
+                       help='Run selection strategy (default: latest)')
+    parser.add_argument('--epochs', type=int, default=None,
+                       help='Epoch count for exact_epochs strategy')
+    parser.add_argument('--verbose', action='store_true',
+                       help='Print run selection details')
 
     args = parser.parse_args()
 
@@ -201,7 +186,10 @@ if __name__ == '__main__':
             section=args.section,
             timestamp=args.timestamp,
             metric=args.metric,
-            show=args.show
+            show=args.show,
+            strategy=args.strategy,
+            epochs=args.epochs,
+            verbose=args.verbose
         )
     except FileNotFoundError as e:
         print(f"Error: {e}")

@@ -16,30 +16,11 @@ import numpy as np
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils import load_run
+from utils.result_finder import select_run
 
 
-def find_latest_timestamp(section='section2_1'):
-    """Find the most recent timestamp for a section"""
-    sec_num = section.split('_')[-1]
-    results_dir = Path(__file__).parent.parent / 'results' / f'sec{sec_num}_results'
-
-    if not results_dir.exists():
-        raise FileNotFoundError(f"Results directory not found: {results_dir}")
-
-    # Find all timestamps - look for adam or lm files
-    timestamps = set()
-    for f in results_dir.glob(f'{section}_*_adam.pkl'):
-        # Extract timestamp from filename: section2_1_TIMESTAMP_adam.pkl
-        timestamp = f.stem.replace(f'{section}_', '').replace('_adam', '')
-        timestamps.add(timestamp)
-
-    if not timestamps:
-        raise FileNotFoundError(f"No results found for {section}")
-
-    return sorted(timestamps)[-1]  # Return most recent
-
-
-def plot_optimizer_comparison(section='section2_1', timestamp=None, dataset_idx=None, show=False):
+def plot_optimizer_comparison(section='section2_1', timestamp=None, dataset_idx=None, show=False,
+                             strategy='latest', epochs=None, verbose=False):
     """
     Plot dense MSE over epochs comparing Adam and LM optimizers.
 
@@ -47,11 +28,18 @@ def plot_optimizer_comparison(section='section2_1', timestamp=None, dataset_idx=
         section: Section name (e.g., 'section2_1')
         timestamp: Specific timestamp to load, or None for most recent
         dataset_idx: Which dataset to analyze, or None for all datasets
+        strategy: Run selection strategy ('latest', 'max_epochs', 'min_epochs', 'exact_epochs')
+        epochs: Epoch count for exact_epochs strategy
+        verbose: Print run selection details
     """
     # Load results
     if timestamp is None:
-        timestamp = find_latest_timestamp(section)
-        print(f"Using most recent timestamp: {timestamp}")
+        results_base = Path(__file__).parent.parent / 'results'
+        timestamp = select_run(section, results_base,
+                             strategy=strategy,
+                             epochs=epochs,
+                             verbose=verbose)
+        print(f"Using selected timestamp: {timestamp}")
 
     print(f"Loading results from {section}_{timestamp}...")
     results, meta = load_run(section, timestamp)
@@ -257,6 +245,13 @@ if __name__ == '__main__':
                        help='Type of plot to generate (default: optimizer)')
     parser.add_argument('--show', action='store_true',
                        help='Display the plot in a window (default: only save to file)')
+    parser.add_argument('--strategy', type=str, default='latest',
+                       choices=['latest', 'max_epochs', 'min_epochs', 'exact_epochs'],
+                       help='Run selection strategy (default: latest)')
+    parser.add_argument('--epochs', type=int, default=None,
+                       help='Epoch count for exact_epochs strategy')
+    parser.add_argument('--verbose', action='store_true',
+                       help='Print run selection details')
 
     args = parser.parse_args()
 
@@ -266,7 +261,10 @@ if __name__ == '__main__':
                 section=args.section,
                 timestamp=args.timestamp,
                 dataset_idx=args.dataset,
-                show=args.show
+                show=args.show,
+                strategy=args.strategy,
+                epochs=args.epochs,
+                verbose=args.verbose
             )
 
         if args.plot_type in ['training', 'both']:
