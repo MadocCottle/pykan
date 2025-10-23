@@ -15,6 +15,28 @@
 #PBS -l storage=scratch/p00+gdata/p00
 
 # =============================================================================
+# IMPORTANT: Resource Allocation
+# =============================================================================
+# PBS directives (#PBS) are parsed BEFORE this script executes and cannot use
+# bash variables. This means the resource calculations below (NCPUS, MEM) are
+# NOT seen by PBS, and PBS will use tiny default resources (1 CPU, 500MB)!
+#
+# RECOMMENDED METHOD: Use the submit_experiment.sh wrapper script
+#   ./submit_experiment.sh section1_1 100          # Auto-select resources
+#   ./submit_experiment.sh section1_1 500 large    # Explicit profile
+#
+# The wrapper automatically adds the correct -l flags when submitting.
+#
+# ADVANCED: Direct qsub with explicit resource flags
+#   qsub -v SECTION=section1_1,EPOCHS=100 \
+#        -l select=1:ncpus=12:mem=48GB \
+#        -l walltime=04:00:00 \
+#        run_experiment.qsub
+#
+# Without explicit -l flags, your job will get 500MB and fail immediately!
+# =============================================================================
+
+# =============================================================================
 # PyKAN Experiment Job Script for NCI Gadi
 # =============================================================================
 #

@@ -169,18 +169,42 @@ source /scratch/$PROJECT/$USER/pykan/pykan/madoc/.venv/bin/activate
 
 ### 1. Submitting Jobs
 
+**RECOMMENDED: Use the wrapper script (handles resource allocation correctly)**
+
 ```bash
-# Submit job with epoch specification
-qsub -v SECTION=section1_1,MAX_EPOCHS=100 run_experiment.qsub
-qsub -v SECTION=section1_2,MAX_EPOCHS=1000 run_experiment.qsub
-qsub -v SECTION=section2_1,MAX_EPOCHS=50 run_experiment.qsub
+# Auto-select resources based on section
+./submit_experiment.sh section1_1 100
+./submit_experiment.sh section1_2 1000
+./submit_experiment.sh section2_1 50
+
+# Explicit profile for large jobs
+./submit_experiment.sh section1_1 500 large
+
+# Available profiles:
+#   test     - 1 CPU,  4GB,   30min  (quick testing)
+#   section1 - 12 CPUs, 48GB,  4h    (section1 default)
+#   section2 - 24 CPUs, 96GB,  8h    (section2 default)
+#   large    - 48 CPUs, 190GB, 24h   (long/memory-intensive runs)
 ```
 
-**The qsub script:**
+**ADVANCED: Direct qsub (must specify resources explicitly)**
+
+```bash
+# You MUST include -l flags for resources!
+qsub -v SECTION=section1_1,EPOCHS=100 \
+     -l select=1:ncpus=12:mem=48GB \
+     -l walltime=04:00:00 \
+     run_experiment.qsub
+
+# Without -l flags, PBS uses defaults (1 CPU, 500MB) and job will fail!
+```
+
+**What the submission does:**
 - Automatically activates the virtual environment
 - Records epochs in the MANIFEST.txt
 - Saves results with epoch count in filenames
 - Creates timestamped `job_results_YYYYMMDD_HHMMSS/` directory
+- Allocates correct CPU/memory resources based on profile
 
 ### 2. Fetching Results
 
