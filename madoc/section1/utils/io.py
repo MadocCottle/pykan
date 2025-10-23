@@ -186,43 +186,107 @@ def load_run(section, timestamp, load_models=False):
         models = {}
 
         # Load MLP models
+        # Try new checkpoint-based naming first (e.g., mlp_0_final.pth)
+        # Prefer 'final' checkpoint for visualizations
         mlp_models = {}
-        for model_file in p.glob(f'{section}_{timestamp}_mlp_*.pth'):
-            idx = int(model_file.stem.split('_')[-1])
-            mlp_models[idx] = torch.load(model_file, map_location='cpu')
+        for model_file in p.glob(f'{section}_{timestamp}_mlp_*_final.pth'):
+            # Extract dataset_idx from: section1_1_20251023_215658_mlp_0_final -> 0
+            parts = model_file.stem.split('_')
+            # Find index: it's the part before 'final'
+            for i, part in enumerate(parts):
+                if part == 'final' and i > 0:
+                    idx = int(parts[i-1])
+                    mlp_models[idx] = torch.load(model_file, map_location='cpu')
+                    break
+
+        # Fallback: try old naming convention for backward compatibility
+        if not mlp_models:
+            for model_file in p.glob(f'{section}_{timestamp}_mlp_*.pth'):
+                # Skip checkpoint-based files (already tried above)
+                if '_final' in model_file.stem or '_at_threshold' in model_file.stem:
+                    continue
+                idx = int(model_file.stem.split('_')[-1])
+                mlp_models[idx] = torch.load(model_file, map_location='cpu')
+
         if mlp_models:
             models['mlp'] = mlp_models
 
         # Load SIREN models
+        # Try new checkpoint-based naming first (e.g., siren_0_final.pth)
         siren_models = {}
-        for model_file in p.glob(f'{section}_{timestamp}_siren_*.pth'):
-            idx = int(model_file.stem.split('_')[-1])
-            siren_models[idx] = torch.load(model_file, map_location='cpu')
+        for model_file in p.glob(f'{section}_{timestamp}_siren_*_final.pth'):
+            # Extract dataset_idx from: section1_1_20251023_215658_siren_0_final -> 0
+            parts = model_file.stem.split('_')
+            for i, part in enumerate(parts):
+                if part == 'final' and i > 0:
+                    idx = int(parts[i-1])
+                    siren_models[idx] = torch.load(model_file, map_location='cpu')
+                    break
+
+        # Fallback: try old naming convention for backward compatibility
+        if not siren_models:
+            for model_file in p.glob(f'{section}_{timestamp}_siren_*.pth'):
+                if '_final' in model_file.stem or '_at_threshold' in model_file.stem:
+                    continue
+                idx = int(model_file.stem.split('_')[-1])
+                siren_models[idx] = torch.load(model_file, map_location='cpu')
+
         if siren_models:
             models['siren'] = siren_models
 
         # Load KAN models (store checkpoint paths)
-        # KAN checkpoints are saved as files with prefix: {section}_{timestamp}_kan_{idx}_state, _config.yml, _cache_data
-        # We need to find the base path (prefix) by looking for _state files
+        # Try new checkpoint-based naming first (e.g., kan_0_final_state)
+        # Prefer 'final' checkpoint for visualizations
         kan_models = {}
-        for state_file in p.glob(f'{section}_{timestamp}_kan_*_state'):
+        for state_file in p.glob(f'{section}_{timestamp}_kan_*_final_state'):
             # Extract the base path by removing '_state' suffix
             base_path = str(state_file)[:-6]  # Remove '_state' suffix
-            # Extract index from the base path (e.g., 'section1_1_20251022_211326_kan_0' -> 0)
-            idx = int(base_path.split('_kan_')[-1])
-            kan_models[idx] = base_path
+            # Extract index from path like: .../section1_1_20251023_215658_kan_0_final
+            parts = base_path.split('_')
+            # Find index: it's the part before 'final'
+            for i, part in enumerate(parts):
+                if part == 'final' and i > 0:
+                    idx = int(parts[i-1])
+                    kan_models[idx] = base_path
+                    break
+
+        # Fallback: try old naming convention
+        if not kan_models:
+            for state_file in p.glob(f'{section}_{timestamp}_kan_*_state'):
+                # Skip checkpoint-based files
+                if '_final_state' in str(state_file) or '_at_threshold_state' in str(state_file):
+                    continue
+                base_path = str(state_file)[:-6]
+                # Old format: section1_1_20251022_211326_kan_0
+                idx = int(base_path.split('_kan_')[-1])
+                kan_models[idx] = base_path
+
         if kan_models:
             models['kan'] = kan_models
 
         # Load pruned KAN models (store checkpoint paths)
-        # Similar to KAN models, look for _state files
+        # Try new checkpoint-based naming first
         kan_pruned_models = {}
-        for state_file in p.glob(f'{section}_{timestamp}_pruned_*_state'):
+        for state_file in p.glob(f'{section}_{timestamp}_kan_pruning_*_final_state'):
             # Extract the base path by removing '_state' suffix
-            base_path = str(state_file)[:-6]  # Remove '_state' suffix
-            # Extract index from the base path (e.g., 'section1_1_20251022_211326_pruned_0' -> 0)
-            idx = int(base_path.split('_pruned_')[-1])
-            kan_pruned_models[idx] = base_path
+            base_path = str(state_file)[:-6]
+            # Extract index from path like: .../section1_1_20251023_215658_kan_pruning_0_final
+            parts = base_path.split('_')
+            for i, part in enumerate(parts):
+                if part == 'final' and i > 0:
+                    idx = int(parts[i-1])
+                    kan_pruned_models[idx] = base_path
+                    break
+
+        # Fallback: try old naming with 'pruned' prefix
+        if not kan_pruned_models:
+            for state_file in p.glob(f'{section}_{timestamp}_pruned_*_state'):
+                if '_final_state' in str(state_file) or '_at_threshold_state' in str(state_file):
+                    continue
+                base_path = str(state_file)[:-6]
+                idx = int(base_path.split('_pruned_')[-1])
+                kan_pruned_models[idx] = base_path
+
         if kan_pruned_models:
             models['kan_pruned'] = kan_pruned_models
 

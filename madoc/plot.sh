@@ -133,8 +133,9 @@ if [ "$SECTION1" = true ] && [ "$PLOTS" = true ]; then
     run_script "Section 1.1 - Function fit plots" \
         "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_function_fit.py' --section section1_1"
 
-    run_script "Section 1.1 - Checkpoint comparison" \
-        "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_checkpoint_comparison.py' --section section1_1"
+    # Note: Checkpoint comparison script is not compatible with current checkpoint format
+    # run_script "Section 1.1 - Checkpoint comparison" \
+    #     "$PYTHON '$SCRIPT_DIR/section1/visualization/plot_checkpoint_comparison.py' --section section1_1"
 
     # Section 1.2 - 1D Poisson PDE
     echo "=== Section 1.2: 1D Poisson PDE Plots ==="

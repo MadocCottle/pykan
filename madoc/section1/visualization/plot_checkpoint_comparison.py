@@ -188,6 +188,28 @@ def plot_time_to_threshold(checkpoint_metadata, dataset_names, output_path=None)
     return fig
 
 
+def find_latest_timestamp(section='section1_1'):
+    """Find the most recent timestamp for a section"""
+    sec_num = section.split('_')[-1]
+    base_dir = Path(__file__).parent.parent
+    results_dir = base_dir / 'results' / f'sec{sec_num}_results'
+
+    if not results_dir.exists():
+        raise FileNotFoundError(f"Results directory not found: {results_dir}")
+
+    # Find all timestamps
+    timestamps = set()
+    for f in results_dir.glob(f'{section}_*_checkpoint_metadata.pkl'):
+        # Extract timestamp from filename: section1_1_TIMESTAMP_checkpoint_metadata.pkl
+        timestamp = f.stem.replace(f'{section}_', '').replace('_checkpoint_metadata', '')
+        timestamps.add(timestamp)
+
+    if not timestamps:
+        raise FileNotFoundError(f"No checkpoint metadata found for {section}")
+
+    return sorted(timestamps)[-1]  # Return most recent
+
+
 def main():
     """
     Example usage: Load results and create all comparison plots
@@ -196,9 +218,15 @@ def main():
 
     parser = argparse.ArgumentParser(description='Create checkpoint comparison plots')
     parser.add_argument('section', type=str, help='Section name (e.g., section1_1)')
-    parser.add_argument('timestamp', type=str, help='Timestamp of the run')
+    parser.add_argument('timestamp', nargs='?', default=None, type=str,
+                       help='Timestamp of the run (default: auto-detect latest)')
     parser.add_argument('--output-dir', type=str, default=None, help='Output directory for plots')
     args = parser.parse_args()
+
+    # Auto-detect timestamp if not provided
+    if args.timestamp is None:
+        args.timestamp = find_latest_timestamp(args.section)
+        print(f"Using most recent timestamp: {args.timestamp}")
 
     # Load results
     print(f"Loading results from {args.section}, timestamp {args.timestamp}")
