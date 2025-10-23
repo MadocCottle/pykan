@@ -20,6 +20,8 @@ Follow the instructions in heuristic.md to use the build in features of pykan, r
 
 In the interests of remaining below the interpolation threshold, reduce the density of nodes that would have been pruned down to a minimum. There are limitations here so far as.... hmmm.... ok.
 
+Yeah ok so maybe once we approach the interpolation threshold.... we find some way to prune, reduce density etc on... some nodes? Like try to do what we can before we hit that threshold.
+
 # Idea lol:
 Would using a more dense MSE loss function actually prevent overfitting past the interpolation threshold.
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.9.16)  23 OCT 2025 05:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.9.16)  23 OCT 2025 11:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -432,9 +432,11 @@ See the natbib package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.94 ...mand\NAT@force@numbers{}\NAT@force@numbers
+l.184 ...and\NAT@force@numbers{}\NAT@force@numbers
                                                   
-? 
+Check the bibliography entries for non-compliant syntax,
+or select author-year BibTeX style, e.g. plainnat
+
 )
 \openout1 = `section.aux'.
 
@@ -560,49 +562,27 @@ OT1/cmr/m/n/10.95 5\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 6\OMS/cmsy/m/n/10.9
 
  []
 
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_1_analysis/01_comparative_metrics/all_datasets_heatmap_test.png'
- not found on input line 248.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_1_analysis/01_comparative_metrics/all_datasets_heat
-map_test.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.248 ...ve_metrics/all_datasets_heatmap_test.png}
-                                                  
-? 
+<figures/function_fits_all_datasets_20251023_021054.png, id=222, 1293.8739pt x 
+1076.823pt>
+File: figures/function_fits_all_datasets_20251023_021054.png Graphic file (type
+ png)
+<use figures/function_fits_all_datasets_20251023_021054.png>
+Package pdftex.def Info: figures/function_fits_all_datasets_20251023_021054.png
+  used on input line 248.
+(pdftex.def)             Requested size: 430.31812pt x 358.12952pt.
 
 
 [5]
 
-[6]
-
-Package natbib Warning: Citation `huang2011adaptive' on page 7 undefined on inp
-ut line 257.
-
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_1_analysis/01_comparative_metrics/dataset_0_learning_curves_test
-.png' not found on input line 267.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_1_analysis/01_comparative_metrics/dataset_0_learnin
-g_curves_test.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.267 ...trics/dataset_0_learning_curves_test.png}
-                                                  
-? 
+[6 <./figures/function_fits_all_datasets_20251023_021054.png>]
+<figures/best_loss_curves_all_datasets_20251023_021054.png, id=247, 1293.633pt 
+x 1076.823pt>
+File: figures/best_loss_curves_all_datasets_20251023_021054.png Graphic file (t
+ype png)
+<use figures/best_loss_curves_all_datasets_20251023_021054.png>
+Package pdftex.def Info: figures/best_loss_curves_all_datasets_20251023_021054.
+png  used on input line 267.
+(pdftex.def)             Requested size: 430.31812pt x 358.19525pt.
 
 Overfull \hbox (20.4629pt too wide) in paragraph at lines 274--275
 []\T1/cmr/bx/n/10.95 MLPs show architecture-dependent con-ver-gence\T1/cmr/m/n/
@@ -610,451 +590,191 @@ Overfull \hbox (20.4629pt too wide) in paragraph at lines 274--275
  []
 
 
-Package natbib Warning: Citation `huang2011adaptive' on page 7 undefined on inp
-ut line 278.
 
+[7 <./figures/best_loss_curves_all_datasets_20251023_021054.png>]
+File: figures/function_fits_all_datasets_20251023_021054.png Graphic file (type
+ png)
+<use figures/function_fits_all_datasets_20251023_021054.png>
+Package pdftex.def Info: figures/function_fits_all_datasets_20251023_021054.png
+  used on input line 286.
+(pdftex.def)             Requested size: 407.66833pt x 339.28319pt.
 
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_1_analysis/02_function_fitting/function_fit_dataset_0_Sin_1.png'
- not found on input line 287.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_1_analysis/02_function_fitting/function_fit_dataset
-_0_Sin_1.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.287 ...fitting/function_fit_dataset_0_Sin_1.png}
-                                                  
-? 
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_1_analysis/02_function_fitting/function_fit_dataset_5_Piecewise.
-png' not found on input line 292.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_1_analysis/02_function_fitting/function_fit_dataset
-_5_Piecewise.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.292 ...ing/function_fit_dataset_5_Piecewise.png}
-                                                  
-? 
-
-
-[7]
 
 [8]
-
-LaTeX Warning: Reference `tab:training_time' on page 1 undefined on input line 
-309.
-
+File: figures/best_loss_curves_all_datasets_20251023_021054.png Graphic file (t
+ype png)
+<use figures/best_loss_curves_all_datasets_20251023_021054.png>
+Package pdftex.def Info: figures/best_loss_curves_all_datasets_20251023_021054.
+png  used on input line 333.
+(pdftex.def)             Requested size: 407.66833pt x 339.33249pt.
 
 
 [9]
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_2_analysis/01_comparative_metrics/all_datasets_heatmap_test.png'
- not found on input line 341.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_2_analysis/01_comparative_metrics/all_datasets_heat
-map_test.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.341 ...ve_metrics/all_datasets_heatmap_test.png}
-                                                  
-? 
-
-Overfull \hbox (12.92621pt too wide) in paragraph at lines 346--347
+Overfull \hbox (12.92621pt too wide) in paragraph at lines 338--339
 []\T1/cmr/m/n/10.95 PDE so-lu-tion qual-ity demon-strates architecture-specific
  strengths aligned with physics-informed
  []
 
 
-Package natbib Warning: Citation `krishnapriyan2021characterizing' on page 10 u
-ndefined on input line 348.
-
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_2_analysis/02_function_fitting/function_fit_dataset_0_1D_Poisson
-_Sin.png' not found on input line 361.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_2_analysis/02_function_fitting/function_fit_dataset
-_0_1D_Poisson_Sin.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.361 ...unction_fit_dataset_0_1D_Poisson_Sin.png}
-                                                  
-? 
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_2_analysis/02_function_fitting/function_fit_dataset_2_1D_Poisson
-_High-freq.png' not found on input line 366.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_2_analysis/02_function_fitting/function_fit_dataset
-_2_1D_Poisson_High-freq.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.366 ...n_fit_dataset_2_1D_Poisson_High-freq.png}
-                                                  
-? 
-
 
 [10]
+File: figures/function_fits_all_datasets_20251023_021054.png Graphic file (type
+ png)
+<use figures/function_fits_all_datasets_20251023_021054.png>
+Package pdftex.def Info: figures/function_fits_all_datasets_20251023_021054.png
+  used on input line 352.
+(pdftex.def)             Requested size: 407.66833pt x 339.28319pt.
+
 
 [11]
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_3_analysis/01_comparative_metrics/all_datasets_heatmap_test.png'
- not found on input line 389.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_3_analysis/01_comparative_metrics/all_datasets_heat
-map_test.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.389 ...ve_metrics/all_datasets_heatmap_test.png}
-                                                  
-? 
+<figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png, id=295, 1116.0
+897pt x 799.0653pt>
+File: figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png Graphic fi
+le (type png)
+<use figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_03
+1942.png  used on input line 373.
+(pdftex.def)             Requested size: 362.37569pt x 259.4371pt.
 
 
-[12]
+[12 <./figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png>]
+File: figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png Graphic fi
+le (type png)
+<use figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_03
+1942.png  used on input line 392.
+(pdftex.def)             Requested size: 362.37569pt x 259.4371pt.
+
 
 [13]
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_3_analysis/03_heatmap_analysis/cross_section_0_2D Sin (π²).png
-' not found on input line 408.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_3_analysis/03_heatmap_analysis/cross_section_0_2D S
-in (π²).png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.408 ...alysis/cross_section_0_2D Sin (π²).png}
-                                                  
-? 
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_3_analysis/02_function_fitting/function_fit_dataset_0_2D_Sin_(π
-²).png' not found on input line 428.
+File: figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png Graphic fi
+le (type png)
+<use figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_03
+1942.png  used on input line 412.
+(pdftex.def)             Requested size: 217.42265pt x 155.66469pt.
+<figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png, id=315, 1122.59
+4pt x 799.0653pt>
+File: figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png Graphic fil
+e (type png)
+<use figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031
+942.png  used on input line 417.
+(pdftex.def)             Requested size: 217.42265pt x 154.76244pt.
 
 
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_3_analysis/02_function_fitting/function_fit_dataset
-_0_2D_Sin_(π²).png' not found: using draft setting.
+[14 <./figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png>]
+File: figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png Graphic fil
+e (type png)
+<use figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031
+942.png  used on input line 438.
+(pdftex.def)             Requested size: 362.37569pt x 257.9374pt.
 
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.428 ...function_fit_dataset_0_2D_Sin_(π²).png}
-                                                  
-? 
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_3_analysis/02_function_fitting/function_fit_dataset_2_2D_High-fr
-eq.png' not found on input line 433.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_3_analysis/02_function_fitting/function_fit_dataset
-_2_2D_High-freq.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.433 .../function_fit_dataset_2_2D_High-freq.png}
-                                                  
-? 
-
-
-[14]
 
 [15]
-
-LaTeX Warning: File `../section1/analysis/section1_complete_analysis_20251021_1
-43055/section1_3_analysis/03_heatmap_analysis/cross_section_2_2D High-freq.png'
- not found on input line 454.
-
-
-! Package pdftex.def Error: File `../section1/analysis/section1_complete_analys
-is_20251021_143055/section1_3_analysis/03_heatmap_analysis/cross_section_2_2D H
-igh-freq.png' not found: using draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.454 ...nalysis/cross_section_2_2D High-freq.png}
-                                                  
-? 
-
-
-[16]
-
-[17]
-
-Package natbib Warning: Citation `krishnapriyan2021characterizing' on page 18 u
-ndefined on input line 461.
-
-
-LaTeX Warning: Reference `fig:2d_heatmaps' on page 1 undefined on input line 46
-9.
-
-<../section1/visualization/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.p
-ng, id=320, 1116.0897pt x 799.0653pt>
-File: ../section1/visualization/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031
-942.png Graphic file (type png)
-<use ../section1/visualization/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_0319
-42.png>
-Package pdftex.def Info: ../section1/visualization/heatmap_2d_dataset_0_2D_Sin_
-(π²)_20251023_031942.png  used on input line 474.
+File: figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png Graphic fi
+le (type png)
+<use figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_03
+1942.png  used on input line 458.
 (pdftex.def)             Requested size: 217.42265pt x 155.66469pt.
-<../section1/visualization/heatmap_2d_dataset_1_2D_Polynomial_20251023_031942.p
-ng, id=322, 1119.2214pt x 799.0653pt>
-File: ../section1/visualization/heatmap_2d_dataset_1_2D_Polynomial_20251023_031
-942.png Graphic file (type png)
-<use ../section1/visualization/heatmap_2d_dataset_1_2D_Polynomial_20251023_0319
-42.png>
-Package pdftex.def Info: ../section1/visualization/heatmap_2d_dataset_1_2D_Poly
-nomial_20251023_031942.png  used on input line 479.
+<figures/heatmap_2d_dataset_1_2D_Polynomial_20251023_031942.png, id=331, 1119.2
+214pt x 799.0653pt>
+File: figures/heatmap_2d_dataset_1_2D_Polynomial_20251023_031942.png Graphic fi
+le (type png)
+<use figures/heatmap_2d_dataset_1_2D_Polynomial_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_1_2D_Polynomial_20251023_03
+1942.png  used on input line 463.
 (pdftex.def)             Requested size: 217.42265pt x 155.22575pt.
-<../section1/visualization/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.pn
-g, id=323, 1122.594pt x 799.0653pt>
-File: ../section1/visualization/heatmap_2d_dataset_2_2D_High-freq_20251023_0319
-42.png Graphic file (type png)
-<use ../section1/visualization/heatmap_2d_dataset_2_2D_High-freq_20251023_03194
-2.png>
-Package pdftex.def Info: ../section1/visualization/heatmap_2d_dataset_2_2D_High
--freq_20251023_031942.png  used on input line 486.
+File: figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png Graphic fil
+e (type png)
+<use figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031
+942.png  used on input line 470.
 (pdftex.def)             Requested size: 217.42265pt x 154.76244pt.
-<../section1/visualization/heatmap_2d_dataset_3_2D_Special_20251023_031942.png,
- id=324, 1116.0897pt x 799.0653pt>
-File: ../section1/visualization/heatmap_2d_dataset_3_2D_Special_20251023_031942
-.png Graphic file (type png)
-<use ../section1/visualization/heatmap_2d_dataset_3_2D_Special_20251023_031942.
-png>
-Package pdftex.def Info: ../section1/visualization/heatmap_2d_dataset_3_2D_Spec
-ial_20251023_031942.png  used on input line 491.
+<figures/heatmap_2d_dataset_3_2D_Special_20251023_031942.png, id=332, 1116.0897
+pt x 799.0653pt>
+File: figures/heatmap_2d_dataset_3_2D_Special_20251023_031942.png Graphic file 
+(type png)
+<use figures/heatmap_2d_dataset_3_2D_Special_20251023_031942.png>
+Package pdftex.def Info: figures/heatmap_2d_dataset_3_2D_Special_20251023_03194
+2.png  used on input line 475.
 (pdftex.def)             Requested size: 217.42265pt x 155.66469pt.
 
-Overfull \hbox (1.51973pt too wide) in paragraph at lines 498--499
+Overfull \hbox (1.51973pt too wide) in paragraph at lines 482--483
 []\T1/cmr/m/n/10.95 These com-pre-hen-sive vi-su-al-iza-tions con-firm our quan
 -ti-ta-tive find-ings: KAN and KAN Pruned
  []
 
 
 
+[16 <./figures/heatmap_2d_dataset_1_2D_Polynomial_20251023_031942.png> <./figur
+es/heatmap_2d_dataset_3_2D_Special_20251023_031942.png>]
+
+[17]
+
 [18]
 
-[19 <../section1/visualization/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_0319
-42.png> <../section1/visualization/heatmap_2d_dataset_1_2D_Polynomial_20251023_
-031942.png> <../section1/visualization/heatmap_2d_dataset_2_2D_High-freq_202510
-23_031942.png> <../section1/visualization/heatmap_2d_dataset_3_2D_Special_20251
-023_031942.png>]
-
-Package natbib Warning: Citation `huang2011adaptive' on page 20 undefined on in
-put line 555.
-
-
+[19]
 
 [20]
-
-Package natbib Warning: Citation `krishnapriyan2021characterizing' on page 21 u
-ndefined on input line 572.
-
-
-Package natbib Warning: Citation `krishnapriyan2021characterizing' on page 21 u
-ndefined on input line 584.
-
-
-
-[21]
-
-Package natbib Warning: Citation `krishnapriyan2021characterizing' on page 22 u
-ndefined on input line 598.
-
-
-Package natbib Warning: Citation `loshchilov2019decoupled' on page 22 undefined
- on input line 607.
-
-
-Package natbib Warning: Citation `krishnapriyan2021characterizing' on page 22 u
-ndefined on input line 607.
-
-
-
-[22]
-
-Package natbib Warning: Citation `huang2011adaptive' on page 23 undefined on in
-put line 615.
-
-
-Package natbib Warning: Citation `krishnapriyan2021characterizing' on page 23 u
-ndefined on input line 617.
-
-
-Package natbib Warning: Citation `huang2011adaptive' on page 23 undefined on in
-put line 618.
-
-
-Package natbib Warning: Citation `jaderberg2017population' on page 23 undefined
- on input line 619.
-
-
-Package natbib Warning: Citation `dietterich2000ensemble' on page 23 undefined 
-on input line 619.
-
-
-Package natbib Warning: Citation `zoph2017neural' on page 23 undefined on input
- line 620.
-
-
-Package natbib Warning: Citation `liu2019darts' on page 23 undefined on input l
-ine 620.
-
-
-
-[23]
-Overfull \hbox (13.1478pt too wide) in paragraph at lines 637--638
+Overfull \hbox (13.1478pt too wide) in paragraph at lines 621--622
 \T1/cmr/m/n/10.95 ity of edge ac-ti-va-tion plots^^Vrevealing which uni-vari-at
 e trans-for-ma-tions the net-work learns^^Venables
  []
 
 
-Package natbib Warning: Citation `krishnapriyan2021characterizing' on page 24 u
-ndefined on input line 641.
 
-
-
-[24]
-
-Package natbib Warning: Citation `huang2011adaptive' on page 25 undefined on in
-put line 643.
-
-
-Package natbib Warning: Citation `jaderberg2017population' on page 25 undefined
- on input line 643.
-
-
-Package natbib Warning: Citation `dietterich2000ensemble' on page 25 undefined 
-on input line 643.
-
-
-Package natbib Warning: Citation `zoph2017neural' on page 25 undefined on input
- line 643.
-
+[21]
 No file section.bbl.
 
 
-[25]
+[22]
 
-Package natbib Warning: There were undefined citations.
-
-
-
-[26] (./section.aux
-
-Package natbib Warning: Citation(s) may have changed.
-(natbib)                Rerun to get citations correct.
-
-)
+[23] (./section.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `section.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `section.out':
-(rerunfilecheck)             Before: C140E1269B8710AC37206BB081077892;6190
-(rerunfilecheck)             After:  2F3E6EC7D4C95F2478E8F7DB74C51369;6374.
+Package rerunfilecheck Info: File `section.out' has not changed.
+(rerunfilecheck)             Checksum: 2F3E6EC7D4C95F2478E8F7DB74C51369;6374.
  ) 
 Here is how much of TeX's memory you used:
- 15317 strings out of 473190
- 301086 string characters out of 5715800
- 642007 words of memory out of 5000000
- 38228 multiletter control sequences out of 15000+600000
- 578401 words of font info for 88 fonts, out of 8000000 for 9000
+ 14949 strings out of 473190
+ 247152 string characters out of 5715800
+ 641073 words of memory out of 5000000
+ 37870 multiletter control sequences out of 15000+600000
+ 575461 words of font info for 76 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,16n,79p,1643b,592s stack positions out of 10000i,1000n,20000p,200000b,200000s
-
-pdfTeX warning (dest): name{table.caption.14} has been referenced but does not 
-exist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{figure.caption.8} has been referenced but does not 
-exist, replaced by a fixed one
-
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><
-/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></
-usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
-sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr
-/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/l
-ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
-al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
-texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
-live/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
-ive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texliv
-e/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/
-2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texl
-ive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texliv
-e/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texlive/
-2025/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/20
-25/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2025
-/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/local/texlive/2025/t
-exmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2025/tex
-mf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf
--dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2025/texmf-d
-ist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2025/texmf-dis
-t/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2025/texmf-dist/
-fonts/type1/public/cm-super/sfti1095.pfb></usr/local/texlive/2025/texmf-dist/fo
-nts/type1/public/cm-super/sftt1095.pfb>
-Output written on section.pdf (26 pages, 7599802 bytes).
+ 75i,16n,79p,1643b,553s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
+sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
+/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
+ocal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loca
+l/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/t
+exlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/te
+xlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texl
+ive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texliv
+e/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/te
+xlive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texl
+ive/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texliv
+e/2025/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/
+2025/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/20
+25/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/local/texlive/2025
+/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2025/t
+exmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/tex
+mf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2025/texmf
+-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2025/texmf-d
+ist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2025/texmf-dis
+t/fonts/type1/public/cm-super/sfti1095.pfb>
+Output written on section.pdf (23 pages, 11223053 bytes).
 PDF statistics:
- 586 PDF objects out of 1000 (max. 8388607)
- 496 compressed objects within 5 object streams
- 161 named destinations out of 1000 (max. 500000)
- 285 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 597 PDF objects out of 1000 (max. 8388607)
+ 507 compressed objects within 6 object streams
+ 156 named destinations out of 1000 (max. 500000)
+ 303 words of extra memory for PDF output out of 10000 (max. 10000000)
 

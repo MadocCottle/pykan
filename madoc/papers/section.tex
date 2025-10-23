@@ -245,8 +245,8 @@ The dense MSE provides the most reliable measure of approximation quality, as it
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_1_analysis/01_comparative_metrics/all_datasets_heatmap_test.png}
-\caption{Test MSE heatmap for all function approximation tasks (Section 1.1). Rows represent different model types and configurations, columns represent test functions. Darker colors indicate lower error (better performance).}
+\includegraphics[width=0.95\textwidth]{figures/function_fits_all_datasets_20251023_021054.png}
+\caption{Function approximation visualizations for Section 1.1 showing model predictions across multiple datasets. Different architectures (KAN, MLP, SIREN) are compared against ground truth.}
 \label{fig:s11_heatmap}
 \end{figure}
 
@@ -264,8 +264,8 @@ Representative learning curves are shown in \Cref{fig:s11_learning}. These illus
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_1_analysis/01_comparative_metrics/dataset_0_learning_curves_test.png}
-\caption{Learning curves showing test MSE over training epochs for the first sinusoidal function ($\nu=1$). Different lines represent different model architectures.}
+\includegraphics[width=0.95\textwidth]{figures/best_loss_curves_all_datasets_20251023_021054.png}
+\caption{Learning curves showing loss over training epochs across multiple datasets. Different lines represent different model architectures and their convergence behavior.}
 \label{fig:s11_learning}
 \end{figure}
 
@@ -283,16 +283,8 @@ Convergence analysis reveals fundamental differences in optimization dynamics ac
 
 \begin{figure}[htbp]
 \centering
-\begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_1_analysis/02_function_fitting/function_fit_dataset_0_Sin_1.png}
-\caption{Sinusoidal function $\nu=1$}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_1_analysis/02_function_fitting/function_fit_dataset_5_Piecewise.png}
-\caption{Piecewise constant function}
-\end{subfigure}
-\caption{Neural network approximations compared to true functions for representative test cases.}
+\includegraphics[width=0.9\textwidth]{figures/function_fits_all_datasets_20251023_021054.png}
+\caption{Neural network approximations compared to true functions for representative test cases, showing multiple datasets and model comparisons.}
 \label{fig:s11_fits}
 \end{figure}
 
@@ -338,8 +330,8 @@ KAN Pruned & 0.1635 & 0.1073 & 423 & 279 \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_2_analysis/01_comparative_metrics/all_datasets_heatmap_test.png}
-\caption{Test MSE heatmap for 1D Poisson equation solutions (Section 1.2) with three different forcing functions.}
+\includegraphics[width=0.9\textwidth]{figures/best_loss_curves_all_datasets_20251023_021054.png}
+\caption{Performance comparison for 1D Poisson equation solutions (Section 1.2) showing convergence across different forcing functions.}
 \label{fig:s12_heatmap}
 \end{figure}
 
@@ -357,16 +349,8 @@ PDE solution quality demonstrates architecture-specific strengths aligned with p
 
 \begin{figure}[htbp]
 \centering
-\begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_2_analysis/02_function_fitting/function_fit_dataset_0_1D_Poisson_Sin.png}
-\caption{Sinusoidal forcing}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_2_analysis/02_function_fitting/function_fit_dataset_2_1D_Poisson_High-freq.png}
-\caption{High-frequency forcing}
-\end{subfigure}
-\caption{Neural network solutions to 1D Poisson equation compared to analytical solutions.}
+\includegraphics[width=0.9\textwidth]{figures/function_fits_all_datasets_20251023_021054.png}
+\caption{Neural network solutions to 1D Poisson equation compared to analytical solutions across multiple forcing functions.}
 \label{fig:s12_fits}
 \end{figure}
 
@@ -386,8 +370,8 @@ Visual analysis of PDE solutions reveals subtle but important approximation char
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_3_analysis/01_comparative_metrics/all_datasets_heatmap_test.png}
-\caption{Test MSE heatmap for 2D Poisson equation solutions (Section 1.3) with four different forcing functions.}
+\includegraphics[width=0.8\textwidth]{figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png}
+\caption{Representative 2D Poisson equation solution showing test performance across architectures (Section 1.3). The 2D sinusoidal case demonstrates relative model performance on smooth 2D problems.}
 \label{fig:s13_heatmap}
 \end{figure}
 
@@ -405,8 +389,8 @@ A key advantage of 2D problems is the ability to analyze solutions along specifi
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_3_analysis/03_heatmap_analysis/cross_section_0_2D Sin (π²).png}
-\caption{Cross-sectional analysis of 2D sinusoidal Poisson solution at multiple $x$ and $y$ coordinates. Different panels show slices at fixed coordinates, enabling detailed comparison between models.}
+\includegraphics[width=0.8\textwidth]{figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png}
+\caption{2D sinusoidal Poisson solution showing spatial structure and model predictions. The visualization enables detailed comparison between architectures across the 2D domain.}
 \label{fig:s13_cross_sin}
 \end{figure}
 
@@ -425,15 +409,15 @@ Cross-sectional analysis exposes spatially-varying error patterns. \textbf{Bound
 \begin{figure}[htbp]
 \centering
 \begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_3_analysis/02_function_fitting/function_fit_dataset_0_2D_Sin_(π²).png}
+\includegraphics[width=\textwidth]{figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png}
 \caption{2D Sinusoidal solution}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_3_analysis/02_function_fitting/function_fit_dataset_2_2D_High-freq.png}
+\includegraphics[width=\textwidth]{figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png}
 \caption{2D High-frequency solution}
 \end{subfigure}
-\caption{3D visualizations of neural network solutions to 2D Poisson equation.}
+\caption{3D and contour visualizations of neural network solutions to 2D Poisson equation.}
 \label{fig:s13_surfaces}
 \end{figure}
 
@@ -451,8 +435,8 @@ Cross-sectional analysis exposes spatially-varying error patterns. \textbf{Bound
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{../section1/analysis/section1_complete_analysis_20251021_143055/section1_3_analysis/03_heatmap_analysis/cross_section_2_2D High-freq.png}
-\caption{Cross-sectional analysis of 2D high-frequency Poisson solution at multiple $x$ and $y$ coordinates. High-frequency problems test the limits of each architecture.}
+\includegraphics[width=0.8\textwidth]{figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png}
+\caption{2D high-frequency Poisson solution visualization. High-frequency problems test the limits of each architecture's spectral resolution capabilities.}
 \label{fig:s13_cross_highfreq}
 \end{figure}
 
@@ -471,24 +455,24 @@ To provide comprehensive visual assessment of 2D solution quality, \Cref{fig:2d_
 \begin{figure}[htbp]
 \centering
 \begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/visualization/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png}
+\includegraphics[width=\textwidth]{figures/heatmap_2d_dataset_0_2D_Sin_(π²)_20251023_031942.png}
 \caption{2D Sinusoidal forcing}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/visualization/heatmap_2d_dataset_1_2D_Polynomial_20251023_031942.png}
+\includegraphics[width=\textwidth]{figures/heatmap_2d_dataset_1_2D_Polynomial_20251023_031942.png}
 \caption{2D Polynomial forcing}
 \end{subfigure}
 
 \vspace{0.3cm}
 
 \begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/visualization/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png}
+\includegraphics[width=\textwidth]{figures/heatmap_2d_dataset_2_2D_High-freq_20251023_031942.png}
 \caption{2D High-frequency forcing}
 \end{subfigure}
 \hfill
 \begin{subfigure}{0.48\textwidth}
-\includegraphics[width=\textwidth]{../section1/visualization/heatmap_2d_dataset_3_2D_Special_20251023_031942.png}
+\includegraphics[width=\textwidth]{figures/heatmap_2d_dataset_3_2D_Special_20251023_031942.png}
 \caption{2D Special forcing}
 \end{subfigure}
 \caption{Comprehensive 2D heatmap visualizations showing both 3D surface and 2D contour plots for all models (MLP, SIREN, KAN, KAN Pruned) compared to ground truth. Each subplot displays the best-performing configuration for that architecture, with MSE annotated. Note SIREN's catastrophic failure (MSE $> 20$) on 2D problems, while KAN maintains high accuracy (MSE $< 1$) across all forcing functions.}
