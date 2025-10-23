@@ -68,17 +68,21 @@ print("="*60 + "\n")
 # Track timing for all model types
 timers = {}
 
-print("\nTraining MLPs (with dense MSE metrics)...")
-mlp_results, mlp_models = track_time(timers, "MLP training", run_mlp_tests, datasets, depths, activations, epochs, device, true_functions, dataset_names)
-
-print("Training SIRENs (with dense MSE metrics)...")
-siren_results, siren_models = track_time(timers, "SIREN training", run_siren_tests, datasets, depths, epochs, device, true_functions, dataset_names)
-
-print("Training KANs (with dense MSE metrics)...")
-kan_results, kan_models = track_time(timers, "KAN training", run_kan_grid_tests, datasets, grids, epochs, device, False, true_functions, dataset_names, steps_per_grid)
+# Train KANs FIRST to get the interpolation threshold time
+print("\nTraining KANs (with dense MSE metrics)...")
+kan_results, kan_checkpoints, kan_threshold_time = track_time(timers, "KAN training", run_kan_grid_tests, datasets, grids, epochs, device, False, true_functions, dataset_names, steps_per_grid)
 
 print("Training KANs with pruning (with dense MSE metrics)...")
-kan_pruning_results, _, kan_pruned_models = track_time(timers, "KAN pruning training", run_kan_grid_tests, datasets, grids, epochs, device, True, true_functions, dataset_names, steps_per_grid)
+kan_pruning_results, kan_pruning_checkpoints, kan_pruning_threshold_time, kan_pruned_models = track_time(timers, "KAN pruning training", run_kan_grid_tests, datasets, grids, epochs, device, True, true_functions, dataset_names, steps_per_grid)
+
+# Now train MLPs and SIRENs, passing the KAN threshold time for iso-compute comparison
+print(f"\nUsing KAN threshold time for iso-compute comparison: {kan_threshold_time:.2f}s")
+
+print("\nTraining MLPs (with dense MSE metrics)...")
+mlp_results, mlp_checkpoints = track_time(timers, "MLP training", run_mlp_tests, datasets, depths, activations, epochs, device, true_functions, dataset_names, kan_threshold_time)
+
+print("Training SIRENs (with dense MSE metrics)...")
+siren_results, siren_checkpoints = track_time(timers, "SIREN training", run_siren_tests, datasets, depths, epochs, device, true_functions, dataset_names, kan_threshold_time)
 
 # Print timing summary
 print_timing_summary(timers, "Section 1.1", num_datasets=len(datasets))
@@ -91,10 +95,11 @@ for model_type, df in all_results.items():
 # Print best dense MSE summary table
 print_best_dense_mse_summary(all_results, dataset_names)
 
+# Save results with checkpoints
 save_run(all_results, 'section1_1',
-         models={'mlp': mlp_models, 'siren': siren_models,
-                 'kan': kan_models, 'kan_pruned': kan_pruned_models},
-         epochs=epochs, device=str(device))
+         checkpoints={'mlp': mlp_checkpoints, 'siren': siren_checkpoints,
+                     'kan': kan_checkpoints, 'kan_pruning': kan_pruning_checkpoints},
+         epochs=epochs, device=str(device), kan_threshold_time=kan_threshold_time)
 # Note: Derivable metadata (grids, depths, activations) can be obtained from DataFrames:
 # - grids: kan_results['grid_size'].unique()
 # - depths: mlp_results['depth'].unique()

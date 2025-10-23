@@ -6,15 +6,17 @@ import pandas as pd
 import torch
 
 
-def save_run(results, section, models=None, **meta):
+def save_run(results, section, models=None, checkpoints=None, **meta):
     """Save experiment run with timestamp
 
     Args:
         results: Dict of DataFrames from training {'mlp': df, 'siren': df, 'kan': df, 'kan_pruning': df}
         section: Section name (e.g., 'section1_1')
-        models: Dict of {'mlp': {idx: model}, 'siren': {idx: model},
-                        'kan': {idx: model}, 'kan_pruned': {idx: model}} or None
-        **meta: Minimal metadata (epochs, device, etc.)
+        models: DEPRECATED - use checkpoints instead
+        checkpoints: Dict of checkpoints from training. Structure:
+                    {'mlp': {dataset_idx: {'at_kan_threshold_time': {...}, 'final': {...}}}, ...}
+                    Each checkpoint dict contains: 'model', 'epoch', 'time', 'dense_mse', etc.
+        **meta: Minimal metadata (epochs, device, kan_threshold_time, etc.)
                Note: Derivable metadata (depths, activations, grids) should not be passed
                as they can be computed from the DataFrames themselves.
 
@@ -36,6 +38,7 @@ def save_run(results, section, models=None, **meta):
         'timestamp': ts,
         'epochs': meta.get('epochs'),
         'device': meta.get('device'),
+        'kan_threshold_time': meta.get('kan_threshold_time'),
     }
 
     # Save each DataFrame with metadata as attributes
@@ -55,17 +58,47 @@ def save_run(results, section, models=None, **meta):
             except ImportError:
                 pass
 
-    # Save models
+    # Save checkpoints (NEW two-checkpoint strategy)
+    if checkpoints:
+        for model_type, dataset_checkpoints in checkpoints.items():
+            for dataset_idx, checkpoint_dict in dataset_checkpoints.items():
+                for checkpoint_name, checkpoint_data in checkpoint_dict.items():
+                    model = checkpoint_data['model']
+
+                    # Save based on model type
+                    if model_type in ['mlp', 'siren']:
+                        # PyTorch models: save state_dict
+                        save_path = p / f'{section}_{ts}_{model_type}_{dataset_idx}_{checkpoint_name}.pth'
+                        torch.save(model.state_dict(), save_path)
+                    elif model_type in ['kan', 'kan_pruning']:
+                        # KAN models: use saveckpt method
+                        save_path_base = str(p / f'{section}_{ts}_{model_type}_{dataset_idx}_{checkpoint_name}')
+                        model.saveckpt(save_path_base)
+
+        # Also save checkpoint metadata as pickle for easy loading
+        checkpoint_metadata = {}
+        for model_type, dataset_checkpoints in checkpoints.items():
+            checkpoint_metadata[model_type] = {}
+            for dataset_idx, checkpoint_dict in dataset_checkpoints.items():
+                checkpoint_metadata[model_type][dataset_idx] = {}
+                for checkpoint_name, checkpoint_data in checkpoint_dict.items():
+                    # Save everything except the model itself
+                    metadata = {k: v for k, v in checkpoint_data.items() if k != 'model'}
+                    checkpoint_metadata[model_type][dataset_idx][checkpoint_name] = metadata
+
+        with open(p / f'{section}_{ts}_checkpoint_metadata.pkl', 'wb') as f:
+            pickle.dump(checkpoint_metadata, f)
+
+    # Backward compatibility: save models if provided (DEPRECATED)
     if models:
+        print("Warning: 'models' parameter is deprecated. Use 'checkpoints' instead.")
         # Save MLP models (PyTorch state_dicts)
         if 'mlp' in models:
-            import torch
             for idx, model in models['mlp'].items():
                 torch.save(model.state_dict(), p / f'{section}_{ts}_mlp_{idx}.pth')
 
         # Save SIREN models (PyTorch state_dicts)
         if 'siren' in models:
-            import torch
             for idx, model in models['siren'].items():
                 torch.save(model.state_dict(), p / f'{section}_{ts}_siren_{idx}.pth')
 
@@ -79,8 +112,12 @@ def save_run(results, section, models=None, **meta):
             for idx, model in models['kan_pruned'].items():
                 model.saveckpt(str(p / f'{section}_{ts}_pruned_{idx}'))
 
-    print(f"Saved to {p}/{section}_{ts}.*")
+    print(f"\nSaved to {p}/{section}_{ts}.*")
     print(f"Metadata stored in DataFrame attributes (access via df.attrs)")
+    if checkpoints:
+        print(f"Checkpoints saved:")
+        for model_type in checkpoints.keys():
+            print(f"  - {model_type}: {len(checkpoints[model_type])} datasets x 2 checkpoints (at_threshold + final)")
     return ts
 
 
