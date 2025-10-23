@@ -151,7 +151,7 @@ echo ""
 # Build qsub command with all necessary flags
 QSUB_CMD="qsub"
 QSUB_CMD="$QSUB_CMD -v SECTION=${SECTION},EPOCHS=${EPOCHS},PROFILE=${PROFILE}"
-QSUB_CMD="$QSUB_CMD -l select=1:ncpus=${NCPUS}:mem=${MEM}"
+QSUB_CMD="$QSUB_CMD -l ncpus=${NCPUS} -l mem=${MEM}"
 QSUB_CMD="$QSUB_CMD -l walltime=${WALLTIME}"
 QSUB_CMD="$QSUB_CMD ${SCRIPT_DIR}/run_experiment.qsub"
 
