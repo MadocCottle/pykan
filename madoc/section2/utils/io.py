@@ -50,6 +50,13 @@ def save_run(results, section, models=None, **meta):
         'device': meta.get('device'),
     }
 
+    # Format filename with epochs if provided
+    epochs = meta.get('epochs')
+    if epochs is not None:
+        filename_base = f'{section}_{ts}_e{epochs}'
+    else:
+        filename_base = f'{section}_{ts}'
+
     # Save each DataFrame with metadata as attributes
     for model_type, df in results.items():
         if isinstance(df, pd.DataFrame):
@@ -59,11 +66,11 @@ def save_run(results, section, models=None, **meta):
             df.attrs['model_type'] = model_type
 
             # Save as pickle (preserves attrs)
-            df.to_pickle(p / f'{section}_{ts}_{model_type}.pkl')
+            df.to_pickle(p / f'{filename_base}_{model_type}.pkl')
 
             # Save as parquet if available (note: parquet doesn't preserve attrs in all versions)
             try:
-                df.to_parquet(p / f'{section}_{ts}_{model_type}.parquet')
+                df.to_parquet(p / f'{filename_base}_{model_type}.parquet')
             except ImportError:
                 pass
 
@@ -81,14 +88,14 @@ def save_run(results, section, models=None, **meta):
             if hasattr(sample_model, 'saveckpt'):
                 # Save KAN models using KAN's saveckpt method
                 for idx, model in model_dict.items():
-                    model.saveckpt(str(p / f'{section}_{ts}_{model_type}_{idx}'))
+                    model.saveckpt(str(p / f'{filename_base}_{model_type}_{idx}'))
             else:
                 # Save as PyTorch state_dict
                 import torch
                 for idx, model in model_dict.items():
-                    torch.save(model.state_dict(), p / f'{section}_{ts}_{model_type}_{idx}.pth')
+                    torch.save(model.state_dict(), p / f'{filename_base}_{model_type}_{idx}.pth')
 
-    print(f"Saved to {p}/{section}_{ts}.*")
+    print(f"Saved to {p}/{filename_base}.*")
     print(f"Metadata stored in DataFrame attributes (access via df.attrs)")
     return ts
 
@@ -140,8 +147,15 @@ def load_run(section, timestamp, load_models=False):
     results = {}
     meta = {}
 
+    # Try new format with epochs first: section2_1_TIMESTAMP_e10_adam.pkl
+    pkl_files = list(p.glob(f'{section}_{timestamp}_e*_*.pkl'))
+
+    # Fall back to old format: section2_1_TIMESTAMP_adam.pkl
+    if not pkl_files:
+        pkl_files = list(p.glob(f'{section}_{timestamp}_*.pkl'))
+
     # Auto-detect available pickle files
-    for pkl_file in p.glob(f'{section}_{timestamp}_*.pkl'):
+    for pkl_file in pkl_files:
         # Extract model type from filename
         model_type = pkl_file.stem.split('_')[-1]
 
@@ -154,7 +168,12 @@ def load_run(section, timestamp, load_models=False):
 
     # If no pickle files found, try parquet
     if not results:
-        for parquet_file in p.glob(f'{section}_{timestamp}_*.parquet'):
+        # Try with epochs first
+        parquet_files = list(p.glob(f'{section}_{timestamp}_e*_*.parquet'))
+        if not parquet_files:
+            parquet_files = list(p.glob(f'{section}_{timestamp}_*.parquet'))
+
+        for parquet_file in parquet_files:
             model_type = parquet_file.stem.split('_')[-1]
             df = pd.read_parquet(parquet_file)
             results[model_type] = df
@@ -165,10 +184,31 @@ def load_run(section, timestamp, load_models=False):
         models = {}
 
         # Auto-detect all model types by finding saved files
+        # Try new format with epochs first, then fall back to old format
         # First, find all .pth files (PyTorch state_dicts)
-        for model_file in p.glob(f'{section}_{timestamp}_*.pth'):
-            # Extract model type and idx: section_timestamp_MODELTYPE_IDX.pth
-            parts = model_file.stem.replace(f'{section}_{timestamp}_', '').rsplit('_', 1)
+        pth_files = list(p.glob(f'{section}_{timestamp}_e*_*.pth'))
+        if not pth_files:
+            pth_files = list(p.glob(f'{section}_{timestamp}_*.pth'))
+
+        for model_file in pth_files:
+            # Extract model type and idx
+            # New format: section_timestamp_e100_MODELTYPE_IDX.pth
+            # Old format: section_timestamp_MODELTYPE_IDX.pth
+            filename = model_file.stem
+            # Remove section and timestamp prefix
+            if f'{section}_{timestamp}_e' in filename:
+                # New format with epochs
+                parts_str = filename.split(f'{section}_{timestamp}_e')[-1]
+                # Remove epoch number: "100_adam_0" -> skip "100_", then parse "adam_0"
+                parts_after_e = parts_str.split('_', 1)  # Split after epoch number
+                if len(parts_after_e) > 1:
+                    parts = parts_after_e[1].rsplit('_', 1)  # Split model_type and idx
+                else:
+                    continue
+            else:
+                # Old format
+                parts = filename.replace(f'{section}_{timestamp}_', '').rsplit('_', 1)
+
             if len(parts) == 2:
                 model_type, idx_str = parts
                 try:
@@ -181,12 +221,27 @@ def load_run(section, timestamp, load_models=False):
 
         # Second, find all KAN checkpoint files (they create _config.yml, _state, _cache_data files)
         # Look for config files as indicators of KAN checkpoints
-        for config_file in p.glob(f'{section}_{timestamp}_*_config.yml'):
+        config_files = list(p.glob(f'{section}_{timestamp}_e*_*_config.yml'))
+        if not config_files:
+            config_files = list(p.glob(f'{section}_{timestamp}_*_config.yml'))
+
+        for config_file in config_files:
             # Extract checkpoint path by removing _config.yml suffix
             ckpt_path = str(config_file).replace('_config.yml', '')
-            # Extract model type and idx: section_timestamp_MODELTYPE_IDX
-            base_name = config_file.stem.replace('_config', '')  # Remove _config from filename
-            parts = base_name.replace(f'{section}_{timestamp}_', '').rsplit('_', 1)
+            # Extract model type and idx
+            base_name = config_file.stem.replace('_config', '')
+
+            # Parse filename similar to above
+            if f'{section}_{timestamp}_e' in base_name:
+                parts_str = base_name.split(f'{section}_{timestamp}_e')[-1]
+                parts_after_e = parts_str.split('_', 1)
+                if len(parts_after_e) > 1:
+                    parts = parts_after_e[1].rsplit('_', 1)
+                else:
+                    continue
+            else:
+                parts = base_name.replace(f'{section}_{timestamp}_', '').rsplit('_', 1)
+
             if len(parts) == 2:
                 model_type, idx_str = parts
                 try:

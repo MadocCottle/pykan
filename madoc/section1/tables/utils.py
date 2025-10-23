@@ -26,11 +26,17 @@ def load_latest_results(section_name: str, results_dir: str = '../results') -> D
     results = {}
 
     for model_type in model_types:
-        pattern = f"{section_name}_*_{model_type}.pkl"
-        files = sorted(results_path.glob(pattern))
+        # Try new format with epochs first: section1_1_*_e*_mlp.pkl
+        pattern_with_epochs = f"{section_name}_*_e*_{model_type}.pkl"
+        files = sorted(results_path.glob(pattern_with_epochs))
+
+        # Fall back to old format: section1_1_*_mlp.pkl
+        if not files:
+            pattern_old = f"{section_name}_*_{model_type}.pkl"
+            files = sorted(results_path.glob(pattern_old))
 
         if files:
-            latest_file = files[-1]  # Get most recent
+            latest_file = files[-1]  # Get most recent (sorts by timestamp)
             with open(latest_file, 'rb') as f:
                 results[model_type] = pickle.load(f)
             print(f"Loaded {model_type}: {latest_file.name}")
